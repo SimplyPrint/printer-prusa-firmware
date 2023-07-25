@@ -1,0 +1,3 @@
+[submodule "Prusa-Firmware-Buddy"]
+	path = Prusa-Firmware-Buddy
+	url = https://github.com/prusa3d/Prusa-Firmware-Buddy
