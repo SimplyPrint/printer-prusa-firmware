@@ -4,7 +4,7 @@ SCRIPTDIR="$( cd "$( dirname "${BASH_SOURCE[0]}" )" && pwd )"
 ROOTDIR="$( cd "${SCRIPTDIR}/.." && pwd )"
 
 # Ensure submodules are initialized
-git submodule update --init
+git submodule update --init --recursive
 
 # Apply patches from patches/ directory into Prusa-Firmware-Buddy directory
 for patch in "${ROOTDIR}/patches/"*.patch; do
