@@ -3,16 +3,39 @@
 SCRIPTDIR="$( cd "$( dirname "${BASH_SOURCE[0]}" )" && pwd )"
 ROOTDIR="$( cd "${SCRIPTDIR}/.." && pwd )"
 
-# Ensure submodules are initialized
-git submodule update --init --recursive
-
 # Go into submodule directory
 cd "${ROOTDIR}/Prusa-Firmware-Buddy"
 
+git remote set-url --push origin DISABLED
+
+# Ensure tags are fetched
+git fetch --tags
+
+if [ $# -ne 2 ] ; then
+    echo "Usage: $0 <version> <presets>"
+    echo "Version: v5.0.0"
+    echo "Presets: mk4,xl,mini"
+    exit 1
+fi
+
+version=$1
+presets=$2
+
+git reset --hard HEAD
+git clean -fdx
+# Checkout the version specified in the args
+git checkout tags/$version
+
+# Apply patches from patches/ directory into Prusa-Firmware-Buddy directory
+for patch in "${ROOTDIR}/patches/"*.patch; do
+    echo "Applying patch: ${patch}"
+    patch -d "${ROOTDIR}/Prusa-Firmware-Buddy" -p1 < "${patch}"
+done
+
 # Create new pipenv environment with pip 22.0
 pipenv --python 3.11 install pip==22.0
+export BUDDY_NO_VIRTUALENV=1
 # Source shell into current shell
-pipenv run python3.11 utils/build.py --preset mk4,xl,mini --build-type release --final --build-dir "${ROOTDIR}/build" --generate-bbf
+pipenv run python3.11 utils/build.py --preset $presets --build-type release --final --build-dir "${ROOTDIR}/build" --generate-bbf
 
-# Cleanup
-pipenv --rm
+cd "${ROOTDIR}"
