@@ -1,0 +1,24 @@
+diff --git a/src/common/marlin_client.cpp b/src/common/marlin_client.cpp
+index 33901e93..a765b687 100644
+--- a/src/common/marlin_client.cpp
++++ b/src/common/marlin_client.cpp
+@@ -17,6 +17,8 @@
+ #include "utility_extensions.hpp"
+ #include "variant8.h"
+ 
++#include "../gui/ScreenHandler.hpp"
++
+ #if HAS_SELFTEST()
+     #include <selftest_types.hpp>
+ #endif
+@@ -442,7 +444,9 @@ bool is_print_started() {
+         case State::Aborted:
+         case State::Finished:
+             // Went to idle - refused by GUI
+-            return false;
++            // Force the GUI to close.
++            Screens::Access()->ClosePrinting();
++            return true;
+         default:
+             // Doing something else ‒ there's a lot of states where we are printing.
+             return true;

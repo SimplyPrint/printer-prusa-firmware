@@ -29,7 +29,7 @@ git checkout tags/$version
 # Apply patches from patches/ directory into Prusa-Firmware-Buddy directory
 for patch in "${ROOTDIR}/patches/"*.patch; do
     echo "Applying patch: ${patch}"
-    patch -d "${ROOTDIR}/Prusa-Firmware-Buddy" -p1 < "${patch}"
+    git apply -p1 < "${patch}"
 done
 
 # Create new pipenv environment with pip 22.0
