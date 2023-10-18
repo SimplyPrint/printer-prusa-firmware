@@ -22,7 +22,6 @@ version=$1
 presets=$2
 
 git reset --hard HEAD
-git clean -fdx
 # Checkout the version specified in the args
 git checkout tags/$version
 
