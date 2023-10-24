@@ -1,0 +1,17 @@
+diff --git a/src/common/gcode/gcode_info.cpp b/src/common/gcode/gcode_info.cpp
+index 456626b80..bea06739c 100644
+--- a/src/common/gcode/gcode_info.cpp
++++ b/src/common/gcode/gcode_info.cpp
+@@ -412,10 +412,10 @@ void GCodeInfo::parse_gcode(GCodeInfo::Buffer::String cmd, uint32_t &gcode_count
+                 *cmd.end = '\0';
+             }
+ 
+-            if (!is_up_to_date(cmd.c_str())) {
++            /*if (!is_up_to_date(cmd.c_str())) {
+                 valid_printer_settings.outdated_firmware.fail();
+                 strncpy(valid_printer_settings.latest_fw_version, cmd.c_str(), min(sizeof(valid_printer_settings.latest_fw_version), cmd.len()));
+-            }
++            }*/
+         }
+     }
+ }

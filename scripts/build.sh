@@ -31,6 +31,12 @@ for patch in "${ROOTDIR}/patches/"*.patch; do
     git apply -p1 < "${patch}"
 done
 
+# Apply version specific patches
+for patch in "${ROOTDIR}/patches/$version/"*.patch; do
+    echo "Applying patch: ${patch}"
+    git apply -p1 < "${patch}"
+done
+
 # Create new pipenv environment with pip 22.0
 pipenv --python 3.11 install pip==22.0
 export BUDDY_NO_VIRTUALENV=1

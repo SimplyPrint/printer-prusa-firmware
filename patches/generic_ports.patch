@@ -3,11 +3,11 @@ index b7314ef9..2a084e16 100644
 --- a/src/connect/planner.cpp
 +++ b/src/connect/planner.cpp
 @@ -142,10 +142,12 @@ namespace {
- 
+
      tuple<const char *, uint16_t> host_and_port(const Printer::Config &config, optional<uint16_t> port_override) {
          uint16_t port = config.port;
 -        if (port == 443 && config.tls) {
-+        
++
 +        if (config.tls) {
              // Go from encrypted to the unencrypted port automatically.
 -            port = 80;
