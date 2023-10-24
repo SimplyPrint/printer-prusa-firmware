@@ -1,0 +1,13 @@
+diff --git a/src/gui/screen_print_preview.cpp b/src/gui/screen_print_preview.cpp
+index 509e71d3..90b44bb9 100644
+--- a/src/gui/screen_print_preview.cpp
++++ b/src/gui/screen_print_preview.cpp
+@@ -89,8 +89,6 @@ void ScreenPrintPreview::Change(fsm::BaseData data) {
+         pMsgbox = makeMsgBox(_(labelWarning), _(txt_unfinished_selftest));
+         break;
+     case PhasesPrintPreview::new_firmware_available: {
+-        const auto version = GCodeInfo::getInstance().get_valid_printer_settings().latest_fw_version;
+-        pMsgbox = makeMsgBox(_("New firmware available"), string_view_utf8::MakeRAM(reinterpret_cast<const uint8_t *>(version)));
+         break;
+     }
+     case PhasesPrintPreview::wrong_printer:
