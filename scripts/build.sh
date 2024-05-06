@@ -41,6 +41,6 @@ done
 pipenv --python 3.11 install pip==22.0
 export BUDDY_NO_VIRTUALENV=1
 # Source shell into current shell
-pipenv run python3.11 utils/build.py --preset $presets --build-type release --final --build-dir "${ROOTDIR}/build" --generate-bbf
+pipenv run python3.11 utils/build.py --preset $presets --build-type release --final --build-dir "${ROOTDIR}/build" --generate-bbf --bootloader yes
 
 cd "${ROOTDIR}"
