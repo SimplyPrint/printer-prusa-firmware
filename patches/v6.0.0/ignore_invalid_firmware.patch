@@ -1,0 +1,22 @@
+diff --git a/src/common/gcode/gcode_info.cpp b/src/common/gcode/gcode_info.cpp
+index fe161f47e..2d30cae3d 100644
+--- a/src/common/gcode/gcode_info.cpp
++++ b/src/common/gcode/gcode_info.cpp
+@@ -489,7 +489,7 @@ void GCodeInfo::parse_gcode(GcodeBuffer::String cmd, uint32_t &gcode_counter) {
+                 *cmd.end = '\0';
+             }
+ 
+-            if (!is_up_to_date(cmd.c_str())) {
++            /*if (!is_up_to_date(cmd.c_str())) {
+                 valid_printer_settings.outdated_firmware.fail();
+                 strlcpy(valid_printer_settings.latest_fw_version, cmd.c_str(), min(sizeof(valid_printer_settings.latest_fw_version), cmd.len()));
+                 // Cut the string at the comment start
+@@ -497,7 +497,7 @@ void GCodeInfo::parse_gcode(GcodeBuffer::String cmd, uint32_t &gcode_counter) {
+                 if (comment_start) {
+                     *comment_start = '\0';
+                 }
+-            }
++            }*/
+         }
+     }
+ 
