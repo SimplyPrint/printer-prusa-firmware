@@ -3,6 +3,15 @@
 SCRIPTDIR="$( cd "$( dirname "${BASH_SOURCE[0]}" )" && pwd )"
 ROOTDIR="$( cd "${SCRIPTDIR}/.." && pwd )"
 
+# Assert that neither are empty
+if [ -z "$SCRIPTDIR" ] || [ -z "$ROOTDIR" ]; then
+    echo "Could not determine script directory or root directory"
+    exit 1
+fi
+
+# Clean build directory
+rm -rf "${ROOTDIR}/build"
+
 # Go into submodule directory
 cd "${ROOTDIR}/Prusa-Firmware-Buddy"
 
@@ -37,10 +46,13 @@ for patch in "${ROOTDIR}/patches/$version/"*.patch; do
     git apply -p1 < "${patch}"
 done
 
-# Create new pipenv environment with pip 22.0
-pipenv --python 3.11 install pip==22.0
-export BUDDY_NO_VIRTUALENV=1
+
+# Create new pipenv environment 
+pipenv update
+
+export BUDDY_NO_VIRTUALENV=1 
+
 # Source shell into current shell
-pipenv run python3.11 utils/build.py --preset $presets --build-type release --final --build-dir "${ROOTDIR}/build" --generate-bbf --bootloader yes
+pipenv run python utils/build.py --preset $presets --build-type release --final --build-dir "${ROOTDIR}/build" --generate-bbf --bootloader yes
 
 cd "${ROOTDIR}"

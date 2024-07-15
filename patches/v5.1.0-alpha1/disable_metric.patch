@@ -1,0 +1,24 @@
+diff --git a/src/gui/screen_printing.cpp b/src/gui/screen_printing.cpp
+index 0ad2ee32..bd1b68fa 100644
+--- a/src/gui/screen_printing.cpp
++++ b/src/gui/screen_printing.cpp
+@@ -198,7 +198,9 @@ extern int _is_in_M600_flg;
+ extern uint32_t *pCommand;
+ #endif
+ 
+-#if DEVELOPMENT_ITEMS() && !DEVELOPER_MODE() && HAS_HUMAN_INTERACTIONS()
++#define ENABLE_PRINT_METRICS false
++
++#if DEVELOPMENT_ITEMS() && !DEVELOPER_MODE() && HAS_HUMAN_INTERACTIONS() && ENABLE_PRINT_METRICS
+ static metric_t print_successful = METRIC("Print_successful", METRIC_VALUE_INTEGER, 0, METRIC_HANDLER_ENABLE_ALL);
+ #endif
+ 
+@@ -264,7 +266,7 @@ void screen_printing_data_t::windowEvent(EventLock /*has private ctor*/, window_
+ 
+     change_print_state();
+ 
+-#if DEVELOPMENT_ITEMS() && !DEVELOPER_MODE() && HAS_HUMAN_INTERACTIONS()
++#if DEVELOPMENT_ITEMS() && !DEVELOPER_MODE() && HAS_HUMAN_INTERACTIONS() && ENABLE_PRINT_METRICS
+     if (p_state == printing_state_t::PRINTING)
+         print_feedback_pending = true;
+ 
