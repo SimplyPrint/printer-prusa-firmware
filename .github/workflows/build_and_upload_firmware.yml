@@ -24,7 +24,9 @@ jobs:
       - name: Install system dependencies
         run: |
           sudo apt-get update
-          sudo apt-get install -y git pipenv
+          sudo apt-get install -y git
+          python3.12 -m pip install --upgrade pip
+          python3.12 -m pip install pipenv
 
       - name: Run release script
         run: ./release.sh
