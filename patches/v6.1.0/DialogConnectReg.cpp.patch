@@ -1,5 +1,5 @@
 diff --git a/src/gui/dialogs/DialogConnectReg.cpp b/src/gui/dialogs/DialogConnectReg.cpp
-index edd9a1be1..2eeb10c0b 100644
+index edd9a1be1..8933d59d1 100644
 --- a/src/gui/dialogs/DialogConnectReg.cpp
 +++ b/src/gui/dialogs/DialogConnectReg.cpp
 @@ -39,11 +39,11 @@ DialogConnectRegister::DialogConnectRegister()
@@ -7,12 +7,12 @@ index edd9a1be1..2eeb10c0b 100644
      line.SetBackColor(COLOR_ORANGE);
  
 -    title.SetText(_("Prusa Connect - printer setup"));
-+    title.SetText(_("SimplyPrint - printer setup"));
++    title.SetText(_("Simplyprint - printer setup"));
  
      last_seen_status = std::make_tuple(connect_client::ConnectionStatus::Unknown, connect_client::OnlineError::NoError, std::nullopt);
  
 -    text_state.SetText(_("Registering the printer to Prusa Connect..."));
-+    text_state.SetText(_("Registering the printer to SimplyPrint."));
++    text_state.SetText(_("Registering the printer to Simplyprint."));
      text_attempt.Hide();
  
      // Show these only after we get the code.
@@ -21,7 +21,7 @@ index edd9a1be1..2eeb10c0b 100644
          case ConnectionStatus::RegistrationRequesting:
          case ConnectionStatus::RegistrationCode:
 -            close = MsgBoxWarning(_("Prusa Connect setup is not finished. Do you want to exit and abort the process?"), Responses_YesNo)
-+            close = MsgBoxWarning(_("SimplyPrint setup is not finished. Do you want to exit and abort the process?"), Responses_YesNo)
++            close = MsgBoxWarning(_("Simplyprint setup is not finished. Do you want to exit and abort the process?"), Responses_YesNo)
                  == Response::Yes;
              break;
          default:
@@ -30,7 +30,7 @@ index edd9a1be1..2eeb10c0b 100644
  
                  ArrayStringBuilder<max_url_len> url_sb;
 -                url_sb.append_string("https://connect.prusa3d.com/add/");
-+                url_sb.append_string("https://simplyprint.io/add/");
++                url_sb.append_string("https://Simplyprint.io/add/");
                  url_sb.append_string(code);
                  qr.SetText(url_sb.str());
                  showQR();
@@ -39,10 +39,10 @@ index edd9a1be1..2eeb10c0b 100644
  
  #if HAS_MINI_DISPLAY()
 -                text_state.SetText(_("Scan the QR code using the Prusa app or camera, or visit prusa.io/add.\n"));
-+                text_state.SetText(_("Scan the QR code using the SimplyPrint app or camera, or visit simplyprint.io/add.\n"));
++                text_state.SetText(_("Scan the QR code using the Simplyprint app or camera, or visit Simplyprint.io/add.\n"));
  #else
 -                text_state.SetText(_("1. Scan the QR code using the Prusa app or camera, or visit prusa.io/add\n\n2. Log in"));
-+                text_state.SetText(_("1. Scan the QR code using the SimplyPrint app or camera, or visit simplyprint.io/add\n\n2. Log in"));
++                text_state.SetText(_("1. Scan the QR code using the Simplyprint app or camera, or visit Simplyprint.io/add\n\n2. Log in"));
  #endif
                  break;
                  ;
@@ -50,7 +50,7 @@ index edd9a1be1..2eeb10c0b 100644
              case ConnectionStatus::RegistrationDone: {
                  hideDetails();
 -                text_state.SetText(_("Registration successful, continue at connect.prusa3d.com"));
-+                text_state.SetText(_("Registration successful, continue at simplyprint.io"));
++                text_state.SetText(_("Registration successful, continue at Simplyprint.io"));
                  connect_client::leave_registration();
                  left_registration = true;
                  break;
@@ -59,7 +59,7 @@ index edd9a1be1..2eeb10c0b 100644
                  text_state.Invalidate();
  
 -                snprintf(url_buffer, sizeof(url_buffer), "prusa.io/%d", static_cast<int>(error.err_code));
-+                snprintf(url_buffer, sizeof(url_buffer), "simplyprint.io/%d", static_cast<int>(error.err_code));
++                snprintf(url_buffer, sizeof(url_buffer), "Simplyprint.io/%d", static_cast<int>(error.err_code));
                  qr.SetText(url_buffer);
                  showQR();
  
@@ -68,7 +68,7 @@ index edd9a1be1..2eeb10c0b 100644
  }
  
 -/** @returns Rect16 for title (prusaConnect)*/
-+/** @returns Rect16 for title (SimplyPrint)*/
++/** @returns Rect16 for title (Simplyprint)*/
  constexpr Rect16 DialogConnectRegister::Positioner::textRectTitle() {
  #if !HAS_MINI_DISPLAY()
      return textRect();
