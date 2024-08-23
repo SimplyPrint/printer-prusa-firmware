@@ -1,0 +1,26 @@
+diff --git a/src/connect/registrator.cpp b/src/connect/registrator.cpp
+index 8ded4b08..bd2bca07 100644
+--- a/src/connect/registrator.cpp
++++ b/src/connect/registrator.cpp
+@@ -60,7 +60,7 @@ namespace {
+                 JSON_FIELD_STR("sn", state.printer_info.serial_number.begin()) JSON_COMMA;
+                 JSON_FIELD_STR("fingerprint", state.printer_info.fingerprint) JSON_COMMA;
+                 JSON_FIELD_STR_FORMAT("printer_type", "%hhu.%hhu.%hhu", version.type, version.version, version.subversion) JSON_COMMA;
+-                JSON_FIELD_STR("firmware", state.printer_info.firmware_version);
++                JSON_FIELD_STR_FORMAT("firmware", "%s%s", state.printer_info.firmware_version, "SP");
+             JSON_OBJ_END;
+             JSON_END;
+             // clang-format on
+diff --git a/src/connect/render.cpp b/src/connect/render.cpp
+index 4dd40a1a..46cb1eac 100644
+--- a/src/connect/render.cpp
++++ b/src/connect/render.cpp
+@@ -214,7 +214,7 @@ namespace {
+             // JSON_... macros don't work in a nested switch :-(.
+             if (event.type == EventType::Info) {
+                 JSON_FIELD_OBJ("data");
+-                    JSON_FIELD_STR("firmware", info.firmware_version) JSON_COMMA;
++                    JSON_FIELD_STR_FORMAT("firmware", "%s%s", info.firmware_version, "SP") JSON_COMMA;
+                     JSON_FIELD_STR_FORMAT("printer_type", "%hhu.%hhu.%hhu", params.version.type, params.version.version, params.version.subversion) JSON_COMMA;
+                     JSON_FIELD_STR("sn", info.serial_number.begin()) JSON_COMMA;
+                     JSON_FIELD_BOOL("appendix", info.appendix) JSON_COMMA;

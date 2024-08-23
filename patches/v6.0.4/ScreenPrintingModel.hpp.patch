@@ -1,0 +1,14 @@
+diff --git a/src/gui/ScreenPrintingModel.hpp b/src/gui/ScreenPrintingModel.hpp
+index 92faa6abd..2c24420aa 100644
+--- a/src/gui/ScreenPrintingModel.hpp
++++ b/src/gui/ScreenPrintingModel.hpp
+@@ -44,6 +44,9 @@ protected:
+         Home,
+         Skip,
+         Disconnect,
++        Bed_Cleared,
++        Print_Good,
++        Print_Failed,
+         _count,
+         _last = _count - 1,
+     };

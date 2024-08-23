@@ -1,0 +1,10 @@
+diff --git a/requirements.txt b/requirements.txt
+index 12e47fe37..c0830f7de 100644
+--- a/requirements.txt
++++ b/requirements.txt
+@@ -11,4 +11,5 @@ pytest~=7.3.2
+ pytest-asyncio~=0.21
+ easyocr~=1.7
+ aiohttp~=3.8
++setuptools~=70.0
+ pre-commit

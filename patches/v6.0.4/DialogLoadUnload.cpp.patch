@@ -1,0 +1,12 @@
+diff --git a/src/gui/dialogs/DialogLoadUnload.cpp b/src/gui/dialogs/DialogLoadUnload.cpp
+index 35fe1b69f..af00113e3 100644
+--- a/src/gui/dialogs/DialogLoadUnload.cpp
++++ b/src/gui/dialogs/DialogLoadUnload.cpp
+@@ -438,6 +438,7 @@ bool DialogLoadUnload::Change(fsm::BaseData base_data) {
+         if (is_notice_fstuck(phase)) {
+             // An ugly workaround to abuse existing infrastructure - this is not an MMU-related error
+             // yet we need to throw a dialog with a QR code and a button.
++            SERIAL_ECHO("Print Paused: FILAMENT_STUCK");
+             auto err_desc = find_error(ErrCode::ERR_MECHANICAL_STUCK_FILAMENT_DETECTED);
+ 
+             notice_radio_button.set_fixed_width_buttons_count(0);

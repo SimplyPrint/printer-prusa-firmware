@@ -1,0 +1,12 @@
+diff --git a/src/common/filament_sensors_handler.cpp b/src/common/filament_sensors_handler.cpp
+index a5e94cb26..43967cf7d 100644
+--- a/src/common/filament_sensors_handler.cpp
++++ b/src/common/filament_sensors_handler.cpp
+@@ -233,6 +233,7 @@ void FilamentSensors::process_events() {
+ 
+         autoload_sent = true;
+         marlin_client::gcode_push_front("M1701 Z40"); // autoload with return option and minimal Z value of 40mm
++        SERIAL_ECHO("Print Paused: FILAMENT_RUNOUT");
+         log_info(FSensor, "Injected autoload");
+ 
+         return true;

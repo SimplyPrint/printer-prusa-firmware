@@ -1,0 +1,27 @@
+diff --git a/src/gui/screen_printing_serial.hpp b/src/gui/screen_printing_serial.hpp
+index c9de86304..54e56168a 100644
+--- a/src/gui/screen_printing_serial.hpp
++++ b/src/gui/screen_printing_serial.hpp
+@@ -5,12 +5,13 @@
+ #include "window_header.hpp"
+ #include "status_footer.hpp"
+ #include "window_text.hpp"
++#include "screen_messages.hpp"
+ #include <array>
+ 
+ class screen_printing_serial_data_t : public AddSuperWindow<ScreenPrintingModel> {
+     static constexpr const char *caption = N_("SERIAL PRINTING");
+ 
+-    window_icon_t octo_icon;
++//    window_icon_t octo_icon;
+ 
+     int last_tick;
+     enum class connection_state_t { connected,
+@@ -29,6 +30,7 @@ protected:
+     virtual void windowEvent(EventLock /*has private ctor*/, window_t *sender, GUI_event_t event, void *param) override;
+ 
+ private:
++    screen_messages_data_t message_screen;
+     virtual void stopAction() override;
+     virtual void pauseAction() override;
+     virtual void tuneAction() override;
