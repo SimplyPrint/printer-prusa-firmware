@@ -1,0 +1,41 @@
+name: Build and Upload Firmware
+
+on:
+  push:
+    branches:
+      - main
+  pull_request:
+    branches:
+      - main
+
+jobs:
+  build-and-upload:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v3
+
+      - name: Set up Python 3.12
+        uses: actions/setup-python@v4
+        with:
+          python-version: 3.12
+
+      - name: Install system dependencies
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y python3.12-venv git pipenv
+
+      - name: Run release script
+        run: ./release.sh
+
+      - name: Upload firmware to GitHub Packages
+        run: |
+          for firmware in build/*/firmware.bbf; do
+            parent_dir=$(basename $(dirname "$firmware"))
+            new_name="${parent_dir%%_*}.bbf"
+            mv "$firmware" "/tmp/$new_name"
+            gh release upload "latest" "/tmp/$new_name" --clobber
+          done
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}

@@ -1,0 +1,13 @@
+diff --git a/src/gui/screen_menu_connect.hpp b/src/gui/screen_menu_connect.hpp
+index 8cbd1d485..abc91673c 100644
+--- a/src/gui/screen_menu_connect.hpp
++++ b/src/gui/screen_menu_connect.hpp
+@@ -76,7 +76,7 @@ using ScreenMenuConnect__ = ScreenMenu<EFooter::Off, MI_RETURN, MI_CONNECT_ENABL
+ class ScreenMenuConnect : public ScreenMenuConnect__ {
+ 
+ public:
+-    constexpr static const char *label = N_("PRUSA CONNECT");
++    constexpr static const char *label = N_("Simplyprint");
+     ScreenMenuConnect();
+ 
+ protected:

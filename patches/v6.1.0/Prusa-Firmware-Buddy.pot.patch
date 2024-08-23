@@ -1,0 +1,69 @@
+diff --git a/src/lang/po/Prusa-Firmware-Buddy.pot b/src/lang/po/Prusa-Firmware-Buddy.pot
+index 6913395f3..c28243b3b 100644
+--- a/src/lang/po/Prusa-Firmware-Buddy.pot
++++ b/src/lang/po/Prusa-Firmware-Buddy.pot
+@@ -1206,7 +1206,7 @@ msgid "Do you really want to restore default input shaper configuration?"
+ msgstr ""
+ 
+ #: src/gui/screen_network_setup.cpp:512
+-msgid "Do you want to add your printer to Prusa Connect?"
++msgid "Do you want to add your printer to Simplyprint?"
+ msgstr ""
+ 
+ #: src/gui/screen_network_setup.cpp:471
+@@ -4432,7 +4432,7 @@ msgstr ""
+ 
+ #. TODO: Doesn't fit
+ #: src/gui/screen_menu_connect.hpp:79 src/gui/dialogs/DialogConnectReg.hpp:20
+-msgid "PRUSA CONNECT"
++msgid "Simplyprint"
+ msgstr ""
+ 
+ #: src/gui/screen_prusa_link.cpp:76
+@@ -4881,16 +4881,16 @@ msgid "Protocol err"
+ msgstr ""
+ 
+ #: src/gui/MItem_menus.hpp:173
+-msgid "Prusa Connect"
++msgid "Simplyprint"
+ msgstr ""
+ 
+ #: src/gui/dialogs/DialogConnectReg.cpp:42
+-msgid "Prusa Connect - printer setup"
++msgid "Simplyprint - printer setup"
+ msgstr ""
+ 
+ #: src/gui/dialogs/DialogConnectReg.cpp:85
+ msgid ""
+-"Prusa Connect setup is not finished. Do you want to exit and abort the "
++"Simplyprint setup is not finished. Do you want to exit and abort the "
+ "process?"
+ msgstr ""
+ 
+@@ -5066,7 +5066,7 @@ msgid "Registering"
+ msgstr ""
+ 
+ #: src/gui/dialogs/DialogConnectReg.cpp:46
+-msgid "Registering the printer to Prusa Connect..."
++msgid "Registering the printer to Simplyprint..."
+ msgstr ""
+ 
+ #: src/gui/dialogs/DialogConnectReg.cpp:136
+@@ -5078,7 +5078,7 @@ msgstr ""
+ #: tmp_error_headers/error_list_ix.hpp:324
+ #: tmp_error_headers/error_list_mk4.hpp:226
+ #: tmp_error_headers/error_list_mk35.hpp:219
+-msgid "Registration to Prusa Connect failed due to:"
++msgid "Registration to Simplyprint failed due to:"
+ msgstr ""
+ 
+ #: src/gui/dialogs/DialogLoadUnload.cpp:506
+@@ -5385,7 +5385,7 @@ msgid "Set Ready"
+ msgstr ""
+ 
+ #: src/gui/screen_network_setup.cpp:512
+-msgid "Set up Prusa Connect?"
++msgid "Set up Simplyprint?"
+ msgstr ""
+ 
+ #: tmp_error_headers/error_list_xl.hpp:506
