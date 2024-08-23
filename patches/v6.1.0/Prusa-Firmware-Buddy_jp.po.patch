@@ -1,0 +1,66 @@
+diff --git a/src/lang/po/jp/Prusa-Firmware-Buddy_jp.po b/src/lang/po/jp/Prusa-Firmware-Buddy_jp.po
+index cd7b7ceca..37f01e0ed 100644
+--- a/src/lang/po/jp/Prusa-Firmware-Buddy_jp.po
++++ b/src/lang/po/jp/Prusa-Firmware-Buddy_jp.po
+@@ -1256,7 +1256,7 @@ msgid "Do you really want to restore default input shaper configuration?"
+ msgstr "インプットシェーパー ノ セッティング ヲ フッキシマスカ?"
+ 
+ #: src/gui/screen_network_setup.cpp:512
+-msgid "Do you want to add your printer to Prusa Connect?"
++msgid "Do you want to add your printer to Simplyprint?"
+ msgstr "ドゥ ユー ウォント トゥ アッド ユア プリンター トゥ プルサ コネクト?"
+ 
+ #: src/gui/screen_network_setup.cpp:471
+@@ -5298,21 +5298,21 @@ msgid "Protocol err"
+ msgstr "プロトコルエラー"
+ 
+ #: src/gui/MItem_menus.hpp:173
+-msgid "Prusa Connect"
++msgid "Simplyprint"
+ msgstr "プルサコネクト"
+ 
+ #. TODO: Doesn't fit
+ #: src/gui/screen_menu_connect.hpp:79 src/gui/dialogs/DialogConnectReg.hpp:20
+-msgid "PRUSA CONNECT"
++msgid "Simplyprint"
+ msgstr "プルサコネクト"
+ 
+ #: src/gui/dialogs/DialogConnectReg.cpp:42
+-msgid "Prusa Connect - printer setup"
++msgid "Simplyprint - printer setup"
+ msgstr "プルサコネクト - プリンタ セットアップ"
+ 
+ #: src/gui/dialogs/DialogConnectReg.cpp:85
+ msgid ""
+-"Prusa Connect setup is not finished. Do you want to exit and abort the "
++"Simplyprint setup is not finished. Do you want to exit and abort the "
+ "process?"
+ msgstr ""
+ "プルサコネクト ノ セットアップガ カンリョウ シテイマセン。シュウリョウシテ プ"
+@@ -5493,7 +5493,7 @@ msgid "Registering"
+ msgstr "トウロク"
+ 
+ #: src/gui/dialogs/DialogConnectReg.cpp:46
+-msgid "Registering the printer to Prusa Connect..."
++msgid "Registering the printer to Simplyprint..."
+ msgstr "レジスタリング ザ プリンター トゥ プルサ コネクト..."
+ 
+ #: src/gui/dialogs/DialogConnectReg.cpp:136
+@@ -5506,7 +5506,7 @@ msgstr ""
+ #: tmp_error_headers/error_list_ix.hpp:324
+ #: tmp_error_headers/error_list_mk4.hpp:226
+ #: tmp_error_headers/error_list_mk35.hpp:219
+-msgid "Registration to Prusa Connect failed due to:"
++msgid "Registration to Simplyprint failed due to:"
+ msgstr "プルサコネクト ノ トウロクニ シッパイ シマシタ:"
+ 
+ #: src/common/client_response_texts.hpp:93
+@@ -5884,7 +5884,7 @@ msgstr ""
+ "シテクダサイ。"
+ 
+ #: src/gui/screen_network_setup.cpp:512
+-msgid "Set up Prusa Connect?"
++msgid "Set up Simplyprint?"
+ msgstr "セット アップ プルサ コネクト?"
+ 
+ #: src/gui/screen_network_setup.cpp:67

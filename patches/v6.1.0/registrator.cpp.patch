@@ -1,0 +1,13 @@
+diff --git a/src/connect/registrator.cpp b/src/connect/registrator.cpp
+index 0a1deef79..37cac4a15 100644
+--- a/src/connect/registrator.cpp
++++ b/src/connect/registrator.cpp
+@@ -61,7 +61,7 @@ namespace {
+                 JSON_FIELD_STR("sn", state.printer_info.serial_number.begin()) JSON_COMMA;
+                 JSON_FIELD_STR("fingerprint", state.printer_info.fingerprint) JSON_COMMA;
+                 JSON_FIELD_STR_FORMAT("printer_type", "%hhu.%hhu.%hhu", version.type, version.version, version.subversion) JSON_COMMA;
+-                JSON_FIELD_STR("firmware", state.printer_info.firmware_version);
++                JSON_FIELD_STR_FORMAT("firmware", "%s%s", state.printer_info.firmware_version, "SP")
+             JSON_OBJ_END;
+             JSON_END;
+             // clang-format on

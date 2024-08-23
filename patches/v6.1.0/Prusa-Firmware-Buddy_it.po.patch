@@ -1,0 +1,81 @@
+diff --git a/src/lang/po/it/Prusa-Firmware-Buddy_it.po b/src/lang/po/it/Prusa-Firmware-Buddy_it.po
+index ffb23c386..a16929c04 100644
+--- a/src/lang/po/it/Prusa-Firmware-Buddy_it.po
++++ b/src/lang/po/it/Prusa-Firmware-Buddy_it.po
+@@ -1248,8 +1248,8 @@ msgstr ""
+ "Vuoi davvero ripristinare la configurazione predefinita di Input shaper?"
+ 
+ #: src/gui/screen_network_setup.cpp:512
+-msgid "Do you want to add your printer to Prusa Connect?"
+-msgstr "Vuoi aggiungere la tua stampante a Prusa Connect?"
++msgid "Do you want to add your printer to Simplyprint?"
++msgstr "Vuoi aggiungere la tua stampante a Simplyprint?"
+ 
+ #: src/gui/screen_network_setup.cpp:471
+ msgid ""
+@@ -5245,24 +5245,24 @@ msgid "Protocol err"
+ msgstr "Protocol err"
+ 
+ #: src/gui/MItem_menus.hpp:173
+-msgid "Prusa Connect"
+-msgstr "Prusa Connect"
++msgid "Simplyprint"
++msgstr "Simplyprint"
+ 
+ #. TODO: Doesn't fit
+ #: src/gui/screen_menu_connect.hpp:79 src/gui/dialogs/DialogConnectReg.hpp:20
+-msgid "PRUSA CONNECT"
+-msgstr "PRUSA CONNECT"
++msgid "Simplyprint"
++msgstr "Simplyprint"
+ 
+ #: src/gui/dialogs/DialogConnectReg.cpp:42
+-msgid "Prusa Connect - printer setup"
+-msgstr "Prusa Connect - configurazione stampante"
++msgid "Simplyprint - printer setup"
++msgstr "Simplyprint - configurazione stampante"
+ 
+ #: src/gui/dialogs/DialogConnectReg.cpp:85
+ msgid ""
+-"Prusa Connect setup is not finished. Do you want to exit and abort the "
++"Simplyprint setup is not finished. Do you want to exit and abort the "
+ "process?"
+ msgstr ""
+-"L'installazione di Prusa Connect non è terminata. Vuoi uscire e interrompere "
++"L'installazione di Simplyprint non è terminata. Vuoi uscire e interrompere "
+ "il processo?"
+ 
+ #: src/gui/screen_prusa_link.cpp:76
+@@ -5440,8 +5440,8 @@ msgid "Registering"
+ msgstr "Registrazione"
+ 
+ #: src/gui/dialogs/DialogConnectReg.cpp:46
+-msgid "Registering the printer to Prusa Connect..."
+-msgstr "Registrazione della stampante su Prusa Connect..."
++msgid "Registering the printer to Simplyprint..."
++msgstr "Registrazione della stampante su Simplyprint..."
+ 
+ #: src/gui/dialogs/DialogConnectReg.cpp:136
+ msgid "Registration successful, continue at connect.prusa3d.com"
+@@ -5452,8 +5452,8 @@ msgstr "Registrazione avvenuta correttamente, continua su connect.prusa3d.com"
+ #: tmp_error_headers/error_list_ix.hpp:324
+ #: tmp_error_headers/error_list_mk4.hpp:226
+ #: tmp_error_headers/error_list_mk35.hpp:219
+-msgid "Registration to Prusa Connect failed due to:"
+-msgstr "La registrazione a Prusa Connect non è riuscita a causa di:"
++msgid "Registration to Simplyprint failed due to:"
++msgstr "La registrazione a Simplyprint non è riuscita a causa di:"
+ 
+ #: src/common/client_response_texts.hpp:93
+ msgid "REHEAT"
+@@ -5828,8 +5828,8 @@ msgstr ""
+ "della cella di carico."
+ 
+ #: src/gui/screen_network_setup.cpp:512
+-msgid "Set up Prusa Connect?"
+-msgstr "Configurare Prusa Connect?"
++msgid "Set up Simplyprint?"
++msgstr "Configurare Simplyprint?"
+ 
+ #: src/gui/screen_network_setup.cpp:67
+ msgid "Setup via NFC"

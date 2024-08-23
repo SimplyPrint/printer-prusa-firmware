@@ -1,0 +1,124 @@
+diff --git a/src/gui/MItem_menus.hpp b/src/gui/MItem_menus.hpp
+index e3fbc14be..4fc239409 100644
+--- a/src/gui/MItem_menus.hpp
++++ b/src/gui/MItem_menus.hpp
+@@ -198,7 +198,7 @@ protected:
+ };
+ 
+ class MI_PRUSA_CONNECT : public IWindowMenuItem {
+-    static constexpr const char *const label = N_("Prusa Connect");
++    static constexpr const char *const label = N_("SimplyPrint");
+ 
+ public:
+     MI_PRUSA_CONNECT();
+diff --git a/src/gui/dialogs/DialogConnectReg.cpp b/src/gui/dialogs/DialogConnectReg.cpp
+index 08e74aa1c..e1de81631 100644
+--- a/src/gui/dialogs/DialogConnectReg.cpp
++++ b/src/gui/dialogs/DialogConnectReg.cpp
+@@ -38,11 +38,11 @@ DialogConnectRegister::DialogConnectRegister()
+     text_detail.SetAlignment(Align_t::Center());
+     line.SetBackColor(COLOR_ORANGE);
+ 
+-    title.SetText(_("Prusa Connect - printer setup"));
++    title.SetText(_("SimplyPrint - printer setup"));
+ 
+     last_seen_status = std::make_tuple(connect_client::ConnectionStatus::Unknown, connect_client::OnlineError::NoError, std::nullopt);
+ 
+-    text_state.SetText(_("Acquiring registration code, please wait..."));
++    text_state.SetText(_("Please add your printer via the SimplyPrint panel."));
+ 
+     char help_buff[20] = { 0 };
+     _(attemptTxt).copyToRAM(help_buff, sizeof(help_buff)); // Translation
+@@ -86,7 +86,7 @@ void DialogConnectRegister::windowEvent(EventLock, window_t *sender, GUI_event_t
+         switch (get<0>(last_seen_status)) {
+         case ConnectionStatus::RegistrationRequesting:
+         case ConnectionStatus::RegistrationCode:
+-            close = MsgBoxWarning(_("Prusa Connect setup is not finished. Do you want to exit and abort the process?"), Responses_YesNo)
++            close = MsgBoxWarning(_("SimplyPrint setup is not finished. Do you want to exit and abort the process?"), Responses_YesNo)
+                 == Response::Yes;
+             break;
+         default:
+@@ -114,7 +114,7 @@ void DialogConnectRegister::windowEvent(EventLock, window_t *sender, GUI_event_t
+                 // already need the ini file to override the hostname and
+                 // therefore the wizard is of little use to them.
+                 showQR();
+-                snprintf(url_buffer, sizeof url_buffer, "https://connect.prusa3d.com/add/%s", code);
++                snprintf(url_buffer, sizeof url_buffer, "https://simplyprint.io/", code);
+                 qr.SetText(url_buffer);
+                 // The MakeRAM doesn't copy it, it just passes the pointer
+                 // through and assumes the data live for long enough.
+@@ -127,13 +127,13 @@ void DialogConnectRegister::windowEvent(EventLock, window_t *sender, GUI_event_t
+ #ifdef USE_ST7789
+                 text_state.SetText(_("Scan QR or visit prusa.io/add, log in and add printer code:"));
+ #else /*USE_ST7789*/
+-                text_state.SetText(_("1. Scan the QR code or visit prusa.io/add.\n2. Log in.\n3. Add printer with code:\n"));
++                text_state.SetText(_("Please add your printer via the SimplyPrint panel."));
+ #endif /*USE_ST7789*/
+                 break;
+             }
+             case ConnectionStatus::RegistrationDone: {
+                 hideDetails();
+-                text_state.SetText(_("Registration successful, continue at connect.prusa3d.com"));
++                text_state.SetText(_("Registration successful, continue at simplyprint.io"));
+                 connect_client::leave_registration();
+                 left_registration = true;
+                 break;
+diff --git a/src/gui/dialogs/DialogConnectReg.hpp b/src/gui/dialogs/DialogConnectReg.hpp
+index 1f91e20c0..b0cc22edf 100644
+--- a/src/gui/dialogs/DialogConnectReg.hpp
++++ b/src/gui/dialogs/DialogConnectReg.hpp
+@@ -15,7 +15,7 @@ private:
+     char error_buffer[90];
+ 
+     // TODO: Doesn't fit
+-    constexpr static const char *const headerLabel = N_("PRUSA CONNECT");
++    constexpr static const char *const headerLabel = N_("SIMPLYPRINT");
+     constexpr static const char *const moreDetailTxt = N_("More detail at");
+     constexpr static const char *const attemptTxt = N_("Attempt");
+ 
+diff --git a/src/gui/screen_menu_connect.cpp b/src/gui/screen_menu_connect.cpp
+index b2890b458..1f6637640 100644
+--- a/src/gui/screen_menu_connect.cpp
++++ b/src/gui/screen_menu_connect.cpp
+@@ -32,15 +32,16 @@ MI_CONNECT_ERROR::MI_CONNECT_ERROR()
+ MI_CONNECT_LOAD_SETTINGS::MI_CONNECT_LOAD_SETTINGS()
+     : IWindowMenuItem(_(label), nullptr, is_enabled_t::yes, is_hidden_t::no, expands_t::no) {}
+ 
++// TODO; Can this be disabled?
+ void MI_CONNECT_LOAD_SETTINGS::click([[maybe_unused]] IWindowMenu &window_menu) {
+     if (connect_client::MarlinPrinter::load_cfg_from_ini()) {
+         if (config_store().connect_enabled.get()) {
+-            MsgBoxInfo(_("Loaded successfully. Connect will activate shortly."), Responses_Ok);
++            MsgBoxInfo(_("Loaded successfully. SimplyPrint will activate shortly."), Responses_Ok);
+         } else {
+-            MsgBoxInfo(_("Loaded successfully. Enable Connect to activate."), Responses_Ok);
++            MsgBoxInfo(_("Loaded successfully. Enable SimplyPrint to activate."), Responses_Ok);
+         }
+     } else {
+-        MsgBoxError(_("Failed to load config. Make sure the ini file downloaded from Connect is on the USB drive and try again."), Responses_Ok);
++        MsgBoxError(_("Failed to load config. Make sure the ini file downloaded from SimplyPrint is on the USB drive and try again."), Responses_Ok);
+     }
+ }
+ 
+diff --git a/src/gui/screen_menu_connect.hpp b/src/gui/screen_menu_connect.hpp
+index 3abe57782..f66a193ac 100644
+--- a/src/gui/screen_menu_connect.hpp
++++ b/src/gui/screen_menu_connect.hpp
+@@ -43,7 +43,7 @@ protected:
+ };
+ 
+ class MI_CONNECT_REGISTER : public IWindowMenuItem {
+-    static constexpr const char *const label = N_("Add Printer to Connect");
++    static constexpr const char *const label = N_("Add Printer to SimplyPrint");
+ 
+ public:
+     MI_CONNECT_REGISTER();
+@@ -59,7 +59,7 @@ private:
+     void updateStatus();
+ 
+ public:
+-    constexpr static const char *label = N_("PRUSA CONNECT");
++    constexpr static const char *label = N_("SIMPLYPRINT");
+     ScreenMenuConnect();
+     virtual void windowEvent(EventLock /*has private ctor*/, window_t *sender, GUI_event_t event, void *param) override;
+ };

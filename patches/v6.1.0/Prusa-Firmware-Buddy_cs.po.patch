@@ -1,0 +1,80 @@
+diff --git a/src/lang/po/cs/Prusa-Firmware-Buddy_cs.po b/src/lang/po/cs/Prusa-Firmware-Buddy_cs.po
+index 651cb3c9b..1f2c35a8a 100644
+--- a/src/lang/po/cs/Prusa-Firmware-Buddy_cs.po
++++ b/src/lang/po/cs/Prusa-Firmware-Buddy_cs.po
+@@ -1219,8 +1219,8 @@ msgid "Do you really want to restore default input shaper configuration?"
+ msgstr "Chcete obnovit výchozí konfiguraci Input Shaper?"
+ 
+ #: src/gui/screen_network_setup.cpp:512
+-msgid "Do you want to add your printer to Prusa Connect?"
+-msgstr "Chcete přidat tiskárnu od Prusa Connect?"
++msgid "Do you want to add your printer to Simplyprint?"
++msgstr "Chcete přidat tiskárnu od Simplyprint?"
+ 
+ #: src/gui/screen_network_setup.cpp:471
+ msgid ""
+@@ -5151,23 +5151,23 @@ msgid "Protocol err"
+ msgstr "Chyba protokolu"
+ 
+ #: src/gui/MItem_menus.hpp:173
+-msgid "Prusa Connect"
+-msgstr "Prusa Connect"
++msgid "Simplyprint"
++msgstr "Simplyprint"
+ 
+ #. TODO: Doesn't fit
+ #: src/gui/screen_menu_connect.hpp:79 src/gui/dialogs/DialogConnectReg.hpp:20
+-msgid "PRUSA CONNECT"
+-msgstr "PRUSA CONNECT"
++msgid "Simplyprint"
++msgstr "Simplyprint"
+ 
+ #: src/gui/dialogs/DialogConnectReg.cpp:42
+-msgid "Prusa Connect - printer setup"
+-msgstr "Prusa Connect - nastavení tiskárny"
++msgid "Simplyprint - printer setup"
++msgstr "Simplyprint - nastavení tiskárny"
+ 
+ #: src/gui/dialogs/DialogConnectReg.cpp:85
+ msgid ""
+-"Prusa Connect setup is not finished. Do you want to exit and abort the "
++"Simplyprint setup is not finished. Do you want to exit and abort the "
+ "process?"
+-msgstr "Nastavení Prusa Connect nedokončeno. Ukončit proces a zahodit změny?"
++msgstr "Nastavení Simplyprint nedokončeno. Ukončit proces a zahodit změny?"
+ 
+ #: src/gui/screen_prusa_link.cpp:76
+ msgid "PRUSALINK"
+@@ -5341,8 +5341,8 @@ msgid "Registering"
+ msgstr "Registruji"
+ 
+ #: src/gui/dialogs/DialogConnectReg.cpp:46
+-msgid "Registering the printer to Prusa Connect..."
+-msgstr "Registruji tiskárnu do Prusa Connect..."
++msgid "Registering the printer to Simplyprint..."
++msgstr "Registruji tiskárnu do Simplyprint..."
+ 
+ #: src/gui/dialogs/DialogConnectReg.cpp:136
+ msgid "Registration successful, continue at connect.prusa3d.com"
+@@ -5353,8 +5353,8 @@ msgstr "Registrace úspěšná, pokračujte na connect.prusa3d.com"
+ #: tmp_error_headers/error_list_ix.hpp:324
+ #: tmp_error_headers/error_list_mk4.hpp:226
+ #: tmp_error_headers/error_list_mk35.hpp:219
+-msgid "Registration to Prusa Connect failed due to:"
+-msgstr "Registrace do služby Prusa Connect se nezdařila z důvodu:"
++msgid "Registration to Simplyprint failed due to:"
++msgstr "Registrace do služby Simplyprint se nezdařila z důvodu:"
+ 
+ #: src/common/client_response_texts.hpp:93
+ msgid "REHEAT"
+@@ -5721,8 +5721,8 @@ msgstr ""
+ "Nastavení tárování se nezdařilo. Zkontrolujte zapojení senzoru loadcell."
+ 
+ #: src/gui/screen_network_setup.cpp:512
+-msgid "Set up Prusa Connect?"
+-msgstr "Nastavit Prusa Connect?"
++msgid "Set up Simplyprint?"
++msgstr "Nastavit Simplyprint?"
+ 
+ #: src/gui/screen_network_setup.cpp:67
+ msgid "Setup via NFC"
