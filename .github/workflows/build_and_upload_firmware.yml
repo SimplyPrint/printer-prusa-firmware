@@ -34,11 +34,14 @@ jobs:
 
       - name: Upload firmware to GitHub Packages
         run: |
-          for firmware in build/*/firmware.bbf; do
-            parent_dir=$(basename $(dirname "$firmware"))
-            new_name="${parent_dir%%_*}.bbf"
-            mv "$firmware" "/tmp/$new_name"
-            gh release upload "latest" "/tmp/$new_name" --clobber
-          done
+              for firmware in build/*/firmware.bbf; do
+                parent_dir=$(basename $(dirname "$firmware"))
+                if [ "$parent_dir" = "products" ]; then
+                  continue
+                fi
+                new_name="${parent_dir%%_*}.bbf"
+                mv "$firmware" "/tmp/$new_name"
+                gh release upload "latest" "/tmp/$new_name" --clobber
+              done
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
