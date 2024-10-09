@@ -1,18 +1,22 @@
 #!/bin/bash
 export DEBIAN_FRONTEND=noninteractive
 apt update && apt install -y python3 python3-pip python3-venv git curl wget software-properties-common
-add-apt-repository ppa:deadsnakes/ppa
+apt install -y python3-dev libjpeg-dev zlib1g-dev libfreetype6-dev liblcms2-dev libopenjp2-7 libtiff5 libwebp-dev tcl-dev tk-dev
+
+add-apt-repository -y ppa:deadsnakes/ppa
 apt update
-apt install -y python3.12 python3.12-distutils
+apt install -y python3.12 python3.12-distutils python3.12-venv python3.12-dev
 
 python3.12 -m venv venv
+source venv/bin/activate
 
-pip3 install pipenv
+pip3 install pipenv uv setuptools wheel
 
 rm -rf Prusa-Firmware-Buddy
 
 mkdir Prusa-Firmware-Buddy
 git clone https://github.com/prusa3d/Prusa-Firmware-Buddy.git Prusa-Firmware-Buddy
+uv pip install -r Prusa-Firmware-Buddy/requirements.txt
 
 scripts/build.sh $1 mk4
 # Upload the built file in the background
