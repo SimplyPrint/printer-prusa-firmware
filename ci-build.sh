@@ -1,6 +1,6 @@
 #!/bin/bash
 export DEBIAN_FRONTEND=noninteractive
-apt update && apt install -y git curl wget software-properties-common
+apt update && apt install -y git curl wget software-properties-common jq
 apt install -y libjpeg-dev zlib1g-dev libfreetype6-dev liblcms2-dev libopenjp2-7 libtiff5 libwebp-dev tcl-dev tk-dev
 
 add-apt-repository -y ppa:deadsnakes/ppa
@@ -17,6 +17,13 @@ rm -rf Prusa-Firmware-Buddy
 mkdir Prusa-Firmware-Buddy
 git clone https://github.com/prusa3d/Prusa-Firmware-Buddy.git Prusa-Firmware-Buddy
 scripts/build.sh $1 mk4
+
+  if [ $? -eq 0 ]; then
+    echo "Built successfully"
+  else
+    echo "Build failed"
+    exit 1
+  fi
 
 PACKAGE_URL="${CI_API_V4_URL}/projects/${CI_PROJECT_ID}/packages/generic/${output_name}/$1"
 while true; do
