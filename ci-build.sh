@@ -50,7 +50,9 @@ while true; do
 
 
 # Upload the built file in the background
-curl --header "JOB-TOKEN: ${CI_JOB_TOKEN}" --upload-file "build/mk4_release_boot/firmware.bbf" "${CI_API_V4_URL}/projects/${CI_PROJECT_ID}/packages/generic/$1/$1/mk4_firmware.bbf"
+input=$1
+stripped=${input:1}
+curl --header "JOB-TOKEN: ${CI_JOB_TOKEN}" --upload-file "build/mk4_release_boot/firmware.bbf" "${CI_API_V4_URL}/projects/${CI_PROJECT_ID}/packages/generic/$1/$stripped/mk4_firmware.bbf"
 
 # Wait for all background jobs to complete
 echo "Build and upload process completed."
