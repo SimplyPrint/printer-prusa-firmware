@@ -20,7 +20,7 @@ uv pip install -r Prusa-Firmware-Buddy/requirements.txt
 
 scripts/build.sh $1 mk4
 # Upload the built file in the background
-curl --header "JOB-TOKEN: ${CI_JOB_TOKEN}" --upload-file "build/mk4_release_boot/firmware.bbf" "${CI_API_V4_URL}/projects/${CI_PROJECT_ID}/packages/generic/$1/mk4_firmware.bbf"
+curl --header "JOB-TOKEN: ${CI_JOB_TOKEN}" --upload-file "build/mk4_release_boot/firmware.bbf" "${CI_API_V4_URL}/projects/${CI_PROJECT_ID}/packages/generic/$1/$1/mk4_firmware.bbf"
 
 # Wait for all background jobs to complete
 echo "Build and upload process completed."
