@@ -1,5 +1,5 @@
 diff --git a/src/gui/screen_menu_connect.hpp b/src/gui/screen_menu_connect.hpp
-index 8cbd1d485..585d44ba6 100644
+index 8cbd1d485..374d65f18 100644
 --- a/src/gui/screen_menu_connect.hpp
 +++ b/src/gui/screen_menu_connect.hpp
 @@ -62,7 +62,7 @@ protected:
@@ -11,7 +11,22 @@ index 8cbd1d485..585d44ba6 100644
  
  public:
      MI_CONNECT_REGISTER();
-@@ -76,7 +76,7 @@ using ScreenMenuConnect__ = ScreenMenu<EFooter::Off, MI_RETURN, MI_CONNECT_ENABL
+@@ -71,12 +71,21 @@ protected:
+     virtual void click(IWindowMenu &window_menu) override;
+ };
+ 
+-using ScreenMenuConnect__ = ScreenMenu<EFooter::Off, MI_RETURN, MI_CONNECT_ENABLED, MI_CONNECT_STATUS, MI_CONNECT_ERROR, MI_CONNECT_HOST, MI_CONNECT_REGISTER, MI_CONNECT_LOAD_SETTINGS>;
++class MI_SEND_SIMPLYPRINT : public IWindowMenuItem {
++    static constexpr const char *const label = N_("Send 'Hello World' to Simplyprint");
++
++public:
++    MI_SEND_SIMPLYPRINT();
++
++protected:
++    virtual void click(IWindowMenu &window_menu) override;
++};
++using ScreenMenuConnect__ = ScreenMenu<EFooter::Off, MI_RETURN, MI_CONNECT_ENABLED, MI_CONNECT_STATUS, MI_CONNECT_ERROR, MI_CONNECT_HOST, MI_CONNECT_REGISTER, MI_CONNECT_LOAD_SETTINGS, MI_SEND_SIMPLYPRINT>;
+ 
  class ScreenMenuConnect : public ScreenMenuConnect__ {
  
  public:

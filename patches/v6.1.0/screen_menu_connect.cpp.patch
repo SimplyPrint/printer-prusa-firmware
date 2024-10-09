@@ -1,28 +1,33 @@
 diff --git a/src/gui/screen_menu_connect.cpp b/src/gui/screen_menu_connect.cpp
-index b545985f3..835a64659 100644
+index b545985f3..1e3682a1e 100644
 --- a/src/gui/screen_menu_connect.cpp
 +++ b/src/gui/screen_menu_connect.cpp
-@@ -14,6 +14,21 @@
+@@ -14,11 +14,26 @@
  using connect_client::ConnectionStatus;
  using connect_client::OnlineError;
  
-+class MI_SEND_SIMPLYPRINT : public IWindowMenuItem {
-+public:
-+    MI_SEND_SIMPLYPRINT()
++
++MI_SEND_SIMPLYPRINT::MI_SEND_SIMPLYPRINT()
 +        : IWindowMenuItem(_("Send 'Hello World' to Simplyprint"), nullptr, is_enabled_t::yes, is_hidden_t::no, expands_t::no) {}
 +
-+    void click([[maybe_unused]] IWindowMenu &window_menu) override {
-+        SharedBuffer buffer;
-+        connect_client::MarlinPrinter printer;
-+        // Use the existing connect_instance to send "Hello World"
-+        connect_client::Connect client(printer, buffer);
-+        client.send_simplyprint("Hello World");
-+        MsgBoxInfo(_("Message sent to Simplyprint!"), Responses_Ok);
-+    }
-+};
++void MI_SEND_SIMPLYPRINT::click([[maybe_unused]] IWindowMenu &window_menu) {
++    SharedBuffer buffer;
++    connect_client::MarlinPrinter printer;
++    // Use the existing connect_instance to send "Hello World"
++    connect_client::Connect client(printer, buffer);
++    client.send_simplyprint("Hello World");
++    MsgBoxInfo(_("Message sent to Simplyprint!"), Responses_Ok);
++}
++
 +
  MI_CONNECT_ENABLED::MI_CONNECT_ENABLED()
      : WI_ICON_SWITCH_OFF_ON_t(config_store().connect_enabled.get(), _(label), nullptr, is_enabled_t::yes, is_hidden_t::no) {}
+ 
+ void MI_CONNECT_ENABLED::OnChange([[maybe_unused]] size_t old_index) {
+     config_store().connect_enabled.set(static_cast<bool>(index));
++
+     // Connect will catch up with new config in its next iteration
+ }
  
 @@ -97,12 +112,12 @@ MI_CONNECT_LOAD_SETTINGS::MI_CONNECT_LOAD_SETTINGS()
  void MI_CONNECT_LOAD_SETTINGS::click([[maybe_unused]] IWindowMenu &window_menu) {
@@ -40,13 +45,12 @@ index b545985f3..835a64659 100644
      }
  }
  
-@@ -116,6 +131,9 @@ void MI_CONNECT_REGISTER::click([[maybe_unused]] IWindowMenu &window_menu) {
- 
- ScreenMenuConnect::ScreenMenuConnect()
-     : ScreenMenuConnect__(_(label)) {
-+    // Add your new simplyprint button to the menu
-+    auto sendSimplyPrintButton = new MI_SEND_SIMPLYPRINT();
-+    sendSimplyPrintButton->show();
+@@ -114,6 +129,8 @@ void MI_CONNECT_REGISTER::click([[maybe_unused]] IWindowMenu &window_menu) {
+     DialogConnectRegister::Show();
  }
  
- void ScreenMenuConnect::windowEvent(window_t *sender, GUI_event_t event, void *param) {
++
++
+ ScreenMenuConnect::ScreenMenuConnect()
+     : ScreenMenuConnect__(_(label)) {
+ }
