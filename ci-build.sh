@@ -1,5 +1,5 @@
 #!/bin/bash
-sudo pip3 install pipenv
+pip3 install pipenv
 
 rm -rf Prusa-Firmware-Buddy
 
