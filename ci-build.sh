@@ -1,5 +1,6 @@
 #!/bin/bash
-apk add python3 python3-pip python3-venv
+apk add python3 py3-pip
+
 pip3 install pipenv
 
 rm -rf Prusa-Firmware-Buddy
