@@ -1,4 +1,5 @@
 #!/bin/bash
+apt install -y python3 python3-pip python3-venv
 pip3 install pipenv
 
 rm -rf Prusa-Firmware-Buddy
