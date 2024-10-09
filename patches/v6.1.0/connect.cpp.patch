@@ -1,5 +1,5 @@
 diff --git a/src/connect/connect.cpp b/src/connect/connect.cpp
-index 11f458c10..447d74f4b 100644
+index 11f458c10..9c35ff076 100644
 --- a/src/connect/connect.cpp
 +++ b/src/connect/connect.cpp
 @@ -45,6 +45,43 @@ LOG_COMPONENT_DEF(connect, LOG_SEVERITY_INFO);
@@ -46,7 +46,7 @@ index 11f458c10..447d74f4b 100644
  
      // Send a ping if there's no activity from us during this time (15_000 ms = 15s)
      constexpr uint32_t ping_inactivity = 15000;
-@@ -621,6 +658,24 @@ CommResult Connect::prepare_connection(CachedFactory &conn_factory, const Printe
+@@ -621,6 +658,25 @@ CommResult Connect::prepare_connection(CachedFactory &conn_factory, const Printe
      return monostate {};
  }
  
@@ -55,9 +55,10 @@ index 11f458c10..447d74f4b 100644
 +
 +    // Create the SimplePrintRequest
 +    SimplyPrintRequest request(data);
++    CachedFactory conn_factory;
 +
 +    // Prepare the HTTP client and send the request
-+    HttpClient http(reinterpret_cast<ConnectionFactory &>(buffer));
++    HttpClient http(conn_factory);
 +    auto result = http.send(request);
 +
 +    // Handle the response
