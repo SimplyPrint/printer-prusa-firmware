@@ -11,6 +11,7 @@ stages:
 
 build-job:
   stage: build
+  image: ubuntu:22.04
   script:
     - bash ci-build.sh v6.1.0
   tags: [ "docker_build" ]
