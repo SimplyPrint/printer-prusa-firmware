@@ -1,0 +1,73 @@
+diff --git a/src/connect/connect.cpp b/src/connect/connect.cpp
+index 11f458c10..447d74f4b 100644
+--- a/src/connect/connect.cpp
++++ b/src/connect/connect.cpp
+@@ -45,6 +45,43 @@ LOG_COMPONENT_DEF(connect, LOG_SEVERITY_INFO);
+ namespace connect_client {
+ 
+ namespace {
++    class SimplyPrintRequest final : public http::Request {
++    private:
++        const std::string &data;
++        HeaderOut headers[2];
++
++    public:
++        SimplyPrintRequest(const std::string &data)
++            : data(data), headers {
++                { "Content-Type", "text/plain", nullopt },
++                { nullptr, nullptr, nullopt }
++            } {}
++
++        // Implement required methods
++        virtual const char *url() const override {
++            return "/p/simplyprint";
++        }
++
++        virtual Method method() const override {
++            return Method::Post;
++        }
++
++        virtual const HeaderOut *extra_headers() const override {
++            return headers;
++        }
++
++        virtual ContentType content_type() const override {
++            return ContentType::TextPlain;
++        }
++
++        virtual const char *connection() const override {
++            return "keep-alive";
++        }
++
++        virtual const std::string &body() const {
++            return data;
++        }
++    };
+ 
+     // Send a ping if there's no activity from us during this time (15_000 ms = 15s)
+     constexpr uint32_t ping_inactivity = 15000;
+@@ -621,6 +658,24 @@ CommResult Connect::prepare_connection(CachedFactory &conn_factory, const Printe
+     return monostate {};
+ }
+ 
++void Connect::send_simplyprint(const std::string &data) {
++    log_debug(connect, "Sending simple print data: %s", data.c_str());
++
++    // Create the SimplePrintRequest
++    SimplyPrintRequest request(data);
++
++    // Prepare the HTTP client and send the request
++    HttpClient http(reinterpret_cast<ConnectionFactory &>(buffer));
++    auto result = http.send(request);
++
++    // Handle the response
++    if (holds_alternative<http::Error>(result)) {
++        log_error(connect, "Failed to send simple print data");
++    } else {
++        log_debug(connect, "Simple print data sent successfully");
++    }
++}
++
+ CommResult Connect::send_command(CachedFactory &conn_factory, const Printer::Config &config, Action &&action, optional<CommandId> background_command_id) {
+     log_debug(connect, "Sending to connect");
+     BasicRequest request(printer, config, action, background_command_id);
