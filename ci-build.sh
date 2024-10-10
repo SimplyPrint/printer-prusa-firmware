@@ -24,12 +24,15 @@ scripts/build.sh $1 mk4
     echo "Build failed"
     exit 1
   fi
+input=$1
+stripped=${input:1}
 
 PACKAGE_URL="${CI_API_V4_URL}/projects/${CI_PROJECT_ID}/packages/generic/${output_name}/$1"
 while true; do
+
     # Get the package details (handling single and array responses)
     # shellcheck disable=SC2154
-    PACKAGE_INFO=$(curl --header "PRIVATE-TOKEN: ${package_registry_delete_token}" --silent "${CI_API_V4_URL}/projects/${CI_PROJECT_ID}/packages?package_name=${output_name}&package_version=$1")
+    PACKAGE_INFO=$(curl --header "PRIVATE-TOKEN: ${package_registry_delete_token}" --silent "${CI_API_V4_URL}/projects/${CI_PROJECT_ID}/packages?package_name=${output_name}&package_version=$stripped")
 
     # Check if the package exists (handling object vs array response)
     PACKAGE_ID=$(echo "$PACKAGE_INFO" | jq -r 'if type=="array" and length > 0 then .[0].id else null end')
@@ -50,8 +53,7 @@ while true; do
 
 
 # Upload the built file in the background
-input=$1
-stripped=${input:1}
+
 curl --header "JOB-TOKEN: ${CI_JOB_TOKEN}" --upload-file "build/mk4_release_boot/firmware.bbf" "${CI_API_V4_URL}/projects/${CI_PROJECT_ID}/packages/generic/$1/$stripped/mk4_firmware.bbf"
 
 # Wait for all background jobs to complete
