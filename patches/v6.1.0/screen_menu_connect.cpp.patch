@@ -1,8 +1,8 @@
 diff --git a/src/gui/screen_menu_connect.cpp b/src/gui/screen_menu_connect.cpp
-index b545985f3..69036cd64 100644
+index b545985f3..92591f253 100644
 --- a/src/gui/screen_menu_connect.cpp
 +++ b/src/gui/screen_menu_connect.cpp
-@@ -14,11 +14,25 @@
+@@ -14,11 +14,31 @@
  using connect_client::ConnectionStatus;
  using connect_client::OnlineError;
  
@@ -15,8 +15,14 @@ index b545985f3..69036cd64 100644
 +    connect_client::MarlinPrinter printer;
 +    connect_client::Connect client(printer, buffer);
 +
-+    client.send_simplyprint("Hello World");
-+    MsgBoxInfo(_("Message sent to Simplyprint!"), Responses_Ok);
++    int rc = client.send_simplyprint("Hello World");
++    if (rc /100  == 2){
++        MsgBoxInfo(_("Message sent to Simplyprint!"), Responses_Ok);
++    }
++    else {
++        MsgBoxError(_("Failed to send message to Simplyprint!"), Responses_Ok);
++    }
++
 +}
 +
  MI_CONNECT_ENABLED::MI_CONNECT_ENABLED()
@@ -28,7 +34,7 @@ index b545985f3..69036cd64 100644
      // Connect will catch up with new config in its next iteration
  }
  
-@@ -97,12 +111,12 @@ MI_CONNECT_LOAD_SETTINGS::MI_CONNECT_LOAD_SETTINGS()
+@@ -97,12 +117,12 @@ MI_CONNECT_LOAD_SETTINGS::MI_CONNECT_LOAD_SETTINGS()
  void MI_CONNECT_LOAD_SETTINGS::click([[maybe_unused]] IWindowMenu &window_menu) {
      if (connect_client::MarlinPrinter::load_cfg_from_ini()) {
          if (config_store().connect_enabled.get()) {
@@ -44,7 +50,7 @@ index b545985f3..69036cd64 100644
      }
  }
  
-@@ -121,7 +135,7 @@ ScreenMenuConnect::ScreenMenuConnect()
+@@ -121,7 +141,7 @@ ScreenMenuConnect::ScreenMenuConnect()
  void ScreenMenuConnect::windowEvent(window_t *sender, GUI_event_t event, void *param) {
      if (event == GUI_event_t::CHILD_CLICK || event == GUI_event_t::LOOP) {
          update_all_updatable_items();

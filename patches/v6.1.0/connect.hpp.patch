@@ -1,12 +1,12 @@
 diff --git a/src/connect/connect.hpp b/src/connect/connect.hpp
-index 43957bd51..3771f8e56 100644
+index 43957bd51..b11f72d33 100644
 --- a/src/connect/connect.hpp
 +++ b/src/connect/connect.hpp
 @@ -85,6 +85,7 @@ private:
  public:
      Connect(Printer &printer, SharedBuffer &buffer);
      void run(void) __attribute__((noreturn));
-+    void send_simplyprint(const std::string &data);
++    int send_simplyprint(const std::string &data);
  };
  
  } // namespace connect_client
