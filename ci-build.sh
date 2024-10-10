@@ -27,12 +27,11 @@ scripts/build.sh $1 mk4
 input=$1
 stripped=${input:1}
 
-PACKAGE_URL="${CI_API_V4_URL}/projects/${CI_PROJECT_ID}/packages/generic/${output_name}/$1"
 while true; do
 
     # Get the package details (handling single and array responses)
     # shellcheck disable=SC2154
-    PACKAGE_INFO=$(curl --header "PRIVATE-TOKEN: ${package_registry_delete_token}" --silent "${CI_API_V4_URL}/projects/${CI_PROJECT_ID}/packages?package_name=${output_name}&package_version=$stripped")
+    PACKAGE_INFO=$(curl --header "PRIVATE-TOKEN: ${package_registry_delete_token}" --silent "${CI_API_V4_URL}/projects/${CI_PROJECT_ID}/packages?package_name=$1&package_version=$stripped")
 
     # Check if the package exists (handling object vs array response)
     PACKAGE_ID=$(echo "$PACKAGE_INFO" | jq -r 'if type=="array" and length > 0 then .[0].id else null end')
