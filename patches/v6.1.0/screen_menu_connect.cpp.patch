@@ -1,8 +1,8 @@
 diff --git a/src/gui/screen_menu_connect.cpp b/src/gui/screen_menu_connect.cpp
-index b545985f3..cda63806f 100644
+index b545985f3..1e32727a4 100644
 --- a/src/gui/screen_menu_connect.cpp
 +++ b/src/gui/screen_menu_connect.cpp
-@@ -14,11 +14,31 @@
+@@ -14,11 +14,27 @@
  using connect_client::ConnectionStatus;
  using connect_client::OnlineError;
  
@@ -15,10 +15,6 @@ index b545985f3..cda63806f 100644
 +
 +    // Show a message box indicating the message is being sent
 +    MsgBoxInfo(_("Message will be sent to Simplyprint!"), Responses_Ok);
-+
-+
-+    // Detach the thread so it runs independently
-+    MsgBoxInfo(_("Message sent to Simplyprint!"), Responses_Ok);
 +}
 +
 +void ScreenMenuConnect::setSimplyPrintTaskPending(bool pending) {
@@ -34,7 +30,7 @@ index b545985f3..cda63806f 100644
      // Connect will catch up with new config in its next iteration
  }
  
-@@ -97,12 +117,12 @@ MI_CONNECT_LOAD_SETTINGS::MI_CONNECT_LOAD_SETTINGS()
+@@ -97,12 +113,12 @@ MI_CONNECT_LOAD_SETTINGS::MI_CONNECT_LOAD_SETTINGS()
  void MI_CONNECT_LOAD_SETTINGS::click([[maybe_unused]] IWindowMenu &window_menu) {
      if (connect_client::MarlinPrinter::load_cfg_from_ini()) {
          if (config_store().connect_enabled.get()) {
@@ -50,7 +46,7 @@ index b545985f3..cda63806f 100644
      }
  }
  
-@@ -121,6 +141,17 @@ ScreenMenuConnect::ScreenMenuConnect()
+@@ -121,6 +137,19 @@ ScreenMenuConnect::ScreenMenuConnect()
  void ScreenMenuConnect::windowEvent(window_t *sender, GUI_event_t event, void *param) {
      if (event == GUI_event_t::CHILD_CLICK || event == GUI_event_t::LOOP) {
          update_all_updatable_items();
@@ -61,6 +57,8 @@ index b545985f3..cda63806f 100644
 +            connect_client::Connect client(printer, buffer);
 +
 +            client.send_simplyprint("Hello World");
++            MsgBoxInfo(_("Message sent to Simplyprint!"), Responses_Ok);
++
 +
 +            // Reset the flag
 +            simplyprint_task_pending = false;
