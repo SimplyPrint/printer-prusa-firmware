@@ -1,8 +1,16 @@
 diff --git a/src/gui/screen_menu_connect.hpp b/src/gui/screen_menu_connect.hpp
-index 8cbd1d485..374d65f18 100644
+index 8cbd1d485..619016b67 100644
 --- a/src/gui/screen_menu_connect.hpp
 +++ b/src/gui/screen_menu_connect.hpp
-@@ -62,7 +62,7 @@ protected:
+@@ -1,7 +1,3 @@
+-/**
+- * @file screen_menu_connect.hpp
+- */
+-
+ #pragma once
+ 
+ #include "screen_menu.hpp"
+@@ -62,7 +58,7 @@ protected:
  };
  
  class MI_CONNECT_REGISTER : public IWindowMenuItem {
@@ -11,7 +19,7 @@ index 8cbd1d485..374d65f18 100644
  
  public:
      MI_CONNECT_REGISTER();
-@@ -71,12 +71,21 @@ protected:
+@@ -71,14 +67,30 @@ protected:
      virtual void click(IWindowMenu &window_menu) override;
  };
  
@@ -25,6 +33,7 @@ index 8cbd1d485..374d65f18 100644
 +protected:
 +    virtual void click(IWindowMenu &window_menu) override;
 +};
++
 +using ScreenMenuConnect__ = ScreenMenu<EFooter::Off, MI_RETURN, MI_CONNECT_ENABLED, MI_CONNECT_STATUS, MI_CONNECT_ERROR, MI_CONNECT_HOST, MI_CONNECT_REGISTER, MI_CONNECT_LOAD_SETTINGS, MI_SEND_SIMPLYPRINT>;
  
  class ScreenMenuConnect : public ScreenMenuConnect__ {
@@ -35,3 +44,11 @@ index 8cbd1d485..374d65f18 100644
      ScreenMenuConnect();
  
  protected:
+     virtual void windowEvent(window_t *sender, GUI_event_t event, void *param) override;
++
++private:
++    bool simplyprint_task_pending = false;  // Flag to indicate if the task is pending
++
++public:
++    void setSimplyPrintTaskPending(bool pending);  // Setter to update task pending state
+ };
