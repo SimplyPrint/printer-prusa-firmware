@@ -1,8 +1,13 @@
 diff --git a/src/gui/screen_menu_connect.cpp b/src/gui/screen_menu_connect.cpp
-index b545985f3..51a710b0e 100644
+index b545985f3..0164010d3 100644
 --- a/src/gui/screen_menu_connect.cpp
 +++ b/src/gui/screen_menu_connect.cpp
-@@ -14,11 +14,34 @@
+@@ -10,15 +10,39 @@
+ #include <connect/connect.hpp>
+ #include <connect/marlin_printer.hpp>
+ #include <config_store/store_instance.hpp>
++#include <thread>
+ 
  using connect_client::ConnectionStatus;
  using connect_client::OnlineError;
  
@@ -37,7 +42,7 @@ index b545985f3..51a710b0e 100644
      // Connect will catch up with new config in its next iteration
  }
  
-@@ -97,12 +120,12 @@ MI_CONNECT_LOAD_SETTINGS::MI_CONNECT_LOAD_SETTINGS()
+@@ -97,12 +121,12 @@ MI_CONNECT_LOAD_SETTINGS::MI_CONNECT_LOAD_SETTINGS()
  void MI_CONNECT_LOAD_SETTINGS::click([[maybe_unused]] IWindowMenu &window_menu) {
      if (connect_client::MarlinPrinter::load_cfg_from_ini()) {
          if (config_store().connect_enabled.get()) {
@@ -53,7 +58,7 @@ index b545985f3..51a710b0e 100644
      }
  }
  
-@@ -114,6 +137,8 @@ void MI_CONNECT_REGISTER::click([[maybe_unused]] IWindowMenu &window_menu) {
+@@ -114,6 +138,8 @@ void MI_CONNECT_REGISTER::click([[maybe_unused]] IWindowMenu &window_menu) {
      DialogConnectRegister::Show();
  }
  
