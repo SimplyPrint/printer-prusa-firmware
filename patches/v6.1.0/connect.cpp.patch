@@ -1,5 +1,5 @@
 diff --git a/src/connect/connect.cpp b/src/connect/connect.cpp
-index 11f458c10..defc4ccd2 100644
+index 11f458c10..80b25caea 100644
 --- a/src/connect/connect.cpp
 +++ b/src/connect/connect.cpp
 @@ -45,6 +45,43 @@ LOG_COMPONENT_DEF(connect, LOG_SEVERITY_INFO);
@@ -12,10 +12,10 @@ index 11f458c10..defc4ccd2 100644
 +        HeaderOut headers[2];
 +
 +    public:
-+        SimplyPrintRequest(const std::string &data)
++        SimplyPrintRequest(const std::string &data, const char* token)
 +            : data(data), headers {
 +                { "Content-Type", "text/plain", nullopt },
-+                { nullptr, nullptr, nullopt }
++                { "TOKEN", token, nullopt }
 +            } {}
 +
 +        // Implement required methods
@@ -46,7 +46,7 @@ index 11f458c10..defc4ccd2 100644
  
      // Send a ping if there's no activity from us during this time (15_000 ms = 15s)
      constexpr uint32_t ping_inactivity = 15000;
-@@ -621,6 +658,27 @@ CommResult Connect::prepare_connection(CachedFactory &conn_factory, const Printe
+@@ -621,6 +658,26 @@ CommResult Connect::prepare_connection(CachedFactory &conn_factory, const Printe
      return monostate {};
  }
  
@@ -54,10 +54,9 @@ index 11f458c10..defc4ccd2 100644
 +    log_debug(connect, "Sending simple print data: %s", data.c_str());
 +
 +    // Create the SimplePrintRequest
-+    SimplyPrintRequest request(data);
 +    CachedFactory conn_factory;
 +    auto [config, cfg_changed] = printer.config();
-+
++    SimplyPrintRequest request(data, config.token);
 +    conn_factory.refresh(config);
 +    // Prepare the HTTP client and send the request
 +    HttpClient http(conn_factory);
