@@ -1,8 +1,8 @@
 diff --git a/src/gui/screen_menu_connect.cpp b/src/gui/screen_menu_connect.cpp
-index b545985f3..69f8b493d 100644
+index b545985f3..69036cd64 100644
 --- a/src/gui/screen_menu_connect.cpp
 +++ b/src/gui/screen_menu_connect.cpp
-@@ -14,11 +14,23 @@
+@@ -14,11 +14,25 @@
  using connect_client::ConnectionStatus;
  using connect_client::OnlineError;
  
@@ -11,10 +11,12 @@ index b545985f3..69f8b493d 100644
 +        : IWindowMenuItem(_("Send 'Hello World' to Simplyprint"), nullptr, is_enabled_t::yes, is_hidden_t::no, expands_t::no) {}
 +
 +void MI_SEND_SIMPLYPRINT::click([[maybe_unused]] IWindowMenu &window_menu) {
-+    task_pending = true;
++    SharedBuffer buffer;
++    connect_client::MarlinPrinter printer;
++    connect_client::Connect client(printer, buffer);
 +
-+    // Show a message box indicating the message is being sent
-+    MsgBoxInfo(_("Message will be sent to Simplyprint!"), Responses_Ok);
++    client.send_simplyprint("Hello World");
++    MsgBoxInfo(_("Message sent to Simplyprint!"), Responses_Ok);
 +}
 +
  MI_CONNECT_ENABLED::MI_CONNECT_ENABLED()
@@ -26,7 +28,7 @@ index b545985f3..69f8b493d 100644
      // Connect will catch up with new config in its next iteration
  }
  
-@@ -97,12 +109,12 @@ MI_CONNECT_LOAD_SETTINGS::MI_CONNECT_LOAD_SETTINGS()
+@@ -97,12 +111,12 @@ MI_CONNECT_LOAD_SETTINGS::MI_CONNECT_LOAD_SETTINGS()
  void MI_CONNECT_LOAD_SETTINGS::click([[maybe_unused]] IWindowMenu &window_menu) {
      if (connect_client::MarlinPrinter::load_cfg_from_ini()) {
          if (config_store().connect_enabled.get()) {
@@ -42,23 +44,12 @@ index b545985f3..69f8b493d 100644
      }
  }
  
-@@ -121,6 +133,19 @@ ScreenMenuConnect::ScreenMenuConnect()
+@@ -121,7 +135,7 @@ ScreenMenuConnect::ScreenMenuConnect()
  void ScreenMenuConnect::windowEvent(window_t *sender, GUI_event_t event, void *param) {
      if (event == GUI_event_t::CHILD_CLICK || event == GUI_event_t::LOOP) {
          update_all_updatable_items();
-+        if (task_pending) {
-+            // Perform the SimplyPrint task asynchronously
-+            SharedBuffer buffer;
-+            connect_client::MarlinPrinter printer;
-+            connect_client::Connect client(printer, buffer);
-+
-+            client.send_simplyprint("Hello World");
-+            MsgBoxInfo(_("Message sent to Simplyprint!"), Responses_Ok);
-+
-+
-+            // Reset the flag
-+            task_pending = false;
+-    }
 +        }
-     }
  
      ScreenMenu::windowEvent(sender, event, param);
+ }
