@@ -18,12 +18,13 @@ mkdir Prusa-Firmware-Buddy
 git clone https://github.com/prusa3d/Prusa-Firmware-Buddy.git Prusa-Firmware-Buddy
 scripts/build.sh $1 mk4
 
-  if [ $? -eq 0 ]; then
-    echo "Built successfully"
-  else
-    echo "Build failed"
-    exit 1
-  fi
+if [ $? -eq 0 ]; then
+  echo "Built successfully"
+else
+  echo "Build failed"
+  exit 1
+fi
+
 input=$1
 stripped=${input:1}
 

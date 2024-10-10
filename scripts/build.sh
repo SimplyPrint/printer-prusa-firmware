@@ -48,4 +48,8 @@ export BUDDY_NO_VIRTUALENV=1
 # Source shell into current shell
 pipenv run python3.12 utils/build.py --preset $presets --build-type release --final --build-dir "${ROOTDIR}/build" --generate-bbf --bootloader yes
 
+if [ $? -eq 0 ]; then
+else
+  exit 1
+fi
 cd "${ROOTDIR}"
