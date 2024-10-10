@@ -1,22 +1,27 @@
 diff --git a/src/connect/connect.cpp b/src/connect/connect.cpp
-index 11f458c10..80b25caea 100644
+index 11f458c10..a56a071a6 100644
 --- a/src/connect/connect.cpp
 +++ b/src/connect/connect.cpp
-@@ -45,6 +45,43 @@ LOG_COMPONENT_DEF(connect, LOG_SEVERITY_INFO);
+@@ -45,6 +45,48 @@ LOG_COMPONENT_DEF(connect, LOG_SEVERITY_INFO);
  namespace connect_client {
  
  namespace {
 +    class SimplyPrintRequest final : public http::Request {
 +    private:
++        HeaderOut headers[6];
 +        const std::string &data;
-+        HeaderOut headers[2];
 +
 +    public:
-+        SimplyPrintRequest(const std::string &data, const char* token)
-+            : data(data), headers {
++        SimplyPrintRequest(const std::string &data, const char* token, Printer * printer)
++            : headers {
 +                { "Content-Type", "text/plain", nullopt },
-+                { "TOKEN", token, nullopt }
-+            } {}
++                { "Fingerprint", printer->printer_info().fingerprint, Printer::PrinterInfo::FINGERPRINT_HDR_SIZE },
++                { "Token", token, nullopt },
++                user_agent_printer,
++                user_agent_version,
++                { nullptr, nullptr, nullopt }
++            },
++            data(data) {}
 +
 +        // Implement required methods
 +        virtual const char *url() const override {
@@ -46,7 +51,7 @@ index 11f458c10..80b25caea 100644
  
      // Send a ping if there's no activity from us during this time (15_000 ms = 15s)
      constexpr uint32_t ping_inactivity = 15000;
-@@ -621,6 +658,26 @@ CommResult Connect::prepare_connection(CachedFactory &conn_factory, const Printe
+@@ -621,6 +663,26 @@ CommResult Connect::prepare_connection(CachedFactory &conn_factory, const Printe
      return monostate {};
  }
  
@@ -56,7 +61,7 @@ index 11f458c10..80b25caea 100644
 +    // Create the SimplePrintRequest
 +    CachedFactory conn_factory;
 +    auto [config, cfg_changed] = printer.config();
-+    SimplyPrintRequest request(data, config.token);
++    SimplyPrintRequest request(data, config.token, &printer);
 +    conn_factory.refresh(config);
 +    // Prepare the HTTP client and send the request
 +    HttpClient http(conn_factory);
