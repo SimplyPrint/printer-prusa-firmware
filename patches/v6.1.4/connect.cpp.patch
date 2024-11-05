@@ -1,8 +1,8 @@
 diff --git a/src/connect/connect.cpp b/src/connect/connect.cpp
-index 11f458c10..4735f5c07 100644
+index 11f458c10..e183d6148 100644
 --- a/src/connect/connect.cpp
 +++ b/src/connect/connect.cpp
-@@ -44,7 +44,51 @@ LOG_COMPONENT_DEF(connect, LOG_SEVERITY_INFO);
+@@ -44,7 +44,52 @@ LOG_COMPONENT_DEF(connect, LOG_SEVERITY_INFO);
  
  namespace connect_client {
  
@@ -11,7 +11,7 @@ index 11f458c10..4735f5c07 100644
  namespace {
 +    class SimplyPrintRequest final : public http::Request {
 +    private:
-+        HeaderOut headers[6];
++        HeaderOut headers[7];
 +        const std::string &data;
 +
 +    public:
@@ -22,6 +22,7 @@ index 11f458c10..4735f5c07 100644
 +                { "Token", token, nullopt },
 +                user_agent_printer,
 +                user_agent_version,
++                { "Content-Length", std::to_string(data.size()).c_str(), nullopt },
 +                { nullptr, nullptr, nullopt }
 +            },
 +            data(data) {}
@@ -54,7 +55,7 @@ index 11f458c10..4735f5c07 100644
  
      // Send a ping if there's no activity from us during this time (15_000 ms = 15s)
      constexpr uint32_t ping_inactivity = 15000;
-@@ -249,13 +293,19 @@ Connect::ServerResp Connect::handle_server_resp(http::Response resp, CommandId c
+@@ -249,13 +294,19 @@ Connect::ServerResp Connect::handle_server_resp(http::Response resp, CommandId c
      // whole request-response pair a successful one. That's OK, because on the
      // lower-level it is - we consumed all the data and are allowed to reuse
      // the connection and all that.
@@ -75,7 +76,7 @@ index 11f458c10..4735f5c07 100644
      default:;
          // If it's unknown content type, then it's unknown command because we
          // have no idea what to do about it / how to even parse it.
-@@ -467,6 +517,9 @@ CommResult Connect::receive_command(CachedFactory &conn_factory) {
+@@ -467,6 +518,9 @@ CommResult Connect::receive_command(CachedFactory &conn_factory) {
              switch (type) {
              case Type::Json: {
                  auto command = Command::parse_json_command(command_id, reinterpret_cast<char *>(buffer + HDR_LEN), read - HDR_LEN, move(*buff));
@@ -85,7 +86,7 @@ index 11f458c10..4735f5c07 100644
                  planner().command(command);
                  break;
              }
-@@ -621,6 +674,34 @@ CommResult Connect::prepare_connection(CachedFactory &conn_factory, const Printe
+@@ -621,6 +675,34 @@ CommResult Connect::prepare_connection(CachedFactory &conn_factory, const Printe
      return monostate {};
  }
  
