@@ -1,0 +1,69 @@
+diff --git a/src/gui/screen_printing.cpp b/src/gui/screen_printing.cpp
+index 83e8b4be0..c7f7c268c 100644
+--- a/src/gui/screen_printing.cpp
++++ b/src/gui/screen_printing.cpp
+@@ -19,6 +19,7 @@
+ #include <option/has_loadcell.h>
+ #include <option/has_mmu2.h>
+ #include <option/has_toolchanger.h>
++#include <connect/marlin_printer.hpp>
+ #if HAS_MMU2()
+     #include <feature/prusa/MMU2/mmu2_mk4.h>
+     #include <window_msgbox.hpp>
+@@ -41,6 +42,10 @@ printing_state_t screen_printing_data_t::GetState() const {
+     return state__readonly__use_change_print_state;
+ }
+ 
++print_start_location screen_printing_data_t::GetStartLocation() const{
++    return state__readonly__use_change_print_start_location;
++}
++
+ void screen_printing_data_t::tuneAction() {
+     if (buttons[ftrstd::to_underlying(BtnSocket::Left)].IsShadowed()) {
+         return;
+@@ -75,8 +80,14 @@ void screen_printing_data_t::pauseAction() {
+         break;
+     case printing_state_t::STOPPED:
+     case printing_state_t::PRINTED:
++        if( GetStartLocation() == print_start_location::SIMPLYPRINT) {
++            screen_printing_clear_bed();
++        }
++        else if (GetStartLocation() == print_start_location::NOT_SIMPLYPRINT){
+         screen_printing_reprint();
++        }
+         change_print_state();
++
+         break;
+     default:
+         break;
+@@ -553,6 +564,18 @@ void screen_printing_data_t::screen_printing_reprint() {
+     header.SetText(_(caption));
+ }
+ 
++void screen_printing_data_t::screen_printing_clear_bed() {
++    connect_client::MarlinPrinter::set_printer_ready(true);
++    screen_printing_data_t::updateTimes(); // reinit, but should be already set correctly
++    SetButtonIconAndLabel(BtnSocket::Middle, BtnRes::Stop, LabelRes::Stop);
++    header.SetText(_("waiting for next_print"));
++
++}
++
++void screen_printing_data_t::screen_printing_start_next_queue() {
++
++}
++
+ void screen_printing_data_t::set_pause_icon_and_label() {
+     // todo it is static, because menu tune is not dialog
+     // switch (state__readonly__use_change_print_state)
+@@ -665,6 +688,11 @@ void screen_printing_data_t::set_stop_icon_and_label() {
+     }
+ }
+ 
++void screen_printing_data_t::change_print_start_location(print_start_location start_location){
++    state__readonly__use_change_print_start_location = start_location;
++}
++
++
+ void screen_printing_data_t::change_print_state() {
+     printing_state_t st = printing_state_t::COUNT;
+ 

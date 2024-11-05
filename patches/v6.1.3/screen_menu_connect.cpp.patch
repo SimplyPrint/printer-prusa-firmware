@@ -1,0 +1,61 @@
+diff --git a/src/gui/screen_menu_connect.cpp b/src/gui/screen_menu_connect.cpp
+index b545985f3..92591f253 100644
+--- a/src/gui/screen_menu_connect.cpp
++++ b/src/gui/screen_menu_connect.cpp
+@@ -14,11 +14,31 @@
+ using connect_client::ConnectionStatus;
+ using connect_client::OnlineError;
+ 
++
++MI_SEND_SIMPLYPRINT::MI_SEND_SIMPLYPRINT()
++        : IWindowMenuItem(_("Send 'Hello World' to Simplyprint"), nullptr, is_enabled_t::yes, is_hidden_t::no, expands_t::no) {}
++
++void MI_SEND_SIMPLYPRINT::click([[maybe_unused]] IWindowMenu &window_menu) {
++    SharedBuffer buffer;
++    connect_client::MarlinPrinter printer;
++    connect_client::Connect client(printer, buffer);
++
++    int rc = client.send_simplyprint("Hello World");
++    if (rc /100  == 2){
++        MsgBoxInfo(_("Message sent to Simplyprint!"), Responses_Ok);
++    }
++    else {
++        MsgBoxError(_("Failed to send message to Simplyprint!"), Responses_Ok);
++    }
++
++}
++
+ MI_CONNECT_ENABLED::MI_CONNECT_ENABLED()
+     : WI_ICON_SWITCH_OFF_ON_t(config_store().connect_enabled.get(), _(label), nullptr, is_enabled_t::yes, is_hidden_t::no) {}
+ 
+ void MI_CONNECT_ENABLED::OnChange([[maybe_unused]] size_t old_index) {
+     config_store().connect_enabled.set(static_cast<bool>(index));
++
+     // Connect will catch up with new config in its next iteration
+ }
+ 
+@@ -97,12 +117,12 @@ MI_CONNECT_LOAD_SETTINGS::MI_CONNECT_LOAD_SETTINGS()
+ void MI_CONNECT_LOAD_SETTINGS::click([[maybe_unused]] IWindowMenu &window_menu) {
+     if (connect_client::MarlinPrinter::load_cfg_from_ini()) {
+         if (config_store().connect_enabled.get()) {
+-            MsgBoxInfo(_("Loaded successfully. Connect will activate shortly."), Responses_Ok);
++            MsgBoxInfo(_("Loaded successfully. Simplyprint will activate shortly."), Responses_Ok);
+         } else {
+-            MsgBoxInfo(_("Loaded successfully. Enable Connect to activate."), Responses_Ok);
++            MsgBoxInfo(_("Loaded successfully. Enable Simplyprint to activate."), Responses_Ok);
+         }
+     } else {
+-        MsgBoxError(_("Failed to load config. Make sure the ini file downloaded from Connect is on the USB drive and try again."), Responses_Ok);
++        MsgBoxError(_("Failed to load config. Make sure the ini file downloaded from Simplyprint is on the USB drive and try again."), Responses_Ok);
+     }
+ }
+ 
+@@ -121,7 +141,7 @@ ScreenMenuConnect::ScreenMenuConnect()
+ void ScreenMenuConnect::windowEvent(window_t *sender, GUI_event_t event, void *param) {
+     if (event == GUI_event_t::CHILD_CLICK || event == GUI_event_t::LOOP) {
+         update_all_updatable_items();
+-    }
++        }
+ 
+     ScreenMenu::windowEvent(sender, event, param);
+ }

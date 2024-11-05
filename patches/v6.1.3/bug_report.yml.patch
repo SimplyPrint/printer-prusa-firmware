@@ -1,0 +1,13 @@
+diff --git a/.github/ISSUE_TEMPLATE/bug_report.yml b/.github/ISSUE_TEMPLATE/bug_report.yml
+index c6a8e5955..5bec95812 100644
+--- a/.github/ISSUE_TEMPLATE/bug_report.yml
++++ b/.github/ISSUE_TEMPLATE/bug_report.yml
+@@ -36,7 +36,7 @@ body:
+     id: printing_from
+     attributes:
+       label: Printing from...
+-      placeholder: 'USB drive, USB cable/Octoprint, PrusaLink, Prusa Connect, ...'
++      placeholder: 'USB drive, USB cable/Octoprint, PrusaLink, Simplyprint, ...'
+     validations:
+       required: true
+   - type: textarea

@@ -1,5 +1,12 @@
 #!/bin/bash
 
+
+if [ $# -ne 1 ] ; then
+    echo "Usage: $0 <version>"
+    echo "Version: v6.1.3"
+    exit 1
+fi
+version=$1
 repo_path=Prusa-Firmware-Buddy-DEV ./generate_patches.sh
 
 
@@ -13,4 +20,4 @@ else
     echo "smartcopy found."
 fi
 
-smartcopy -o ./new_patches/* ./patches/v6.1.0
+smartcopy -o ./new_patches/* ./patches/$version

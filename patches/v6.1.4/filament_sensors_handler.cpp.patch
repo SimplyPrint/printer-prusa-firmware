@@ -1,0 +1,13 @@
+diff --git a/src/common/filament_sensors_handler.cpp b/src/common/filament_sensors_handler.cpp
+index 51f3bf49e..c4c37ff54 100644
+--- a/src/common/filament_sensors_handler.cpp
++++ b/src/common/filament_sensors_handler.cpp
+@@ -203,7 +203,7 @@ void FilamentSensors::process_events() {
+         m600_sent = true;
+ 
+         marlin_client::gcode_push_front("M600 A"); // change filament
+-
++        SERIAL_ECHO("M118 A1 action:pause");
+         log_info(FSensor, "Injected runout");
+         return true;
+     };

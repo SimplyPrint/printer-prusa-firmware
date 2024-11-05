@@ -1,0 +1,13 @@
+diff --git a/src/gui/dialogs/DialogConnectReg.hpp b/src/gui/dialogs/DialogConnectReg.hpp
+index 3642111ef..76195392a 100644
+--- a/src/gui/dialogs/DialogConnectReg.hpp
++++ b/src/gui/dialogs/DialogConnectReg.hpp
+@@ -17,7 +17,7 @@ private:
+     std::array<char, 32> code_buffer;
+ 
+     // TODO: Doesn't fit
+-    constexpr static const char *const headerLabel = N_("PRUSA CONNECT");
++    constexpr static const char *const headerLabel = N_("Simplyprint");
+     constexpr static const char *const moreDetailTxt = N_("More detail at");
+ 
+     // TODO: Stolen from selftest_frame_esp_qr.hpp ‒ unify to a common place.

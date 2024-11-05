@@ -1,0 +1,22 @@
+diff --git a/lib/Prusa-Error-Codes/10_SL1/errors.yaml b/lib/Prusa-Error-Codes/10_SL1/errors.yaml
+index e509bfa6c..3a538c58f 100644
+--- a/lib/Prusa-Error-Codes/10_SL1/errors.yaml
++++ b/lib/Prusa-Error-Codes/10_SL1/errors.yaml
+@@ -8,7 +8,7 @@
+ # MECHANICAL     xx1xx   # Mechanical failures, engines XYZ, tower
+ # TEMPERATURE    xx2xx   # Temperature measurement, thermistors, heating
+ # ELECTRICAL     xx3xx   # Electrical, MINDA, FINDA, Motion Controller, …
+-# CONNECTIVITY   xx4xx   # Connectivity - Wi - Fi, LAN, Prusa Connect Cloud
++# CONNECTIVITY   xx4xx   # Connectivity - Wi - Fi, LAN, Simplyprint Cloud
+ # SYSTEM         xx5xx   # System - BSOD, ...
+ # BOOTLOADER     xx6xx   #
+ # WARNINGS       xx7xx   # Category-less warnings
+@@ -337,7 +337,7 @@ Errors:
+   id: "UNKNOWN_PRINTER_MODEL"
+   approved: true
+ 
+-# CONNECTIVITY   104xx   # Connectivity - Wi - Fi, LAN, Prusa Connect Cloud
++# CONNECTIVITY   104xx   # Connectivity - Wi - Fi, LAN, Simplyprint Cloud
+ - code: "10401"
+   title: "MQTT UPLOAD FAILED"
+   text: "Cannot send factory config to the database (MQTT)! Check the network connection. Please, contact support."
