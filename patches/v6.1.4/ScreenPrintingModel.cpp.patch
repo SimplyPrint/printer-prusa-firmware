@@ -1,0 +1,16 @@
+diff --git a/src/gui/ScreenPrintingModel.cpp b/src/gui/ScreenPrintingModel.cpp
+index 47dd8eb77..befbe0687 100644
+--- a/src/gui/ScreenPrintingModel.cpp
++++ b/src/gui/ScreenPrintingModel.cpp
+@@ -23,7 +23,10 @@ constexpr const char *label_resources[] = {
+     N_("Reprint"),
+     N_("Home"),
+     N_("Skip"),
+-    N_("Disconnect")
++    N_("Disconnect"),
++    N_("Print OK"),
++    N_("Print Failed"),
++    N_("Bed Cleared"),
+ };
+ } // namespace
+ 

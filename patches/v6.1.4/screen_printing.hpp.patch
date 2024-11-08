@@ -1,28 +1,35 @@
 diff --git a/src/gui/screen_printing.hpp b/src/gui/screen_printing.hpp
-index 0714477bf..113cbed10 100644
+index 0714477bf..eccb8a628 100644
 --- a/src/gui/screen_printing.hpp
 +++ b/src/gui/screen_printing.hpp
-@@ -32,6 +32,11 @@ enum class printing_state_t : uint8_t {
+@@ -32,6 +32,17 @@ enum class printing_state_t : uint8_t {
      COUNT // setting this state == forced update
  };
  
-+enum class print_start_location: uint8_t {
-+    SIMPLYPRINT,
-+    NOT_SIMPLYPRINT
++enum class bed_cleared: uint8_t {
++    Bed_cleared,
++    waiting_for_bed_cleared
++};
++
++enum class print_succeed: uint8_t {
++    print_ok,
++    print_failed,
++    waiting_for_print_result
 +};
 +
  inline constexpr size_t POPUP_MSG_DUR_MS = 5000;
  
  class screen_printing_data_t : public ScreenPrintingModel {
-@@ -94,6 +99,7 @@ class screen_printing_data_t : public ScreenPrintingModel {
+@@ -94,6 +105,8 @@ class screen_printing_data_t : public ScreenPrintingModel {
      bool stop_pressed;
      bool waiting_for_abort; /// flag specific for stop pressed when MBL is performed
      printing_state_t state__readonly__use_change_print_state;
-+    print_start_location state__readonly__use_change_print_start_location;
++    bed_cleared state__readonly__use_change_bed_cleared_state;
++    print_succeed state__readonly__use_change_print_success_state;
  
      float last_e_axis_position;
      const Rect16 popup_rect;
-@@ -134,9 +140,12 @@ private:
+@@ -134,15 +147,20 @@ private:
  #endif
      void screen_printing_reprint();
      void set_pause_icon_and_label();
@@ -31,14 +38,16 @@ index 0714477bf..113cbed10 100644
      void set_tune_icon_and_label();
      void set_stop_icon_and_label();
      void change_print_state();
-+    void change_print_start_location(print_start_location start_location);
- 
+-
++    void change_bed_cleared_state(bed_cleared state);
++    void change_print_success_state(print_succeed state);
      virtual void stopAction() override;
      virtual void pauseAction() override;
-@@ -144,5 +153,6 @@ private:
+     virtual void tuneAction() override;
  
  public:
      printing_state_t GetState() const;
-+    print_start_location GetStartLocation() const;
++    bed_cleared get_bed_cleared() const;
++    print_succeed get_print_succeed() const;
      virtual Rect16 GetPopUpRect() override { return popup_rect; }
  };
