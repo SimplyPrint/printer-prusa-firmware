@@ -1,8 +1,8 @@
 diff --git a/src/connect/connect.cpp b/src/connect/connect.cpp
-index 11f458c10..5e0a56088 100644
+index 11f458c10..84e603266 100644
 --- a/src/connect/connect.cpp
 +++ b/src/connect/connect.cpp
-@@ -44,7 +44,68 @@ LOG_COMPONENT_DEF(connect, LOG_SEVERITY_INFO);
+@@ -44,7 +44,60 @@ LOG_COMPONENT_DEF(connect, LOG_SEVERITY_INFO);
  
  namespace connect_client {
  
@@ -49,11 +49,6 @@ index 11f458c10..5e0a56088 100644
 +            return "keep-alive";
 +        }
 +
-+//        virtual const std::string &body() const override { // Override body() method
-+//            return data;
-+//        }
-+
-+// Send as a single body without chunked encoding
 +        virtual std::variant<unsigned int, http::Error> write_body_chunk(char *buffer, size_t size) override {
 +            const size_t max_chunk_size = 512 * 1024; // 512 KB, or adjust as needed
 +            size_t chunk_size = std::min({size, max_chunk_size, data.size() - offset});
@@ -64,14 +59,11 @@ index 11f458c10..5e0a56088 100644
 +            offset += chunk_size;
 +            return static_cast<unsigned int>(chunk_size);
 +        }
-+
-+
-+
 +    };
  
      // Send a ping if there's no activity from us during this time (15_000 ms = 15s)
      constexpr uint32_t ping_inactivity = 15000;
-@@ -249,13 +310,19 @@ Connect::ServerResp Connect::handle_server_resp(http::Response resp, CommandId c
+@@ -249,13 +302,19 @@ Connect::ServerResp Connect::handle_server_resp(http::Response resp, CommandId c
      // whole request-response pair a successful one. That's OK, because on the
      // lower-level it is - we consumed all the data and are allowed to reuse
      // the connection and all that.
@@ -92,7 +84,7 @@ index 11f458c10..5e0a56088 100644
      default:;
          // If it's unknown content type, then it's unknown command because we
          // have no idea what to do about it / how to even parse it.
-@@ -467,6 +534,9 @@ CommResult Connect::receive_command(CachedFactory &conn_factory) {
+@@ -467,6 +526,9 @@ CommResult Connect::receive_command(CachedFactory &conn_factory) {
              switch (type) {
              case Type::Json: {
                  auto command = Command::parse_json_command(command_id, reinterpret_cast<char *>(buffer + HDR_LEN), read - HDR_LEN, move(*buff));
@@ -102,7 +94,7 @@ index 11f458c10..5e0a56088 100644
                  planner().command(command);
                  break;
              }
-@@ -621,6 +691,34 @@ CommResult Connect::prepare_connection(CachedFactory &conn_factory, const Printe
+@@ -621,6 +683,34 @@ CommResult Connect::prepare_connection(CachedFactory &conn_factory, const Printe
      return monostate {};
  }
  
