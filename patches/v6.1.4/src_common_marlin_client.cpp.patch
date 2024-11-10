@@ -1,0 +1,12 @@
+diff --git a/src/common/marlin_client.cpp b/src/common/marlin_client.cpp
+index 05e5bce0ff57d5d130f0f6174c2d5c6daa8fa391..b0915a36520d746ab6ba76c26122d9727a2b4b14 100644
+--- a/src/common/marlin_client.cpp
++++ b/src/common/marlin_client.cpp
+@@ -366,6 +366,7 @@ bool is_print_started() {
+         case State::Aborted:
+         case State::Finished:
+             // Went to idle - refused by GUI
++            // TODO need to close the screen somehow?
+             return false;
+         default:
+             // Doing something else ‒ there's a lot of states where we are printing.

@@ -1,10 +1,8 @@
 #!/bin/bash
 
 if [ -z "$repo_path" ]; then
-
   echo "Enter the path of the repo where there are changes"
   read repo_path
-
 fi
 
 cd "$repo_path" || exit
@@ -22,7 +20,7 @@ rm -rf "$PATCH_DIR"
 mkdir -p "$PATCH_DIR"
 
 # Get the list of modified files
-MODIFIED_FILES=$(git diff --name-only)
+MODIFIED_FILES=$(git diff --name-only --diff-filter=ACMR)
 
 # Check if there are any modified files
 if [ -z "$MODIFIED_FILES" ]; then
@@ -30,10 +28,18 @@ if [ -z "$MODIFIED_FILES" ]; then
     exit 0
 fi
 
-# Generate a patch for each modified file
+# Generate a patch for each modified file, including new files
 for FILE in $MODIFIED_FILES; do
-    PATCH_FILE="$PATCH_DIR/$(basename "$FILE").patch"
-    git diff --binary "$FILE" > "$PATCH_FILE"
+    # Ensure the patch filename reflects the full path for uniqueness
+    PATCH_FILE="$PATCH_DIR/$(echo "$FILE" | sed 's/\//_/g').patch"
+    # Create patches that include added files using format-patch
+    if [ -f "$FILE" ]; then
+        git diff --binary --full-index "$FILE" > "$PATCH_FILE"
+    else
+        echo "Creating patch for new file: $FILE"
+        # Use git format-patch to ensure new files are included correctly
+        git format-patch -1 --stdout HEAD -- "$FILE" > "$PATCH_FILE"
+    fi
     echo "Patch file created: $PATCH_FILE"
 done
 

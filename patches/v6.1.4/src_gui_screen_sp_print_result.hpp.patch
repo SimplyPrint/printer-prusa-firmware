@@ -1,0 +1,44 @@
+diff --git a/src/gui/screen_sp_print_result.hpp b/src/gui/screen_sp_print_result.hpp
+index 508afaec05bafab2acabfc4207cac394e16320e6..45340e89610b06deb3b5be3455a0abfdb3fecbb6 100644
+--- a/src/gui/screen_sp_print_result.hpp
++++ b/src/gui/screen_sp_print_result.hpp
+@@ -1,14 +1,29 @@
+-//
+-// Created by rylan on 11/10/24.
+-//
++#pragma once
+ 
+-#ifndef PRUSA_FIRMWARE_BUDDY_DEV_SCREEN_SP_PRINT_RESULT_H
+-#define PRUSA_FIRMWARE_BUDDY_DEV_SCREEN_SP_PRINT_RESULT_H
++#include <window.hpp>
++#include <window_text.hpp>
++#include <window_icon.hpp>
++#include <button.hpp>
++#include <guiconfig/guiconfig.h>
++#include <fonts.hpp>
++#include <image.hpp>  // Assuming there is an image handling class
+ 
++/**
++ * @brief SPPrintResultScreen creates a screen with an image on the left and two buttons on the right.
++ */
++class SPPrintResultScreen : public window_frame_t {
++public:
++    SPPrintResultScreen(window_t *parent, Rect16 rect);
+ 
+-class screen_sp_print_result {
++    void Show() override;
++    void Hide() override;
+ 
+-};
++private:
++    void setupComponents();
++    void button1Callback();
++    void button2Callback();
+ 
+-
+-#endif //PRUSA_FIRMWARE_BUDDY_DEV_SCREEN_SP_PRINT_RESULT_H
++    window_icon_t image_left;
++    button_t button1;
++    button_t button2;
++};
+\ No newline at end of file

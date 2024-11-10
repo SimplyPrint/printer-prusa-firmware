@@ -1,0 +1,431 @@
+diff --git a/src/gui/screen_printing.cpp b/src/gui/screen_printing.cpp
+index 83e8b4be072ab21d4d770f8ea18303b9a947d88a..a1636e1aec91e1fa70873e761e20bf9da4e472d6 100644
+--- a/src/gui/screen_printing.cpp
++++ b/src/gui/screen_printing.cpp
+@@ -19,6 +19,7 @@
+ #include <option/has_loadcell.h>
+ #include <option/has_mmu2.h>
+ #include <option/has_toolchanger.h>
++#include <connect/connect.hpp>
+ #if HAS_MMU2()
+     #include <feature/prusa/MMU2/mmu2_mk4.h>
+     #include <window_msgbox.hpp>
+@@ -37,6 +38,7 @@ using namespace marlin_server;
+ void screen_printing_data_t::invalidate_print_state() {
+     state__readonly__use_change_print_state = printing_state_t::COUNT;
+ }
++
+ printing_state_t screen_printing_data_t::GetState() const {
+     return state__readonly__use_change_print_state;
+ }
+@@ -46,13 +48,13 @@ void screen_printing_data_t::tuneAction() {
+         return;
+     }
+     switch (GetState()) {
+-    case printing_state_t::PRINTING:
+-    case printing_state_t::ABSORBING_HEAT:
+-    case printing_state_t::PAUSED:
+-        Screens::Access()->Open(ScreenFactory::Screen<ScreenMenuTune>);
+-        break;
+-    default:
+-        break;
++        case printing_state_t::PRINTING:
++        case printing_state_t::ABSORBING_HEAT:
++        case printing_state_t::PAUSED:
++            Screens::Access()->Open(ScreenFactory::Screen<ScreenMenuTune>);
++            break;
++        default:
++            break;
+     }
+ }
+ 
+@@ -61,25 +63,30 @@ void screen_printing_data_t::pauseAction() {
+         return;
+     }
+     switch (GetState()) {
+-    case printing_state_t::PRINTING:
+-        marlin_client::print_pause();
+-        change_print_state();
+-        break;
+-    case printing_state_t::ABSORBING_HEAT:
+-        bed_preheat.skip_preheat();
+-        change_print_state();
+-        break;
+-    case printing_state_t::PAUSED:
+-        marlin_client::print_resume();
+-        change_print_state();
+-        break;
+-    case printing_state_t::STOPPED:
+-    case printing_state_t::PRINTED:
+-        screen_printing_reprint();
+-        change_print_state();
+-        break;
+-    default:
+-        break;
++        case printing_state_t::PRINTING:
++            marlin_client::print_pause();
++            change_print_state();
++            break;
++        case printing_state_t::ABSORBING_HEAT:
++            bed_preheat.skip_preheat();
++            change_print_state();
++            break;
++        case printing_state_t::PAUSED:
++            marlin_client::print_resume();
++            change_print_state();
++            break;
++        case printing_state_t::STOPPED:
++        case printing_state_t::PRINTED:
++            if (connect_client::is_print_network) {
++                screen_printing_clear_bed();
++            } else {
++                screen_printing_reprint();
++            }
++            change_print_state();
++
++            break;
++        default:
++            break;
+     }
+ }
+ 
+@@ -88,39 +95,45 @@ void screen_printing_data_t::stopAction() {
+         return;
+     }
+     switch (GetState()) {
+-    case printing_state_t::STOPPED:
+-    case printing_state_t::PRINTED:
+-        marlin_client::print_exit();
+-        return;
+-    case printing_state_t::PAUSING:
+-    case printing_state_t::RESUMING:
+-        return;
+-    default: {
+-        if (MsgBoxWarning(_("Are you sure to stop this printing?"), Responses_YesNo, 1)
+-            == Response::Yes) {
+-            stop_pressed = true;
+-            waiting_for_abort = true;
+-            marlin_client::print_abort();
+-            change_print_state();
+-        } else {
++        case printing_state_t::STOPPED:
++        case printing_state_t::PRINTED:
++            // set the is_print_network to false here!!
++            connect_client::is_print_network = false;
++            marlin_client::print_exit();
+             return;
++        case printing_state_t::PAUSING:
++        case printing_state_t::RESUMING:
++            return;
++        default: {
++            if (MsgBoxWarning(_("Are you sure to stop this printing?"), Responses_YesNo, 1)
++                == Response::Yes) {
++                stop_pressed = true;
++                waiting_for_abort = true;
++                marlin_client::print_abort();
++                change_print_state();
++            } else {
++                return;
++            }
+         }
+     }
+-    }
+ }
+ 
+ /******************************************************************************/
+ 
+ namespace {
+-constexpr const char *txt_na { N_("N/A") };
++    constexpr const char *txt_na{N_("N/A")};
+ 
+-constexpr size_t column_left { 30 };
++    constexpr size_t
++    column_left {
++    30
++};
+ 
+ constexpr size_t row_0 { 104 };
++
+ constexpr size_t row_height { 20 };
+ 
+ constexpr size_t get_row(size_t idx) {
+-    return row_0 + idx * row_height;
++    return row_0 + idx *row_height;
+ }
+ 
+ #if HAS_MINI_DISPLAY()
+@@ -145,37 +158,35 @@ constexpr Rect16 end_result_body_rect { 0, row_0 - EndResultBody::extra_top_spac
+ } // namespace
+ 
+ screen_printing_data_t::screen_printing_data_t()
+-    : ScreenPrintingModel(_(caption))
++        : ScreenPrintingModel(_(caption))
+ #if (HAS_LARGE_DISPLAY())
+-    , print_progress(this)
+-    , arrow_left(this, arrow_left_rect, arrow_left_res)
+-    , rotating_circles(this, rotating_circles_rect, ftrstd::to_underlying(CurrentlyShowing::_count))
++        , print_progress(this)
++        , arrow_left(this, arrow_left_rect, arrow_left_res)
++        , rotating_circles(this, rotating_circles_rect, ftrstd::to_underlying(CurrentlyShowing::_count))
+ #endif
+ #if HAS_MINI_DISPLAY()
+-    , w_filename(this, Rect16(10, 33, 220, 29))
+-    , w_progress(this, Rect16(10, 70, GuiDefaults::RectScreen.Width() - 2 * 10, 16))
+-    , w_progress_txt(this, Rect16(10, 86, GuiDefaults::RectScreen.Width() - 2 * 10, 30)) // font: Normal (11x18 px)
+-    , w_time_label(this, Rect16(10, 128, 101, 20), is_multiline::no)
+-    , w_time_value(this, Rect16(10, 148, 101, 20), is_multiline::no)
+-    , w_etime_label(this, Rect16(130, 128, 101, 20), is_multiline::no)
+-    , w_etime_value(this, Rect16(120, 148, 111, 37), is_multiline::yes)
++        , w_filename(this, Rect16(10, 33, 220, 29))
++        , w_progress(this, Rect16(10, 70, GuiDefaults::RectScreen.Width() - 2 * 10, 16))
++        , w_progress_txt(this, Rect16(10, 86, GuiDefaults::RectScreen.Width() - 2 * 10, 30)) // font: Normal (11x18 px)
++        , w_time_label(this, Rect16(10, 128, 101, 20), is_multiline::no)
++        , w_time_value(this, Rect16(10, 148, 101, 20), is_multiline::no)
++        , w_etime_label(this, Rect16(130, 128, 101, 20), is_multiline::no)
++        , w_etime_value(this, Rect16(120, 148, 111, 37), is_multiline::yes)
+ #elif HAS_LARGE_DISPLAY()
+-    , w_filename(this, Rect16(30, 38, 420, 24))
+-    , w_progress(this, Rect16(30, 65, GuiDefaults::RectScreen.Width() - 2 * 30, 16))
+-    , w_progress_txt(this, EndResultBody::get_progress_txt_rect(row_0)) // Left side option: 30, 115, 100, 54 | font: Large (53x30 px)
+-    , w_etime_label(this, Rect16(30, get_row(0), 150, 20), is_multiline::no) // Right side option: 300, 118, 150, 20
+-    , w_etime_value(this, Rect16(30, get_row(1), 200, 23), is_multiline::no) // Right side option: 250, 138, 200, 23
++        , w_filename(this, Rect16(30, 38, 420, 24))
++        , w_progress(this, Rect16(30, 65, GuiDefaults::RectScreen.Width() - 2 * 30, 16))
++        , w_progress_txt(this, EndResultBody::get_progress_txt_rect(row_0)) // Left side option: 30, 115, 100, 54 | font: Large (53x30 px)
++        , w_etime_label(this, Rect16(30, get_row(0), 150, 20), is_multiline::no) // Right side option: 300, 118, 150, 20
++        , w_etime_value(this, Rect16(30, get_row(1), 200, 23), is_multiline::no) // Right side option: 250, 138, 200, 23
+ #endif // USE_<display>
+-    , message_timer(0)
+-    , stop_pressed(false)
+-    , waiting_for_abort(false)
+-    , state__readonly__use_change_print_state(printing_state_t::COUNT)
++        , message_timer(0), stop_pressed(false), waiting_for_abort(false),
++          state__readonly__use_change_print_state(printing_state_t::COUNT)
+ #if HAS_MINI_DISPLAY()
+-    , popup_rect(Rect16::Merge(std::array<Rect16, 4>({ w_time_label.GetRect(), w_time_value.GetRect(), w_etime_label.GetRect(), w_etime_value.GetRect() })))
+-    , time_end_format(PT_t::init)
++, popup_rect(Rect16::Merge(std::array<Rect16, 4>({ w_time_label.GetRect(), w_time_value.GetRect(), w_etime_label.GetRect(), w_etime_value.GetRect() })))
++, time_end_format(PT_t::init)
+ #elif HAS_LARGE_DISPLAY()
+-    , popup_rect(Rect16(30, get_row(0), 250, 70)) // Rect for printing messages from marlin.
+-    , end_result_body(this, end_result_body_rect) // safe to pass even if order changes because EndScreen constructor doesn't use it (therefore guaranteed to be valid)
++, popup_rect(Rect16(30, get_row(0), 250, 70)) // Rect for printing messages from marlin.
++, end_result_body(this, end_result_body_rect) // safe to pass even if order changes because EndScreen constructor doesn't use it (therefore guaranteed to be valid)
+ #endif // USE_<display>
+ {
+     // we will handle HELD_RELEASED event in this window
+@@ -217,7 +228,7 @@ screen_printing_data_t::screen_printing_data_t()
+ 
+     strlcpy(text_filename.data(), GCodeInfo::getInstance().GetGcodeFilename(), text_filename.size());
+     w_filename.set_font(Font::big);
+-    w_filename.SetPadding({ 0, 0, 0, 0 });
++    w_filename.SetPadding({0, 0, 0, 0});
+     w_filename.SetText(string_view_utf8::MakeRAM(text_filename.data()));
+ 
+     w_etime_label.set_font(Font::small);
+@@ -322,18 +333,18 @@ void screen_printing_data_t::windowEvent(window_t *sender, GUI_event_t event, vo
+             string_view_utf8 txt;
+             switch (*reason) {
+             case MMU2::MaintenanceReason::Failures:
+-    #if HAS_LOADCELL()
++#if HAS_LOADCELL()
+                 txt = _("Printer has detected multiple consecutive filament loading errors. We recommend checking Nextruder main-plate. Visit prusa.io/mmu-care");
+-    #else
++#else
+                 txt = _("Printer has detected multiple consecutive filament loading errors. We recommend checking the extruder. Visit prusa.io/mmu-care");
+-    #endif
++#endif
+                 break;
+             case MMU2::MaintenanceReason::Changes:
+-    #if HAS_LOADCELL()
++#if HAS_LOADCELL()
+                 txt = _("Maintenance Reminder. Filament changes have reached main-plate lifespan. Inspect the part and ensure you have a spare plate available. Visit prusa.io/mmu-care");
+-    #else
++#else
+                 txt = _("Maintenance Reminder. Filament changes have reached 30k. Inspect and clean the extruder. Visit prusa.io/mmu-care");
+-    #endif
++#endif
+                 break;
+             }
+ 
+@@ -401,7 +412,9 @@ void screen_printing_data_t::start_showing_end_result() {
+     hide_time_information(); // OK because currently we never show remaining time at the end
+ 
+     // show end result
++    if (Connect_client::is_print_network){
+ 
++    }
+     end_result_body.Show();
+     CaptureNormalWindow(end_result_body);
+ 
+@@ -669,93 +682,93 @@ void screen_printing_data_t::change_print_state() {
+     printing_state_t st = printing_state_t::COUNT;
+ 
+     switch (marlin_vars()->print_state) {
+-    case State::Idle:
+-    case State::WaitGui:
+-    case State::PrintPreviewInit:
+-    case State::PrintPreviewImage:
+-    case State::PrintPreviewConfirmed:
+-    case State::PrintPreviewQuestions:
++        case State::Idle:
++        case State::WaitGui:
++        case State::PrintPreviewInit:
++        case State::PrintPreviewImage:
++        case State::PrintPreviewConfirmed:
++        case State::PrintPreviewQuestions:
+ #if HAS_TOOLCHANGER() || HAS_MMU2()
+-    case State::PrintPreviewToolsMapping:
++            case State::PrintPreviewToolsMapping:
+ #endif
+-    case State::PrintInit:
+-        st = printing_state_t::INITIAL;
+-        break;
+-    case State::Printing:
+-        if (bed_preheat.is_waiting()) {
+-            st = printing_state_t::ABSORBING_HEAT;
+-        } else {
+-            st = printing_state_t::PRINTING;
+-        }
+-        break;
+-    case State::PowerPanic_AwaitingResume:
+-    case State::Paused:
+-        // stop_pressed = false;
+-        st = printing_state_t::PAUSED;
+-        break;
+-    case State::Pausing_Begin:
+-    case State::Pausing_Failed_Code:
+-    case State::Pausing_WaitIdle:
+-    case State::Pausing_ParkHead:
+-        st = printing_state_t::PAUSING;
++        case State::PrintInit:
++            st = printing_state_t::INITIAL;
++            break;
++        case State::Printing:
++            if (bed_preheat.is_waiting()) {
++                st = printing_state_t::ABSORBING_HEAT;
++            } else {
++                st = printing_state_t::PRINTING;
++            }
++            break;
++        case State::PowerPanic_AwaitingResume:
++        case State::Paused:
++            // stop_pressed = false;
++            st = printing_state_t::PAUSED;
++            break;
++        case State::Pausing_Begin:
++        case State::Pausing_Failed_Code:
++        case State::Pausing_WaitIdle:
++        case State::Pausing_ParkHead:
++            st = printing_state_t::PAUSING;
+ // When print is paused, progress screen needs to reinit it's thumbnail file handler
+ // because USB removal error crashes file handler access. Progress screen should not be enabled during pause -> reinit on EVERY pause
+ #if HAS_LARGE_DISPLAY()
+-        print_progress.Pause();
++            print_progress.Pause();
+ #endif
+-        break;
+-    case State::Resuming_Reheating:
+-        stop_pressed = false;
+-        st = printing_state_t::REHEATING;
+-        break;
+-    case State::Resuming_Begin:
+-    case State::Resuming_UnparkHead_XY:
+-    case State::Resuming_UnparkHead_ZE:
+-    case State::CrashRecovery_Begin:
+-    case State::CrashRecovery_Retracting:
+-    case State::CrashRecovery_Lifting:
+-    case State::CrashRecovery_ToolchangePowerPanic:
+-    case State::CrashRecovery_XY_Measure:
++            break;
++        case State::Resuming_Reheating:
++            stop_pressed = false;
++            st = printing_state_t::REHEATING;
++            break;
++        case State::Resuming_Begin:
++        case State::Resuming_UnparkHead_XY:
++        case State::Resuming_UnparkHead_ZE:
++        case State::CrashRecovery_Begin:
++        case State::CrashRecovery_Retracting:
++        case State::CrashRecovery_Lifting:
++        case State::CrashRecovery_ToolchangePowerPanic:
++        case State::CrashRecovery_XY_Measure:
+ #if HAS_TOOLCHANGER()
+-    case State::CrashRecovery_Tool_Pickup:
++            case State::CrashRecovery_Tool_Pickup:
+ #endif
+-    case State::CrashRecovery_XY_HOME:
+-    case State::CrashRecovery_HOMEFAIL:
+-    case State::CrashRecovery_Axis_NOK:
+-    case State::CrashRecovery_Repeated_Crash:
+-    case State::PowerPanic_Resume:
+-        stop_pressed = false;
+-        st = printing_state_t::RESUMING;
++        case State::CrashRecovery_XY_HOME:
++        case State::CrashRecovery_HOMEFAIL:
++        case State::CrashRecovery_Axis_NOK:
++        case State::CrashRecovery_Repeated_Crash:
++        case State::PowerPanic_Resume:
++            stop_pressed = false;
++            st = printing_state_t::RESUMING;
+ #if HAS_LARGE_DISPLAY()
+-        print_progress.Resume();
++            print_progress.Resume();
+ #endif
+-        break;
+-    case State::Aborting_Begin:
+-    case State::Aborting_WaitIdle:
+-    case State::Aborting_UnloadFilament:
+-    case State::Aborting_ParkHead:
+-    case State::Aborting_Preview:
+-        stop_pressed = false;
+-        st = printing_state_t::ABORTING;
+-        break;
+-    case State::Finishing_WaitIdle:
+-    case State::Finishing_UnloadFilament:
+-    case State::Finishing_ParkHead:
+-        st = printing_state_t::PRINTING;
+-        break;
+-    case State::Aborted:
+-        stop_pressed = false;
+-        st = printing_state_t::STOPPED;
+-        break;
+-    case State::Finished:
+-    case State::Exit:
+-        st = printing_state_t::PRINTED;
+-        break;
+-    case State::PowerPanic_acFault:
+-    case State::SerialPrintInit:
+-        // this state is never reached
+-        __builtin_unreachable();
+-        return;
++            break;
++        case State::Aborting_Begin:
++        case State::Aborting_WaitIdle:
++        case State::Aborting_UnloadFilament:
++        case State::Aborting_ParkHead:
++        case State::Aborting_Preview:
++            stop_pressed = false;
++            st = printing_state_t::ABORTING;
++            break;
++        case State::Finishing_WaitIdle:
++        case State::Finishing_UnloadFilament:
++        case State::Finishing_ParkHead:
++            st = printing_state_t::PRINTING;
++            break;
++        case State::Aborted:
++            stop_pressed = false;
++            st = printing_state_t::STOPPED;
++            break;
++        case State::Finished:
++        case State::Exit:
++            st = printing_state_t::PRINTED;
++            break;
++        case State::PowerPanic_acFault:
++        case State::SerialPrintInit:
++            // this state is never reached
++            __builtin_unreachable();
++            return;
+     }
+     if (stop_pressed) {
+         st = printing_state_t::ABORTING;

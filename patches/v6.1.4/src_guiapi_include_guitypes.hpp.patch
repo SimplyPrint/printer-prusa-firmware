@@ -1,0 +1,16 @@
+diff --git a/src/guiapi/include/guitypes.hpp b/src/guiapi/include/guitypes.hpp
+index 0994f63b82963698b3620915bea7d036f849e6e3..1332d3978e9c664b1d325e7ae9bd6bca482f0303 100644
+--- a/src/guiapi/include/guitypes.hpp
++++ b/src/guiapi/include/guitypes.hpp
+@@ -39,7 +39,10 @@ static constexpr color_t COLOR_LIGHT_GREEN = 0x0040b040L;
+ static constexpr color_t COLOR_PURPLE = 0x00800080L;
+ static constexpr color_t COLOR_TEAL = 0x00808000L;
+ static constexpr color_t COLOR_NAVY = 0x00800000L;
+-static constexpr color_t COLOR_ORANGE = 0x001B65F8L;
++static constexpr color_t COLOR_SP_BLUE = 0x00ffB638L;
++static constexpr color_t COLOR_PRUSA_ORANGE = 0x001B65F8L;
++//static constexpr color_t COLOR_ORANGE = 0x001B65F8L;
++static constexpr color_t COLOR_ORANGE = COLOR_SP_BLUE;
+ static constexpr color_t COLOR_DARK_KHAKI = 0x006BD7DBL;
+ 
+ // Menu item corners - background rounded corners

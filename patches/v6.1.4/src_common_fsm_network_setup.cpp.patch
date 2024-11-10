@@ -1,0 +1,13 @@
+diff --git a/src/common/fsm_network_setup.cpp b/src/common/fsm_network_setup.cpp
+index 1858385285eb37c1e0ac4ff3e60a72cf1ebfac59..b41bc7c507e3f5c23431568cb2dea4a38a8d48aa 100644
+--- a/src/common/fsm_network_setup.cpp
++++ b/src/common/fsm_network_setup.cpp
+@@ -34,7 +34,7 @@ public:
+         mode_ = WizardMode::initial_setup;
+ 
+         // We cannot allow continuing the connecting on background on the initial setup,
+-        // because we want to offer Prusa Connect if the user connects successfully.
++        // because we want to offer Simplyprint if the user connects successfully.
+         connecting_phase_ = Phase::connecting_nonfinishable;
+     }
+ 

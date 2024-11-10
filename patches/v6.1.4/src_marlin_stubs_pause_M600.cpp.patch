@@ -1,0 +1,23 @@
+diff --git a/src/marlin_stubs/pause/M600.cpp b/src/marlin_stubs/pause/M600.cpp
+index b186319d71cd3231a4014d304edd4116a593e68a..f5c77eed3bd8049928ee93d06ebf46215206c963 100644
+--- a/src/marlin_stubs/pause/M600.cpp
++++ b/src/marlin_stubs/pause/M600.cpp
+@@ -117,7 +117,8 @@ void GcodeSuite::M600() {
+     }
+ #endif
+ 
+-    if (do_manual_m600) {
++    if (do_manual_m600){
++        SERIAL_ECHO("M118 A1 action:pause");
+         M600_manual();
+     }
+ 
+@@ -351,7 +352,7 @@ void PrusaGcodeSuite::M1601() {
+         std::nullopt, std::nullopt, std::nullopt,
+         std::nullopt, std::nullopt,
+         pause::Settings::CalledFrom::FilamentStuck);
+-
++    SERIAL_ECHO("M118 A1 action:pause");
+     EMotorStallDetector::Instance().ClearReported();
+ }
+ #else

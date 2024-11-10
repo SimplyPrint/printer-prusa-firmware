@@ -1,0 +1,21 @@
+diff --git a/src/connect/connect.hpp b/src/connect/connect.hpp
+index 43957bd5136c2963bd2b7b9060c73c435712e48b..78516a738fd219f9024ce8c75c1691904b90b1dc 100644
+--- a/src/connect/connect.hpp
++++ b/src/connect/connect.hpp
+@@ -14,6 +14,8 @@
+ 
+ namespace connect_client {
+ 
++extern std::atomic<bool> is_print_network;
++
+ class CachedFactory;
+ 
+ OnlineStatus last_status();
+@@ -85,6 +87,7 @@ private:
+ public:
+     Connect(Printer &printer, SharedBuffer &buffer);
+     void run(void) __attribute__((noreturn));
++    int send_simplyprint(const std::string &data);
+ };
+ 
+ } // namespace connect_client
