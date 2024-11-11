@@ -1,36 +1,41 @@
 diff --git a/src/gui/screen_sp_bed_cleared.hpp b/src/gui/screen_sp_bed_cleared.hpp
 new file mode 100644
-index 0000000000000000000000000000000000000000..e6a0f2dfc5ddcf5b93c64bf912f84bfea3e9ec6b
+index 0000000000000000000000000000000000000000..80d3f63bff8bf2d5b1fbc955229815e577f91a80
 --- /dev/null
 +++ b/src/gui/screen_sp_bed_cleared.hpp
-@@ -0,0 +1,29 @@
+@@ -0,0 +1,35 @@
 +#pragma once
 +
-+#include <window.hpp>
-+#include <window_text.hpp>
-+#include <window_icon.hpp>
-+#include <button.hpp>
++#include "status_footer.hpp"
++#include "window_header.hpp"
++#include "window_roll_text.hpp"
++#include "window_icon.hpp"
++#include "window_term.hpp"
++#include "ScreenPrintingModel.hpp"
 +#include <guiconfig/guiconfig.h>
-+#include <fonts.hpp>
-+#include <image.hpp>  // Assuming there is an image handling class
++#include <array>
++#include <window_progress.hpp>
 +
 +/**
-+ * @brief SPBedClearedScreen creates a screen with an image on the left and two buttons on the right.
++ * @brief SPBedClearedScreen creates a screen with an image on the left, an icon, and two buttons at the bottom.
 + */
-+class SPBedClearedScreen : public window_frame_t {
-+public:
-+    SPBedClearedScreen(window_t *parent, Rect16 rect);
++class SPBedClearedScreen : public ScreenPrintingModel {
++    static constexpr const char *caption = N_("Bed Cleared?");
 +
-+    void Show() override;
-+    void Hide() override;
++public:
++    SPBedClearedScreen(window_t *parent);
++
++    void Show();
++    void Hide();
++
++protected:
++    virtual void windowEvent(window_t *sender, GUI_event_t event, void *param) override;
 +
 +private:
 +    void setupComponents();
-+    void button1Callback();
-+    void button2Callback();
-+
-+    window_icon_t image_left;
-+    button_t button1;
-+    button_t button2;
++    virtual void stopAction() override;
++    virtual void pauseAction() override;
++    virtual void tuneAction() override;
++    window_t *parent_window;
++    window_icon_t bed_icon;
 +};
-\ No newline at end of file

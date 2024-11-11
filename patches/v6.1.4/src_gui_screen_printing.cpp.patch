@@ -1,5 +1,5 @@
 diff --git a/src/gui/screen_printing.cpp b/src/gui/screen_printing.cpp
-index 83e8b4be072ab21d4d770f8ea18303b9a947d88a..a1636e1aec91e1fa70873e761e20bf9da4e472d6 100644
+index 83e8b4be072ab21d4d770f8ea18303b9a947d88a..fd2253bf685558df6d0bda451f99b54902e1fb8b 100644
 --- a/src/gui/screen_printing.cpp
 +++ b/src/gui/screen_printing.cpp
 @@ -19,6 +19,7 @@
@@ -39,122 +39,7 @@ index 83e8b4be072ab21d4d770f8ea18303b9a947d88a..a1636e1aec91e1fa70873e761e20bf9d
      }
  }
  
-@@ -61,25 +63,30 @@ void screen_printing_data_t::pauseAction() {
-         return;
-     }
-     switch (GetState()) {
--    case printing_state_t::PRINTING:
--        marlin_client::print_pause();
--        change_print_state();
--        break;
--    case printing_state_t::ABSORBING_HEAT:
--        bed_preheat.skip_preheat();
--        change_print_state();
--        break;
--    case printing_state_t::PAUSED:
--        marlin_client::print_resume();
--        change_print_state();
--        break;
--    case printing_state_t::STOPPED:
--    case printing_state_t::PRINTED:
--        screen_printing_reprint();
--        change_print_state();
--        break;
--    default:
--        break;
-+        case printing_state_t::PRINTING:
-+            marlin_client::print_pause();
-+            change_print_state();
-+            break;
-+        case printing_state_t::ABSORBING_HEAT:
-+            bed_preheat.skip_preheat();
-+            change_print_state();
-+            break;
-+        case printing_state_t::PAUSED:
-+            marlin_client::print_resume();
-+            change_print_state();
-+            break;
-+        case printing_state_t::STOPPED:
-+        case printing_state_t::PRINTED:
-+            if (connect_client::is_print_network) {
-+                screen_printing_clear_bed();
-+            } else {
-+                screen_printing_reprint();
-+            }
-+            change_print_state();
-+
-+            break;
-+        default:
-+            break;
-     }
- }
- 
-@@ -88,39 +95,45 @@ void screen_printing_data_t::stopAction() {
-         return;
-     }
-     switch (GetState()) {
--    case printing_state_t::STOPPED:
--    case printing_state_t::PRINTED:
--        marlin_client::print_exit();
--        return;
--    case printing_state_t::PAUSING:
--    case printing_state_t::RESUMING:
--        return;
--    default: {
--        if (MsgBoxWarning(_("Are you sure to stop this printing?"), Responses_YesNo, 1)
--            == Response::Yes) {
--            stop_pressed = true;
--            waiting_for_abort = true;
--            marlin_client::print_abort();
--            change_print_state();
--        } else {
-+        case printing_state_t::STOPPED:
-+        case printing_state_t::PRINTED:
-+            // set the is_print_network to false here!!
-+            connect_client::is_print_network = false;
-+            marlin_client::print_exit();
-             return;
-+        case printing_state_t::PAUSING:
-+        case printing_state_t::RESUMING:
-+            return;
-+        default: {
-+            if (MsgBoxWarning(_("Are you sure to stop this printing?"), Responses_YesNo, 1)
-+                == Response::Yes) {
-+                stop_pressed = true;
-+                waiting_for_abort = true;
-+                marlin_client::print_abort();
-+                change_print_state();
-+            } else {
-+                return;
-+            }
-         }
-     }
--    }
- }
- 
- /******************************************************************************/
- 
- namespace {
--constexpr const char *txt_na { N_("N/A") };
-+    constexpr const char *txt_na{N_("N/A")};
- 
--constexpr size_t column_left { 30 };
-+    constexpr size_t
-+    column_left {
-+    30
-+};
- 
- constexpr size_t row_0 { 104 };
-+
- constexpr size_t row_height { 20 };
- 
- constexpr size_t get_row(size_t idx) {
--    return row_0 + idx * row_height;
-+    return row_0 + idx *row_height;
- }
- 
- #if HAS_MINI_DISPLAY()
-@@ -145,37 +158,35 @@ constexpr Rect16 end_result_body_rect { 0, row_0 - EndResultBody::extra_top_spac
+@@ -145,42 +147,42 @@ constexpr Rect16 end_result_body_rect { 0, row_0 - EndResultBody::extra_top_spac
  } // namespace
  
  screen_printing_data_t::screen_printing_data_t()
@@ -211,10 +96,18 @@ index 83e8b4be072ab21d4d770f8ea18303b9a947d88a..a1636e1aec91e1fa70873e761e20bf9d
 -    , end_result_body(this, end_result_body_rect) // safe to pass even if order changes because EndScreen constructor doesn't use it (therefore guaranteed to be valid)
 +, popup_rect(Rect16(30, get_row(0), 250, 70)) // Rect for printing messages from marlin.
 +, end_result_body(this, end_result_body_rect) // safe to pass even if order changes because EndScreen constructor doesn't use it (therefore guaranteed to be valid)
++, sp_bed_cleared_body(this)
++, sp_print_result_body(this)
  #endif // USE_<display>
  {
      // we will handle HELD_RELEASED event in this window
-@@ -217,7 +228,7 @@ screen_printing_data_t::screen_printing_data_t()
+     DisableLongHoldScreenAction();
+-
++    end_screen_state = EndScreenState::end_screen;
+     strlcpy(text_filament.data(), "999m", text_filament.size());
+ 
+ #if HAS_MINI_DISPLAY()
+@@ -217,7 +219,7 @@ screen_printing_data_t::screen_printing_data_t()
  
      strlcpy(text_filename.data(), GCodeInfo::getInstance().GetGcodeFilename(), text_filename.size());
      w_filename.set_font(Font::big);
@@ -223,7 +116,7 @@ index 83e8b4be072ab21d4d770f8ea18303b9a947d88a..a1636e1aec91e1fa70873e761e20bf9d
      w_filename.SetText(string_view_utf8::MakeRAM(text_filename.data()));
  
      w_etime_label.set_font(Font::small);
-@@ -322,18 +333,18 @@ void screen_printing_data_t::windowEvent(window_t *sender, GUI_event_t event, vo
+@@ -322,18 +324,18 @@ void screen_printing_data_t::windowEvent(window_t *sender, GUI_event_t event, vo
              string_view_utf8 txt;
              switch (*reason) {
              case MMU2::MaintenanceReason::Failures:
@@ -248,17 +141,61 @@ index 83e8b4be072ab21d4d770f8ea18303b9a947d88a..a1636e1aec91e1fa70873e761e20bf9d
                  break;
              }
  
-@@ -401,7 +412,9 @@ void screen_printing_data_t::start_showing_end_result() {
+@@ -401,15 +403,51 @@ void screen_printing_data_t::start_showing_end_result() {
      hide_time_information(); // OK because currently we never show remaining time at the end
  
      // show end result
-+    if (Connect_client::is_print_network){
- 
++    if (connect_client::is_print_network){
++        connect_client::is_print_network = false;
++        end_screen_state = EndScreenState::print_result_screen;
 +    }
-     end_result_body.Show();
-     CaptureNormalWindow(end_result_body);
++    switch (end_screen_state) {
++        case EndScreenState::end_screen:
++            end_result_body.Show();
++            CaptureNormalWindow(end_result_body);
++            break;
++        case EndScreenState::bed_cleared_screen:
++            end_screen_state = EndScreenState::end_screen;
++            sp_bed_cleared_body.Show();
++            CaptureNormalWindow(sp_bed_cleared_body);
  
-@@ -669,93 +682,93 @@ void screen_printing_data_t::change_print_state() {
+-    end_result_body.Show();
+-    CaptureNormalWindow(end_result_body);
++            break;
++        case EndScreenState::print_result_screen:
++            end_screen_state = EndScreenState::bed_cleared_screen;
++            sp_print_result_body.Show();
++            CaptureNormalWindow(sp_print_result_body);
++            break;
++    }
+ 
+     showing_end_result = true;
+     shown_end_result = true;
+ }
+ 
+ void screen_printing_data_t::stop_showing_end_result() {
++
++    switch (end_screen_state) {
++        case EndScreenState::end_screen:
++            break;
++        case EndScreenState::bed_cleared_screen:
++            end_screen_state = EndScreenState::end_screen;
++            ReleaseCaptureOfNormalWindow();
++            sp_bed_cleared_body.Show();
++            CaptureNormalWindow(sp_bed_cleared_body);
++            return;
++        case EndScreenState::print_result_screen:
++            end_screen_state = EndScreenState::bed_cleared_screen;
++            ReleaseCaptureOfNormalWindow();
++            sp_print_result_body.Show();
++            CaptureNormalWindow(sp_print_result_body);
++            return;
++    }
++
+     // show previous
+     for (auto &button : buttons) {
+         button.Show();
+@@ -669,93 +707,93 @@ void screen_printing_data_t::change_print_state() {
      printing_state_t st = printing_state_t::COUNT;
  
      switch (marlin_vars()->print_state) {

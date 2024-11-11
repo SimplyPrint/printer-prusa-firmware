@@ -1,68 +1,77 @@
 diff --git a/src/gui/screen_sp_bed_cleared.cpp b/src/gui/screen_sp_bed_cleared.cpp
 new file mode 100644
-index 0000000000000000000000000000000000000000..289cef51c5a544ae117b5689de3b9eeddda1cc95
+index 0000000000000000000000000000000000000000..203f6e7030d5850952be8c0515672717b4f41f86
 --- /dev/null
 +++ b/src/gui/screen_sp_bed_cleared.cpp
-@@ -0,0 +1,62 @@
+@@ -0,0 +1,71 @@
 +#include "screen_sp_bed_cleared.hpp"
 +#include "marlin_client.hpp"
 +#include "ScreenHandler.hpp"
-+#include "MsgBoxWarning.hpp"
++#include <window_msgbox.hpp>
 +#include <connect/marlin_printer.hpp>
 +#include <connect/connect.hpp>
++#include "img_resources.hpp"
 +
-+SPBedClearedScreen::SPBedClearedScreen(window_t *parent, Rect16 rect)
-+        : window_frame_t(parent, rect),
-+          image_left(this, Rect16{0, 0, rect.width / 2, rect.height}, "image_path_here"),
-+          button1(this, Rect16{rect.width / 2 + 10, 20, 100, 40}, N_("Button 1"), &SPBedClearedScreen::button1Callback),
-+          button2(this, Rect16{rect.width / 2 + 10, 80, 100, 40}, N_("Button 2"), &SPBedClearedScreen::button2Callback) {
++SPBedClearedScreen::SPBedClearedScreen(window_t *parent)
++        : ScreenPrintingModel(_(caption)),
++          bed_icon(this,
++                   Rect16((display::GetW() - img::serial_printing_172x138.w) / 2, GuiDefaults::RectScreenBody.Top(),
++                          img::serial_printing_172x138.w, img::serial_printing_172x138.h),
++                   &img::serial_printing_172x138) {
 +
++
++    SetButtonIconAndLabel(BtnSocket::Left, BtnRes::Disconnect, LabelRes::Stop);
++    SetButtonIconAndLabel(BtnSocket::Right, BtnRes::Disconnect, LabelRes::Stop);
++    DisableButton(BtnSocket::Left);
++    DisableButton(BtnSocket::Right);
++    parent_window = parent;
++    bed_icon.Disable();
++    bed_icon.Unshadow();
 +    setupComponents();
 +}
 +
 +void SPBedClearedScreen::setupComponents() {
-+    image_left.Show();
-+    button1.Show();
-+    button2.Show();
++    SetButtonIconAndLabel(BtnSocket::Middle, BtnRes::Bed_Clear, LabelRes::Bed_Clear);
++
++
 +}
 +
 +void SPBedClearedScreen::Show() {
-+    window_frame_t::Show();
-+    image_left.Show();
-+    button1.Show();
-+    button2.Show();
++    ScreenPrintingModel::Show();
++    bed_icon.Show();
 +}
 +
 +void SPBedClearedScreen::Hide() {
-+    window_frame_t::Hide();
-+    image_left.Hide();
-+    button1.Hide();
-+    button2.Hide();
++
++    bed_icon.Hide();
++    ScreenPrintingModel::Hide();
++
 +}
 +
-+void SPBedClearedScreen::button1Callback() {
-+    if (marlin_client::is_printing()) {
-+        // Action to pause the current printing process
-+        marlin_client::print_pause();
-+        MsgBoxWarning(_("Printing paused successfully."), Responses_Ok);
-+    } else {
-+        MsgBoxWarning(_("No active print to pause."), Responses_Ok);
++void SPBedClearedScreen::pauseAction() {
++    // Action to clear the bed when the print is completed
++    SharedBuffer buffer;
++    connect_client::MarlinPrinter connect_printer;
++    connect_client::Connect client(connect_printer, buffer);
++    int response_code = client.send_simplyprint("bed cleared");
++    if (response_code / 100 != 2) {
++        MsgBoxWarning(_("Failed to send bed cleared message."), Responses_Ok);
 +    }
++    void * param = nullptr;
++    parent_window->WindowEvent(this, GUI_event_t::CHILD_CHANGED, param);
++
++
 +}
 +
-+void SPBedClearedScreen::button2Callback() {
-+    if (marlin_client::get_print_state() == printing_state_t::PRINTED) {
-+        // Action to clear the bed when the print is completed
-+        connect_client::MarlinPrinter printer;
-+        SharedBuffer buffer;
-+        connect_client::Connect client(printer, buffer);
-+        int response_code = client.send_simplyprint("bed cleared");
-+        if (response_code / 100 == 2) {
-+            MsgBoxWarning(_("Bed cleared message sent successfully."), Responses_Ok);
-+        } else {
-+            MsgBoxWarning(_("Failed to send bed cleared message."), Responses_Ok);
-+        }
-+    } else {
-+        MsgBoxWarning(_("Print not completed. Bed clear action not applicable."), Responses_Ok);
++void SPBedClearedScreen::stopAction() {}
++
++void SPBedClearedScreen::tuneAction() {}
++
++void SPBedClearedScreen::windowEvent(window_t *, GUI_event_t event, void *param ) {
++    if (event == GUI_event_t::ENC_UP || event == GUI_event_t::CLICK || event == GUI_event_t::TOUCH_CLICK) {
++//        if (GetParent()) {
++//            GetParent()->WindowEvent(this, GUI_event_t::CHILD_CHANGED, param);
++//        }
 +    }
++    ScreenPrintingModel::windowEvent(this, event, param);
 +}

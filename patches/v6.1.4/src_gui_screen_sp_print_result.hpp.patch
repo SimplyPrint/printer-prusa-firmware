@@ -1,36 +1,44 @@
 diff --git a/src/gui/screen_sp_print_result.hpp b/src/gui/screen_sp_print_result.hpp
 new file mode 100644
-index 0000000000000000000000000000000000000000..45340e89610b06deb3b5be3455a0abfdb3fecbb6
+index 0000000000000000000000000000000000000000..2461af665fca20f75eb28f79490a2f854bdffa68
 --- /dev/null
 +++ b/src/gui/screen_sp_print_result.hpp
-@@ -0,0 +1,29 @@
+@@ -0,0 +1,37 @@
 +#pragma once
 +
-+#include <window.hpp>
-+#include <window_text.hpp>
-+#include <window_icon.hpp>
-+#include <button.hpp>
++
++#include "status_footer.hpp"
++#include "window_header.hpp"
++#include "window_roll_text.hpp"
++#include "window_icon.hpp"
++#include "window_term.hpp"
++#include "ScreenPrintingModel.hpp"
 +#include <guiconfig/guiconfig.h>
-+#include <fonts.hpp>
-+#include <image.hpp>  // Assuming there is an image handling class
++#include <array>
++#include <window_progress.hpp>
 +
 +/**
 + * @brief SPPrintResultScreen creates a screen with an image on the left and two buttons on the right.
 + */
-+class SPPrintResultScreen : public window_frame_t {
++class SPPrintResultScreen : public ScreenPrintingModel {
++    static constexpr const char *caption = N_("Print Result");
 +public:
-+    SPPrintResultScreen(window_t *parent, Rect16 rect);
++    SPPrintResultScreen(window_t *parent);
 +
-+    void Show() override;
-+    void Hide() override;
++    void Show();
++    void Hide();
++
++protected:
++    virtual void windowEvent(window_t *sender, GUI_event_t event, void *param) override;
++
 +
 +private:
 +    void setupComponents();
-+    void button1Callback();
-+    void button2Callback();
++    virtual void stopAction() override;
++    virtual void pauseAction() override;
++    virtual void tuneAction() override;
 +
-+    window_icon_t image_left;
-+    button_t button1;
-+    button_t button2;
++    window_t *parent_window;
++    window_icon_t bed_icon;
 +};
 \ No newline at end of file

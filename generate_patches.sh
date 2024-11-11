@@ -6,6 +6,7 @@ if [ -z "$repo_path" ]; then
 fi
 
 cd "$repo_path" || exit
+git add .
 
 # Ensure the script is run from within a Git repository
 if ! git rev-parse --is-inside-work-tree >/dev/null 2>&1; then
@@ -25,7 +26,6 @@ MODIFIED_FILES=$(git diff --name-only --diff-filter=ACMR)
 # Check if there are any modified files
 if [ -z "$MODIFIED_FILES" ]; then
     echo "No modified files found."
-    exit 0
 fi
 
 # Generate a patch for each modified file, including new files
@@ -50,7 +50,6 @@ MODIFIED_FILES=$(git diff --cached --name-only --diff-filter=ACMR)
 # Check if there are any modified files
 if [ -z "$MODIFIED_FILES" ]; then
     echo "No modified files found."
-    exit 0
 fi
 
 # Generate a patch for each modified file, including new files

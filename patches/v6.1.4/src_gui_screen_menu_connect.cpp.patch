@@ -1,5 +1,5 @@
 diff --git a/src/gui/screen_menu_connect.cpp b/src/gui/screen_menu_connect.cpp
-index b545985f3369eb372084382491b8d677b8f0495d..92591f253f27743b47600d2dff1fc3788b88a513 100644
+index b545985f3369eb372084382491b8d677b8f0495d..d252d981110d0d923be6b51533251834109f0d0d 100644
 --- a/src/gui/screen_menu_connect.cpp
 +++ b/src/gui/screen_menu_connect.cpp
 @@ -14,11 +14,31 @@
@@ -12,8 +12,8 @@ index b545985f3369eb372084382491b8d677b8f0495d..92591f253f27743b47600d2dff1fc378
 +
 +void MI_SEND_SIMPLYPRINT::click([[maybe_unused]] IWindowMenu &window_menu) {
 +    SharedBuffer buffer;
-+    connect_client::MarlinPrinter printer;
-+    connect_client::Connect client(printer, buffer);
++    connect_client::MarlinPrinter connect_printer;
++    connect_client::Connect client(connect_printer, buffer);
 +
 +    int rc = client.send_simplyprint("Hello World");
 +    if (rc /100  == 2){
