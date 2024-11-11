@@ -1,18 +1,15 @@
 diff --git a/src/gui/screen_sp_print_result.cpp b/src/gui/screen_sp_print_result.cpp
-index 33d576fedf9178c883f77cda2281fd09587aba18..39afe9839f6755e7b3b952b0f691ffd99eaa9886 100644
---- a/src/gui/screen_sp_print_result.cpp
+new file mode 100644
+index 0000000000000000000000000000000000000000..39afe9839f6755e7b3b952b0f691ffd99eaa9886
+--- /dev/null
 +++ b/src/gui/screen_sp_print_result.cpp
-@@ -1,5 +1,61 @@
--//
--// Created by rylan on 11/10/24.
--//
+@@ -0,0 +1,61 @@
 +#include "screen_sp_print_result.hpp"
 +#include "marlin_client.hpp"
 +#include "ScreenHandler.hpp"
 +#include "MsgBoxWarning.hpp"
 +#include <connect/marlin_printer.hpp>
- 
--#include "screen_sp_print_result.h"
++
 +SPPrintResultScreen::SPPrintResultScreen(window_t *parent, Rect16 rect)
 +        : window_frame_t(parent, rect),
 +          image_left(this, Rect16{0, 0, rect.width / 2, rect.height}, "image_path_here"),

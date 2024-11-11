@@ -1,15 +1,11 @@
 diff --git a/src/gui/screen_sp_bed_cleared.hpp b/src/gui/screen_sp_bed_cleared.hpp
-index d1d9a6ae87472be3f7ba50d2867333d3fd19bf55..e6a0f2dfc5ddcf5b93c64bf912f84bfea3e9ec6b 100644
---- a/src/gui/screen_sp_bed_cleared.hpp
+new file mode 100644
+index 0000000000000000000000000000000000000000..e6a0f2dfc5ddcf5b93c64bf912f84bfea3e9ec6b
+--- /dev/null
 +++ b/src/gui/screen_sp_bed_cleared.hpp
-@@ -1,14 +1,29 @@
--//
--// Created by rylan on 11/10/24.
--//
+@@ -0,0 +1,29 @@
 +#pragma once
- 
--#ifndef PRUSA_FIRMWARE_BUDDY_DEV_SCREEN_SP_BED_CLEARED_H
--#define PRUSA_FIRMWARE_BUDDY_DEV_SCREEN_SP_BED_CLEARED_H
++
 +#include <window.hpp>
 +#include <window_text.hpp>
 +#include <window_icon.hpp>
@@ -17,26 +13,22 @@ index d1d9a6ae87472be3f7ba50d2867333d3fd19bf55..e6a0f2dfc5ddcf5b93c64bf912f84bfe
 +#include <guiconfig/guiconfig.h>
 +#include <fonts.hpp>
 +#include <image.hpp>  // Assuming there is an image handling class
- 
++
 +/**
 + * @brief SPBedClearedScreen creates a screen with an image on the left and two buttons on the right.
 + */
 +class SPBedClearedScreen : public window_frame_t {
 +public:
 +    SPBedClearedScreen(window_t *parent, Rect16 rect);
- 
--class screen_sp_bed_cleared {
++
 +    void Show() override;
 +    void Hide() override;
- 
--};
++
 +private:
 +    void setupComponents();
 +    void button1Callback();
 +    void button2Callback();
- 
--
--#endif //PRUSA_FIRMWARE_BUDDY_DEV_SCREEN_SP_BED_CLEARED_H
++
 +    window_icon_t image_left;
 +    button_t button1;
 +    button_t button2;

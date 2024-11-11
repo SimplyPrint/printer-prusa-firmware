@@ -43,6 +43,31 @@ for FILE in $MODIFIED_FILES; do
     echo "Patch file created: $PATCH_FILE"
 done
 
+
+# Get the list of modified files
+MODIFIED_FILES=$(git diff --cached --name-only --diff-filter=ACMR)
+
+# Check if there are any modified files
+if [ -z "$MODIFIED_FILES" ]; then
+    echo "No modified files found."
+    exit 0
+fi
+
+# Generate a patch for each modified file, including new files
+for FILE in $MODIFIED_FILES; do
+    # Ensure the patch filename reflects the full path for uniqueness
+    PATCH_FILE="$PATCH_DIR/$(echo "$FILE" | sed 's/\//_/g').patch"
+    # Create patches that include added files using format-patch
+    if [ -f "$FILE" ]; then
+        git diff --binary --cached --full-index "$FILE" > "$PATCH_FILE"
+    else
+        echo "Creating patch for new file: $FILE"
+        # Use git format-patch to ensure new files are included correctly
+        git format-patch -1 --stdout HEAD -- "$FILE" > "$PATCH_FILE"
+    fi
+    echo "Patch file created: $PATCH_FILE"
+done
+
 PNG_PATCH_DIR="$PATCH_DIR/png_patches"
 mkdir -p "$PNG_PATCH_DIR"
 

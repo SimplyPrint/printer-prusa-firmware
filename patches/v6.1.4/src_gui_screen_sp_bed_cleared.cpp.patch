@@ -1,19 +1,16 @@
 diff --git a/src/gui/screen_sp_bed_cleared.cpp b/src/gui/screen_sp_bed_cleared.cpp
-index a29878dff098f2617cce9e74d1a81433fb449698..289cef51c5a544ae117b5689de3b9eeddda1cc95 100644
---- a/src/gui/screen_sp_bed_cleared.cpp
+new file mode 100644
+index 0000000000000000000000000000000000000000..289cef51c5a544ae117b5689de3b9eeddda1cc95
+--- /dev/null
 +++ b/src/gui/screen_sp_bed_cleared.cpp
-@@ -1,5 +1,62 @@
--//
--// Created by rylan on 11/10/24.
--//
+@@ -0,0 +1,62 @@
 +#include "screen_sp_bed_cleared.hpp"
 +#include "marlin_client.hpp"
 +#include "ScreenHandler.hpp"
 +#include "MsgBoxWarning.hpp"
 +#include <connect/marlin_printer.hpp>
 +#include <connect/connect.hpp>
- 
--#include "screen_sp_bed_cleared.h"
++
 +SPBedClearedScreen::SPBedClearedScreen(window_t *parent, Rect16 rect)
 +        : window_frame_t(parent, rect),
 +          image_left(this, Rect16{0, 0, rect.width / 2, rect.height}, "image_path_here"),
