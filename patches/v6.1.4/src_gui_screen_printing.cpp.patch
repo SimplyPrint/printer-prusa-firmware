@@ -1,5 +1,5 @@
 diff --git a/src/gui/screen_printing.cpp b/src/gui/screen_printing.cpp
-index 83e8b4be072ab21d4d770f8ea18303b9a947d88a..fd2253bf685558df6d0bda451f99b54902e1fb8b 100644
+index 83e8b4be072ab21d4d770f8ea18303b9a947d88a..392905cdbe312426b92098720e3b8d4fd43dfbf9 100644
 --- a/src/gui/screen_printing.cpp
 +++ b/src/gui/screen_printing.cpp
 @@ -19,6 +19,7 @@
@@ -39,7 +39,7 @@ index 83e8b4be072ab21d4d770f8ea18303b9a947d88a..fd2253bf685558df6d0bda451f99b549
      }
  }
  
-@@ -145,42 +147,42 @@ constexpr Rect16 end_result_body_rect { 0, row_0 - EndResultBody::extra_top_spac
+@@ -145,42 +147,44 @@ constexpr Rect16 end_result_body_rect { 0, row_0 - EndResultBody::extra_top_spac
  } // namespace
  
  screen_printing_data_t::screen_printing_data_t()
@@ -101,13 +101,15 @@ index 83e8b4be072ab21d4d770f8ea18303b9a947d88a..fd2253bf685558df6d0bda451f99b549
  #endif // USE_<display>
  {
      // we will handle HELD_RELEASED event in this window
++    sp_print_result_body.Hide();
++    sp_bed_cleared_body.Hide();
      DisableLongHoldScreenAction();
 -
 +    end_screen_state = EndScreenState::end_screen;
      strlcpy(text_filament.data(), "999m", text_filament.size());
  
  #if HAS_MINI_DISPLAY()
-@@ -217,7 +219,7 @@ screen_printing_data_t::screen_printing_data_t()
+@@ -217,7 +221,7 @@ screen_printing_data_t::screen_printing_data_t()
  
      strlcpy(text_filename.data(), GCodeInfo::getInstance().GetGcodeFilename(), text_filename.size());
      w_filename.set_font(Font::big);
@@ -116,7 +118,7 @@ index 83e8b4be072ab21d4d770f8ea18303b9a947d88a..fd2253bf685558df6d0bda451f99b549
      w_filename.SetText(string_view_utf8::MakeRAM(text_filename.data()));
  
      w_etime_label.set_font(Font::small);
-@@ -322,18 +324,18 @@ void screen_printing_data_t::windowEvent(window_t *sender, GUI_event_t event, vo
+@@ -322,18 +326,18 @@ void screen_printing_data_t::windowEvent(window_t *sender, GUI_event_t event, vo
              string_view_utf8 txt;
              switch (*reason) {
              case MMU2::MaintenanceReason::Failures:
@@ -141,7 +143,7 @@ index 83e8b4be072ab21d4d770f8ea18303b9a947d88a..fd2253bf685558df6d0bda451f99b549
                  break;
              }
  
-@@ -401,15 +403,51 @@ void screen_printing_data_t::start_showing_end_result() {
+@@ -401,15 +405,51 @@ void screen_printing_data_t::start_showing_end_result() {
      hide_time_information(); // OK because currently we never show remaining time at the end
  
      // show end result
@@ -195,7 +197,7 @@ index 83e8b4be072ab21d4d770f8ea18303b9a947d88a..fd2253bf685558df6d0bda451f99b549
      // show previous
      for (auto &button : buttons) {
          button.Show();
-@@ -669,93 +707,93 @@ void screen_printing_data_t::change_print_state() {
+@@ -669,93 +709,93 @@ void screen_printing_data_t::change_print_state() {
      printing_state_t st = printing_state_t::COUNT;
  
      switch (marlin_vars()->print_state) {
