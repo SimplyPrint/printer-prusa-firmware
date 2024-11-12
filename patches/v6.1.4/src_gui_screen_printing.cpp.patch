@@ -1,5 +1,5 @@
 diff --git a/src/gui/screen_printing.cpp b/src/gui/screen_printing.cpp
-index 83e8b4be072ab21d4d770f8ea18303b9a947d88a..6acbaa35b20f29a55e488480580a32484c8707e2 100644
+index 83e8b4be072ab21d4d770f8ea18303b9a947d88a..9251776a0a53321f8eb92008662e7ca69a6ed8a5 100644
 --- a/src/gui/screen_printing.cpp
 +++ b/src/gui/screen_printing.cpp
 @@ -19,6 +19,8 @@
@@ -259,16 +259,18 @@ index 83e8b4be072ab21d4d770f8ea18303b9a947d88a..6acbaa35b20f29a55e488480580a3248
                  break;
              }
  
-@@ -342,6 +426,8 @@ void screen_printing_data_t::windowEvent(window_t *sender, GUI_event_t event, vo
+@@ -342,6 +426,10 @@ void screen_printing_data_t::windowEvent(window_t *sender, GUI_event_t event, vo
      }
  #endif
  
-+ScreenPrintingModel::windowEvent(sender, event, param);
++if (!showing_end_result) {
++    ScreenPrintingModel::windowEvent(sender, event, param);
++}
 +
  #if HAS_LARGE_DISPLAY()
      if (shown_end_result && event == GUI_event_t::ENC_DN
          && ((buttons[0].IsEnabled() && buttons[0].IsFocused()) || (!buttons[0].IsEnabled() && buttons[1].IsFocused()))) {
-@@ -375,41 +461,129 @@ void screen_printing_data_t::windowEvent(window_t *sender, GUI_event_t event, vo
+@@ -375,41 +463,129 @@ void screen_printing_data_t::windowEvent(window_t *sender, GUI_event_t event, vo
          return;
      }
  
@@ -329,7 +331,9 @@ index 83e8b4be072ab21d4d770f8ea18303b9a947d88a..6acbaa35b20f29a55e488480580a3248
 +
 +            end_result_body.Show();
 +            CaptureNormalWindow(end_result_body);
-+
+ 
+-    end_result_body.Show();
+-    CaptureNormalWindow(end_result_body);
 +
 +            break;
 +        case EndScreenState::bed_cleared_screen:
@@ -357,9 +361,7 @@ index 83e8b4be072ab21d4d770f8ea18303b9a947d88a..6acbaa35b20f29a55e488480580a3248
 +            DisableButton(BtnSocket::Middle);
 +            break;
 +    }
- 
--    end_result_body.Show();
--    CaptureNormalWindow(end_result_body);
++
 +//remove later
 +/*************************************/
 +//    end_result_body.Show();
@@ -413,7 +415,7 @@ index 83e8b4be072ab21d4d770f8ea18303b9a947d88a..6acbaa35b20f29a55e488480580a3248
      // show previous
      for (auto &button : buttons) {
          button.Show();
-@@ -560,6 +734,12 @@ void screen_printing_data_t::set_pause_icon_and_label() {
+@@ -560,6 +736,12 @@ void screen_printing_data_t::set_pause_icon_and_label() {
      case printing_state_t::COUNT:
      case printing_state_t::INITIAL:
      case printing_state_t::PRINTING:
@@ -426,7 +428,7 @@ index 83e8b4be072ab21d4d770f8ea18303b9a947d88a..6acbaa35b20f29a55e488480580a3248
      case printing_state_t::MBL_FAILED:
          EnableButton(BtnSocket::Middle);
          SetButtonIconAndLabel(BtnSocket::Middle, BtnRes::Pause, LabelRes::Pause);
-@@ -669,93 +849,93 @@ void screen_printing_data_t::change_print_state() {
+@@ -669,93 +851,93 @@ void screen_printing_data_t::change_print_state() {
      printing_state_t st = printing_state_t::COUNT;
  
      switch (marlin_vars()->print_state) {
