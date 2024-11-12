@@ -1,5 +1,5 @@
 diff --git a/src/gui/screen_printing.cpp b/src/gui/screen_printing.cpp
-index 83e8b4be072ab21d4d770f8ea18303b9a947d88a..f27a6a94f9b3af2a72ccef6cc66c2d6138089ab8 100644
+index 83e8b4be072ab21d4d770f8ea18303b9a947d88a..6acbaa35b20f29a55e488480580a32484c8707e2 100644
 --- a/src/gui/screen_printing.cpp
 +++ b/src/gui/screen_printing.cpp
 @@ -19,6 +19,8 @@
@@ -268,7 +268,22 @@ index 83e8b4be072ab21d4d770f8ea18303b9a947d88a..f27a6a94f9b3af2a72ccef6cc66c2d61
  #if HAS_LARGE_DISPLAY()
      if (shown_end_result && event == GUI_event_t::ENC_DN
          && ((buttons[0].IsEnabled() && buttons[0].IsFocused()) || (!buttons[0].IsEnabled() && buttons[1].IsFocused()))) {
-@@ -386,30 +472,118 @@ void screen_printing_data_t::windowEvent(window_t *sender, GUI_event_t event, vo
+@@ -375,41 +461,129 @@ void screen_printing_data_t::windowEvent(window_t *sender, GUI_event_t event, vo
+         return;
+     }
+ 
+-    if (!showing_end_result) {
+-        ScreenPrintingModel::windowEvent(sender, event, param);
+-    }
++//    if (!showing_end_result) {
++//        ScreenPrintingModel::windowEvent(sender, event, param);
++//    }
+ #else
+-    ScreenPrintingModel::windowEvent(sender, event, param);
++//    ScreenPrintingModel::windowEvent(sender, event, param);
+ #endif
+ }
+ 
  #if HAS_LARGE_DISPLAY()
  void screen_printing_data_t::start_showing_end_result() {
  
