@@ -1,5 +1,5 @@
 diff --git a/src/gui/ScreenPrintingModel.hpp b/src/gui/ScreenPrintingModel.hpp
-index 52d667d6f3dd01ff7e9eb3f926ab74696639b02c..0769a1fef6097867f6ca907edcc06ef9486c2752 100644
+index 52d667d6f3dd01ff7e9eb3f926ab74696639b02c..343d8de6d00b00fbd2ff1d3c0af960012c0b8731 100644
 --- a/src/gui/ScreenPrintingModel.hpp
 +++ b/src/gui/ScreenPrintingModel.hpp
 @@ -28,6 +28,9 @@ protected:
@@ -12,13 +12,14 @@ index 52d667d6f3dd01ff7e9eb3f926ab74696639b02c..0769a1fef6097867f6ca907edcc06ef9
          _count,
          _last = _count - 1,
      };
-@@ -44,6 +47,9 @@ protected:
+@@ -44,6 +47,10 @@ protected:
          Home,
          Skip,
          Disconnect,
 +        Print_OK,
 +        Print_Failed,
 +        Bed_Clear,
++        Disabled,
          _count,
          _last = _count - 1,
      };
