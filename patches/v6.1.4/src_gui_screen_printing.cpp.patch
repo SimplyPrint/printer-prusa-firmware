@@ -1,5 +1,5 @@
 diff --git a/src/gui/screen_printing.cpp b/src/gui/screen_printing.cpp
-index 83e8b4be072ab21d4d770f8ea18303b9a947d88a..cf22ea02415f673a174b7525b093a5f8efbf9a95 100644
+index 83e8b4be072ab21d4d770f8ea18303b9a947d88a..5b4953b79fc797a552d615b5a354310a2bf3ef13 100644
 --- a/src/gui/screen_printing.cpp
 +++ b/src/gui/screen_printing.cpp
 @@ -19,6 +19,8 @@
@@ -136,7 +136,7 @@ index 83e8b4be072ab21d4d770f8ea18303b9a947d88a..cf22ea02415f673a174b7525b093a5f8
  }
  
  /******************************************************************************/
-@@ -140,47 +208,62 @@ constexpr size_t rotating_circles_left_offset { 0 };
+@@ -140,47 +208,61 @@ constexpr size_t rotating_circles_left_offset { 0 };
  constexpr Rect16 rotating_circles_rect { column_left + rotating_circles_left_offset, get_row(1) + height(etime_val_font) + 5, rotating_circles_width, rotating_circles_height };
  
  constexpr Rect16 end_result_body_rect { 0, row_0 - EndResultBody::extra_top_space, GuiDefaults::ScreenWidth, GuiDefaults::ScreenHeight - GuiDefaults::FooterHeight - row_0 };
@@ -207,7 +207,6 @@ index 83e8b4be072ab21d4d770f8ea18303b9a947d88a..cf22ea02415f673a174b7525b093a5f8
 +
  #endif // USE_<display>
  {
-+    GuiDefaults::ScreenWidth
      // we will handle HELD_RELEASED event in this window
 +    sp_bed_cleared_icon.Disable();
 +    sp_bed_cleared_icon.Unshadow();
@@ -225,7 +224,7 @@ index 83e8b4be072ab21d4d770f8ea18303b9a947d88a..cf22ea02415f673a174b7525b093a5f8
      strlcpy(text_filament.data(), "999m", text_filament.size());
  
  #if HAS_MINI_DISPLAY()
-@@ -217,7 +300,7 @@ screen_printing_data_t::screen_printing_data_t()
+@@ -217,7 +299,7 @@ screen_printing_data_t::screen_printing_data_t()
  
      strlcpy(text_filename.data(), GCodeInfo::getInstance().GetGcodeFilename(), text_filename.size());
      w_filename.set_font(Font::big);
@@ -234,7 +233,7 @@ index 83e8b4be072ab21d4d770f8ea18303b9a947d88a..cf22ea02415f673a174b7525b093a5f8
      w_filename.SetText(string_view_utf8::MakeRAM(text_filename.data()));
  
      w_etime_label.set_font(Font::small);
-@@ -322,18 +405,18 @@ void screen_printing_data_t::windowEvent(window_t *sender, GUI_event_t event, vo
+@@ -322,18 +404,18 @@ void screen_printing_data_t::windowEvent(window_t *sender, GUI_event_t event, vo
              string_view_utf8 txt;
              switch (*reason) {
              case MMU2::MaintenanceReason::Failures:
@@ -259,7 +258,7 @@ index 83e8b4be072ab21d4d770f8ea18303b9a947d88a..cf22ea02415f673a174b7525b093a5f8
                  break;
              }
  
-@@ -342,6 +425,10 @@ void screen_printing_data_t::windowEvent(window_t *sender, GUI_event_t event, vo
+@@ -342,6 +424,10 @@ void screen_printing_data_t::windowEvent(window_t *sender, GUI_event_t event, vo
      }
  #endif
  
@@ -270,7 +269,7 @@ index 83e8b4be072ab21d4d770f8ea18303b9a947d88a..cf22ea02415f673a174b7525b093a5f8
  #if HAS_LARGE_DISPLAY()
      if (shown_end_result && event == GUI_event_t::ENC_DN
          && ((buttons[0].IsEnabled() && buttons[0].IsFocused()) || (!buttons[0].IsEnabled() && buttons[1].IsFocused()))) {
-@@ -375,41 +462,129 @@ void screen_printing_data_t::windowEvent(window_t *sender, GUI_event_t event, vo
+@@ -375,41 +461,129 @@ void screen_printing_data_t::windowEvent(window_t *sender, GUI_event_t event, vo
          return;
      }
  
@@ -415,7 +414,7 @@ index 83e8b4be072ab21d4d770f8ea18303b9a947d88a..cf22ea02415f673a174b7525b093a5f8
      // show previous
      for (auto &button : buttons) {
          button.Show();
-@@ -560,6 +735,12 @@ void screen_printing_data_t::set_pause_icon_and_label() {
+@@ -560,6 +734,12 @@ void screen_printing_data_t::set_pause_icon_and_label() {
      case printing_state_t::COUNT:
      case printing_state_t::INITIAL:
      case printing_state_t::PRINTING:
@@ -428,7 +427,7 @@ index 83e8b4be072ab21d4d770f8ea18303b9a947d88a..cf22ea02415f673a174b7525b093a5f8
      case printing_state_t::MBL_FAILED:
          EnableButton(BtnSocket::Middle);
          SetButtonIconAndLabel(BtnSocket::Middle, BtnRes::Pause, LabelRes::Pause);
-@@ -669,93 +850,93 @@ void screen_printing_data_t::change_print_state() {
+@@ -669,93 +849,93 @@ void screen_printing_data_t::change_print_state() {
      printing_state_t st = printing_state_t::COUNT;
  
      switch (marlin_vars()->print_state) {
