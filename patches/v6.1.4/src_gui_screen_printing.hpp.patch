@@ -1,22 +1,15 @@
 diff --git a/src/gui/screen_printing.hpp b/src/gui/screen_printing.hpp
-index 0714477bf4858eddd62ce262edda514e40190481..20fd040032089481b6262345eb42dc62fa300f6c 100644
+index 0714477bf4858eddd62ce262edda514e40190481..bb3493927cc3738eed1013ed1ed2589e2c4fc81d 100644
 --- a/src/gui/screen_printing.hpp
 +++ b/src/gui/screen_printing.hpp
-@@ -15,6 +15,8 @@
- #include <array>
- #include <window_progress.hpp>
- #include "screen_printing_end_result.hpp"
-+#include "screen_sp_bed_cleared.hpp"
-+#include "screen_sp_print_result.hpp"
- 
- enum class printing_state_t : uint8_t {
-     INITIAL,
-@@ -105,6 +107,16 @@ class screen_printing_data_t : public ScreenPrintingModel {
+@@ -105,6 +105,18 @@ class screen_printing_data_t : public ScreenPrintingModel {
      EndResultBody::DateBufferT w_etime_value_buffer;
      EndResultBody end_result_body;
  
-+    SPBedClearedScreen sp_bed_cleared_body;
-+    SPPrintResultScreen sp_print_result_body;
++//    SPBedClearedScreen sp_bed_cleared_body;
++//    SPPrintResultScreen sp_print_result_body;
++    window_icon_t sp_bed_cleared_icon;
++    window_icon_t sp_print_finished_icon;
 +
 +    enum class EndScreenState{
 +        end_screen,
@@ -28,12 +21,7 @@ index 0714477bf4858eddd62ce262edda514e40190481..20fd040032089481b6262345eb42dc62
      enum class CurrentlyShowing {
          remaining_time, // time until end of print
          end_time, // 'date' of end of print
-@@ -134,10 +146,11 @@ private:
- #endif
-     void screen_printing_reprint();
-     void set_pause_icon_and_label();
-+    void screen_printing_start_next_queue();
-+    void screen_printing_clear_bed();
+@@ -137,7 +149,6 @@ private:
      void set_tune_icon_and_label();
      void set_stop_icon_and_label();
      void change_print_state();
