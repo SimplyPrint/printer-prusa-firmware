@@ -1,5 +1,5 @@
 diff --git a/src/gui/screen_printing.cpp b/src/gui/screen_printing.cpp
-index 83e8b4be072ab21d4d770f8ea18303b9a947d88a..ec6c76dfa872a21d1869869dfda3c566fb62421a 100644
+index 83e8b4be072ab21d4d770f8ea18303b9a947d88a..166ba7f0d0356fa4b7bd540aa860ef9de2764541 100644
 --- a/src/gui/screen_printing.cpp
 +++ b/src/gui/screen_printing.cpp
 @@ -19,6 +19,8 @@
@@ -136,14 +136,14 @@ index 83e8b4be072ab21d4d770f8ea18303b9a947d88a..ec6c76dfa872a21d1869869dfda3c566
  }
  
  /******************************************************************************/
-@@ -140,47 +208,63 @@ constexpr size_t rotating_circles_left_offset { 0 };
+@@ -140,47 +208,62 @@ constexpr size_t rotating_circles_left_offset { 0 };
  constexpr Rect16 rotating_circles_rect { column_left + rotating_circles_left_offset, get_row(1) + height(etime_val_font) + 5, rotating_circles_width, rotating_circles_height };
  
  constexpr Rect16 end_result_body_rect { 0, row_0 - EndResultBody::extra_top_space, GuiDefaults::ScreenWidth, GuiDefaults::ScreenHeight - GuiDefaults::FooterHeight - row_0 };
-+constexpr Rect16 sp_rect { 0, 0, GuiDefaults::ScreenWidth, GuiDefaults::ScreenHeight - GuiDefaults::FooterHeight  - row_0 };
-+
- #endif
+-#endif
++constexpr Rect16 sp_rect { 0, 10, GuiDefaults::ScreenWidth, GuiDefaults::ScreenHeight - GuiDefaults::FooterHeight 10 - row_0 };
  
++#endif
  } // namespace
  
  screen_printing_data_t::screen_printing_data_t()
@@ -200,8 +200,8 @@ index 83e8b4be072ab21d4d770f8ea18303b9a947d88a..ec6c76dfa872a21d1869869dfda3c566
 -    , end_result_body(this, end_result_body_rect) // safe to pass even if order changes because EndScreen constructor doesn't use it (therefore guaranteed to be valid)
 +, popup_rect(Rect16(30, get_row(0), 250, 70)) // Rect for printing messages from marlin.
 +, end_result_body(this, end_result_body_rect) // safe to pass even if order changes because EndScreen constructor doesn't use it (therefore guaranteed to be valid)
-+, sp_bed_cleared_icon(this, sp_rect, &img::serial_printing_172x138)
-+, sp_print_finished_icon(this, sp_rect, &img::serial_printing_172x138)
++, sp_bed_cleared_icon(this, sp_rect, &img::sp_bed_cleared)
++, sp_print_finished_icon(this, sp_rect, &img::sp_print_finished)
 +
 +//Rect16((display::GetW() - img::serial_printing_172x138.w) / 2, GuiDefaults::RectScreenBody.Top(), img::serial_printing_172x138.w, img::serial_printing_172x138.h)
 +
@@ -225,7 +225,7 @@ index 83e8b4be072ab21d4d770f8ea18303b9a947d88a..ec6c76dfa872a21d1869869dfda3c566
      strlcpy(text_filament.data(), "999m", text_filament.size());
  
  #if HAS_MINI_DISPLAY()
-@@ -217,7 +301,7 @@ screen_printing_data_t::screen_printing_data_t()
+@@ -217,7 +300,7 @@ screen_printing_data_t::screen_printing_data_t()
  
      strlcpy(text_filename.data(), GCodeInfo::getInstance().GetGcodeFilename(), text_filename.size());
      w_filename.set_font(Font::big);
@@ -234,7 +234,7 @@ index 83e8b4be072ab21d4d770f8ea18303b9a947d88a..ec6c76dfa872a21d1869869dfda3c566
      w_filename.SetText(string_view_utf8::MakeRAM(text_filename.data()));
  
      w_etime_label.set_font(Font::small);
-@@ -322,18 +406,18 @@ void screen_printing_data_t::windowEvent(window_t *sender, GUI_event_t event, vo
+@@ -322,18 +405,18 @@ void screen_printing_data_t::windowEvent(window_t *sender, GUI_event_t event, vo
              string_view_utf8 txt;
              switch (*reason) {
              case MMU2::MaintenanceReason::Failures:
@@ -259,7 +259,7 @@ index 83e8b4be072ab21d4d770f8ea18303b9a947d88a..ec6c76dfa872a21d1869869dfda3c566
                  break;
              }
  
-@@ -342,6 +426,10 @@ void screen_printing_data_t::windowEvent(window_t *sender, GUI_event_t event, vo
+@@ -342,6 +425,10 @@ void screen_printing_data_t::windowEvent(window_t *sender, GUI_event_t event, vo
      }
  #endif
  
@@ -270,7 +270,7 @@ index 83e8b4be072ab21d4d770f8ea18303b9a947d88a..ec6c76dfa872a21d1869869dfda3c566
  #if HAS_LARGE_DISPLAY()
      if (shown_end_result && event == GUI_event_t::ENC_DN
          && ((buttons[0].IsEnabled() && buttons[0].IsFocused()) || (!buttons[0].IsEnabled() && buttons[1].IsFocused()))) {
-@@ -375,41 +463,129 @@ void screen_printing_data_t::windowEvent(window_t *sender, GUI_event_t event, vo
+@@ -375,41 +462,129 @@ void screen_printing_data_t::windowEvent(window_t *sender, GUI_event_t event, vo
          return;
      }
  
@@ -328,12 +328,12 @@ index 83e8b4be072ab21d4d770f8ea18303b9a947d88a..ec6c76dfa872a21d1869869dfda3c566
 +            DisableButton(BtnSocket::Left);
 +            EnableButton(BtnSocket::Middle);
 +            EnableButton(BtnSocket::Right);
-+
-+            end_result_body.Show();
-+            CaptureNormalWindow(end_result_body);
  
 -    end_result_body.Show();
 -    CaptureNormalWindow(end_result_body);
++            end_result_body.Show();
++            CaptureNormalWindow(end_result_body);
++
 +
 +            break;
 +        case EndScreenState::bed_cleared_screen:
@@ -415,7 +415,7 @@ index 83e8b4be072ab21d4d770f8ea18303b9a947d88a..ec6c76dfa872a21d1869869dfda3c566
      // show previous
      for (auto &button : buttons) {
          button.Show();
-@@ -560,6 +736,12 @@ void screen_printing_data_t::set_pause_icon_and_label() {
+@@ -560,6 +735,12 @@ void screen_printing_data_t::set_pause_icon_and_label() {
      case printing_state_t::COUNT:
      case printing_state_t::INITIAL:
      case printing_state_t::PRINTING:
@@ -428,7 +428,7 @@ index 83e8b4be072ab21d4d770f8ea18303b9a947d88a..ec6c76dfa872a21d1869869dfda3c566
      case printing_state_t::MBL_FAILED:
          EnableButton(BtnSocket::Middle);
          SetButtonIconAndLabel(BtnSocket::Middle, BtnRes::Pause, LabelRes::Pause);
-@@ -669,93 +851,93 @@ void screen_printing_data_t::change_print_state() {
+@@ -669,93 +850,93 @@ void screen_printing_data_t::change_print_state() {
      printing_state_t st = printing_state_t::COUNT;
  
      switch (marlin_vars()->print_state) {
