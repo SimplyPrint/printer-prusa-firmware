@@ -1,5 +1,5 @@
 diff --git a/src/gui/screen_printing.cpp b/src/gui/screen_printing.cpp
-index 83e8b4be072ab21d4d770f8ea18303b9a947d88a..9251776a0a53321f8eb92008662e7ca69a6ed8a5 100644
+index 83e8b4be072ab21d4d770f8ea18303b9a947d88a..ec6c76dfa872a21d1869869dfda3c566fb62421a 100644
 --- a/src/gui/screen_printing.cpp
 +++ b/src/gui/screen_printing.cpp
 @@ -19,6 +19,8 @@
@@ -263,7 +263,7 @@ index 83e8b4be072ab21d4d770f8ea18303b9a947d88a..9251776a0a53321f8eb92008662e7ca6
      }
  #endif
  
-+if (!showing_end_result) {
++if (end_screen_state != EndScreenState::end_screen || !showing_end_result) {
 +    ScreenPrintingModel::windowEvent(sender, event, param);
 +}
 +
