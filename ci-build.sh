@@ -1,4 +1,7 @@
 #!/bin/bash
+
+source /venv/bin/activate
+
 ./local_build.sh $1
 
 input=$1
