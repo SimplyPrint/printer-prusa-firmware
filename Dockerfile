@@ -14,9 +14,6 @@ RUN bash -c "source venv/bin/activate \
 
 RUN mkdir /app
 COPY Prusa-Firmware-Buddy/ /app/Prusa-Firmware-Buddy
-COPY patches /app/patches
-COPY scripts /app/scripts
-COPY *.sh /app
 
 WORKDIR /app
 

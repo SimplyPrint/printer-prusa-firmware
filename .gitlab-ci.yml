@@ -13,7 +13,6 @@ build-job:
   stage: build
   image: registry.gitlab.rylanswebsite.com/rylan-meilutis/prusa-firmware-patches:latest
   script:
-    - cd /app
     - bash ci-build.sh v6.1.4
   tags: [ "docker_build" ]
 
