@@ -1,5 +1,5 @@
 diff --git a/src/gui/screen_printing.cpp b/src/gui/screen_printing.cpp
-index 83e8b4be072ab21d4d770f8ea18303b9a947d88a..61c9463b4137deb8d216e2f9451afe96e9a7d3af 100644
+index 83e8b4be072ab21d4d770f8ea18303b9a947d88a..6d713dd35612bcd406d688435a418eae99e8e4c9 100644
 --- a/src/gui/screen_printing.cpp
 +++ b/src/gui/screen_printing.cpp
 @@ -19,6 +19,8 @@
@@ -36,7 +36,7 @@ index 83e8b4be072ab21d4d770f8ea18303b9a947d88a..61c9463b4137deb8d216e2f9451afe96
  printing_state_t screen_printing_data_t::GetState() const {
      return state__readonly__use_change_print_state;
  }
-@@ -45,21 +60,61 @@ void screen_printing_data_t::tuneAction() {
+@@ -45,21 +60,62 @@ void screen_printing_data_t::tuneAction() {
      if (buttons[ftrstd::to_underlying(BtnSocket::Left)].IsShadowed()) {
          return;
      }
@@ -76,6 +76,7 @@ index 83e8b4be072ab21d4d770f8ea18303b9a947d88a..61c9463b4137deb8d216e2f9451afe96
 +            SetButtonVisible(BtnSocket::Left, true);
 +            SetButtonVisible(BtnSocket::Middle, true);
 +            SetButtonVisible(BtnSocket::Right, true);
++            was_network_print = false;
 +            marlin_client::print_exit();
 +            return;
 +        default:
@@ -105,7 +106,7 @@ index 83e8b4be072ab21d4d770f8ea18303b9a947d88a..61c9463b4137deb8d216e2f9451afe96
      switch (GetState()) {
      case printing_state_t::PRINTING:
          marlin_client::print_pause();
-@@ -75,6 +130,7 @@ void screen_printing_data_t::pauseAction() {
+@@ -75,6 +131,7 @@ void screen_printing_data_t::pauseAction() {
          break;
      case printing_state_t::STOPPED:
      case printing_state_t::PRINTED:
@@ -113,7 +114,7 @@ index 83e8b4be072ab21d4d770f8ea18303b9a947d88a..61c9463b4137deb8d216e2f9451afe96
          screen_printing_reprint();
          change_print_state();
          break;
-@@ -83,13 +139,38 @@ void screen_printing_data_t::pauseAction() {
+@@ -83,13 +140,40 @@ void screen_printing_data_t::pauseAction() {
      }
  }
  
@@ -149,10 +150,12 @@ index 83e8b4be072ab21d4d770f8ea18303b9a947d88a..61c9463b4137deb8d216e2f9451afe96
 +        SetButtonVisible(BtnSocket::Left, true);
 +        SetButtonVisible(BtnSocket::Middle, true);
 +        SetButtonVisible(BtnSocket::Right, true);
++        was_network_print = false;
++
          marlin_client::print_exit();
          return;
      case printing_state_t::PAUSING:
-@@ -107,6 +188,7 @@ void screen_printing_data_t::stopAction() {
+@@ -107,6 +191,7 @@ void screen_printing_data_t::stopAction() {
          }
      }
      }
@@ -160,7 +163,7 @@ index 83e8b4be072ab21d4d770f8ea18303b9a947d88a..61c9463b4137deb8d216e2f9451afe96
  }
  
  /******************************************************************************/
-@@ -138,49 +220,63 @@ constexpr size_t rotating_circles_height { 5 };
+@@ -138,49 +223,63 @@ constexpr size_t rotating_circles_height { 5 };
  constexpr size_t rotating_circles_width { 35 };
  constexpr size_t rotating_circles_left_offset { 0 };
  constexpr Rect16 rotating_circles_rect { column_left + rotating_circles_left_offset, get_row(1) + height(etime_val_font) + 5, rotating_circles_width, rotating_circles_height };
@@ -240,7 +243,7 @@ index 83e8b4be072ab21d4d770f8ea18303b9a947d88a..61c9463b4137deb8d216e2f9451afe96
 +    sp_print_finished_icon.Disable();
 +    sp_print_finished_icon.Unshadow();
 +    sp_print_finished_icon.Hide();
-+
++    was_network_print = false;
 +    EnableButton(BtnSocket::Left);
 +    EnableButton(BtnSocket::Middle);
 +    EnableButton(BtnSocket::Right);
@@ -250,7 +253,7 @@ index 83e8b4be072ab21d4d770f8ea18303b9a947d88a..61c9463b4137deb8d216e2f9451afe96
      strlcpy(text_filament.data(), "999m", text_filament.size());
  
  #if HAS_MINI_DISPLAY()
-@@ -217,7 +313,7 @@ screen_printing_data_t::screen_printing_data_t()
+@@ -217,7 +316,7 @@ screen_printing_data_t::screen_printing_data_t()
  
      strlcpy(text_filename.data(), GCodeInfo::getInstance().GetGcodeFilename(), text_filename.size());
      w_filename.set_font(Font::big);
@@ -259,7 +262,7 @@ index 83e8b4be072ab21d4d770f8ea18303b9a947d88a..61c9463b4137deb8d216e2f9451afe96
      w_filename.SetText(string_view_utf8::MakeRAM(text_filename.data()));
  
      w_etime_label.set_font(Font::small);
-@@ -262,6 +358,12 @@ void screen_printing_data_t::windowEvent(window_t *sender, GUI_event_t event, vo
+@@ -262,6 +361,14 @@ void screen_printing_data_t::windowEvent(window_t *sender, GUI_event_t event, vo
  
      /// -- close screen when print is done / stopped and USB media is removed
      if (!marlin_vars()->media_inserted && (p_state == printing_state_t::PRINTED || p_state == printing_state_t::STOPPED)) {
@@ -269,10 +272,12 @@ index 83e8b4be072ab21d4d770f8ea18303b9a947d88a..61c9463b4137deb8d216e2f9451afe96
 +        SetButtonVisible(BtnSocket::Left, true);
 +        SetButtonVisible(BtnSocket::Middle, true);
 +        SetButtonVisible(BtnSocket::Right, true);
++        was_network_print = false;
++
          marlin_client::print_exit();
          return;
      }
-@@ -322,18 +424,18 @@ void screen_printing_data_t::windowEvent(window_t *sender, GUI_event_t event, vo
+@@ -322,18 +429,18 @@ void screen_printing_data_t::windowEvent(window_t *sender, GUI_event_t event, vo
              string_view_utf8 txt;
              switch (*reason) {
              case MMU2::MaintenanceReason::Failures:
@@ -297,7 +302,7 @@ index 83e8b4be072ab21d4d770f8ea18303b9a947d88a..61c9463b4137deb8d216e2f9451afe96
                  break;
              }
  
-@@ -342,6 +444,9 @@ void screen_printing_data_t::windowEvent(window_t *sender, GUI_event_t event, vo
+@@ -342,6 +449,9 @@ void screen_printing_data_t::windowEvent(window_t *sender, GUI_event_t event, vo
      }
  #endif
  
@@ -307,7 +312,7 @@ index 83e8b4be072ab21d4d770f8ea18303b9a947d88a..61c9463b4137deb8d216e2f9451afe96
  #if HAS_LARGE_DISPLAY()
      if (shown_end_result && event == GUI_event_t::ENC_DN
          && ((buttons[0].IsEnabled() && buttons[0].IsFocused()) || (!buttons[0].IsEnabled() && buttons[1].IsFocused()))) {
-@@ -375,41 +480,118 @@ void screen_printing_data_t::windowEvent(window_t *sender, GUI_event_t event, vo
+@@ -375,41 +485,132 @@ void screen_printing_data_t::windowEvent(window_t *sender, GUI_event_t event, vo
          return;
      }
  
@@ -342,17 +347,16 @@ index 83e8b4be072ab21d4d770f8ea18303b9a947d88a..61c9463b4137deb8d216e2f9451afe96
  
 +    /*DEBUGGING REMOVE FOR PROD*/
 +    /********************************************/
-+    connect_client::is_print_network = true;
++//    connect_client::is_print_network = true;
 +    /********************************************/
 +
      // show end result
 +    if (connect_client::is_print_network){
 +        connect_client::is_print_network = false;
++        was_network_print = true;
 +        end_screen_state = EndScreenState::print_result_screen;
 +    }
- 
--    end_result_body.Show();
--    CaptureNormalWindow(end_result_body);
++
 +    switch (end_screen_state) {
 +        case EndScreenState::end_screen:
 +             // hide previous
@@ -370,15 +374,24 @@ index 83e8b4be072ab21d4d770f8ea18303b9a947d88a..61c9463b4137deb8d216e2f9451afe96
 +            ResetButtonRect(BtnSocket::Middle);
 +            ResetButtonRect(BtnSocket::Right);
 +            SetButtonIconAndLabel(BtnSocket::Middle, BtnRes::Reprint, LabelRes::Reprint);
-+            SetButtonIconAndLabel(BtnSocket::Left, BtnRes::Next_Queue_Item, LabelRes::Next_Queue_Item);
++            if (was_network_print){
++                EnableButton(BtnSocket::Left);
++                SetButtonIconAndLabel(BtnSocket::Left, BtnRes::Next_Queue_Item, LabelRes::Next_Queue_Item);
++            }
++            else{
++                DisableButton(BtnSocket::Left);
++                SetButtonIconAndLabel(BtnSocket::Left, BtnRes::Settings, LabelRes::Settings);
++
++            }
 +            SetButtonIconAndLabel(BtnSocket::Right, BtnRes::Home, LabelRes::Home);
-+            EnableButton(BtnSocket::Left);
 +            EnableButton(BtnSocket::Middle);
 +            EnableButton(BtnSocket::Right);
 +
 +            end_result_body.Show();
 +            CaptureNormalWindow(end_result_body);
-+
+ 
+-    end_result_body.Show();
+-    CaptureNormalWindow(end_result_body);
 +
 +            break;
 +
@@ -415,9 +428,15 @@ index 83e8b4be072ab21d4d770f8ea18303b9a947d88a..61c9463b4137deb8d216e2f9451afe96
 +            ResetButtonRect(BtnSocket::Right);
 +            sp_print_finished_icon.Hide();
 +            SetButtonIconAndLabel(BtnSocket::Middle, BtnRes::Reprint, LabelRes::Reprint);
-+            SetButtonIconAndLabel(BtnSocket::Left, BtnRes::Next_Queue_Item, LabelRes::Next_Queue_Item);
-+            SetButtonIconAndLabel(BtnSocket::Right, BtnRes::Home, LabelRes::Home);
-+            EnableButton(BtnSocket::Left);
++            if (was_network_print){
++                EnableButton(BtnSocket::Left);
++                SetButtonIconAndLabel(BtnSocket::Left, BtnRes::Next_Queue_Item, LabelRes::Next_Queue_Item);
++            }
++            else{
++                DisableButton(BtnSocket::Left);
++                SetButtonIconAndLabel(BtnSocket::Left, BtnRes::Settings, LabelRes::Settings);
++
++            }
 +            EnableButton(BtnSocket::Middle);
 +            EnableButton(BtnSocket::Right);
 +            break;
@@ -442,7 +461,7 @@ index 83e8b4be072ab21d4d770f8ea18303b9a947d88a..61c9463b4137deb8d216e2f9451afe96
      // show previous
      for (auto &button : buttons) {
          button.Show();
-@@ -560,6 +742,12 @@ void screen_printing_data_t::set_pause_icon_and_label() {
+@@ -560,6 +761,12 @@ void screen_printing_data_t::set_pause_icon_and_label() {
      case printing_state_t::COUNT:
      case printing_state_t::INITIAL:
      case printing_state_t::PRINTING:
@@ -455,7 +474,7 @@ index 83e8b4be072ab21d4d770f8ea18303b9a947d88a..61c9463b4137deb8d216e2f9451afe96
      case printing_state_t::MBL_FAILED:
          EnableButton(BtnSocket::Middle);
          SetButtonIconAndLabel(BtnSocket::Middle, BtnRes::Pause, LabelRes::Pause);
-@@ -669,93 +857,93 @@ void screen_printing_data_t::change_print_state() {
+@@ -669,93 +876,93 @@ void screen_printing_data_t::change_print_state() {
      printing_state_t st = printing_state_t::COUNT;
  
      switch (marlin_vars()->print_state) {
