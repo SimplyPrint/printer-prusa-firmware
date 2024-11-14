@@ -1,13 +1,21 @@
 diff --git a/src/gui/res/mini_used_imgs.txt b/src/gui/res/mini_used_imgs.txt
-index 47a0637ece8edb1580e85e8f1af524805e625dad..2204338ed6c3e8526466dddfe6a6a436db0966dc 100644
+index 47a0637ece8edb1580e85e8f1af524805e625dad..b6adf3f8f155eb1a5df9a3cbb87962385ef1cb32 100644
 --- a/src/gui/res/mini_used_imgs.txt
 +++ b/src/gui/res/mini_used_imgs.txt
-@@ -95,6 +95,8 @@ nozzle_shape_48x48.png
+@@ -95,6 +95,16 @@ nozzle_shape_48x48.png
  pepa_92x140.png
  pepa_42x64.png
  serial_printing_172x138.png
-+sp_bed_cleared.png
 +sp_print_finished.png
++sp_print_ok_disabled.png
++sp_print_ok_focused.png
++sp_print_ok.png
++sp_next_queue_item_disabled.png
++sp_next_queue_item_focused.png
++sp_next_queue_item.png
++sp_print_failed_disabled.png
++sp_print_failed_focused.png
++sp_print_failed.png
  settings_16x16.png
  sheets_profile_16x14.png
  spinner0_16x16.png

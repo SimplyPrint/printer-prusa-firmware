@@ -1,17 +1,15 @@
 diff --git a/src/gui/screen_printing.hpp b/src/gui/screen_printing.hpp
-index 0714477bf4858eddd62ce262edda514e40190481..fb73bd3bcafc79e7d20e9af6c129266c5c95e17b 100644
+index 0714477bf4858eddd62ce262edda514e40190481..af2bb1a62d36a28584560a8aa706f69cd5a052ae 100644
 --- a/src/gui/screen_printing.hpp
 +++ b/src/gui/screen_printing.hpp
-@@ -105,6 +105,16 @@ class screen_printing_data_t : public ScreenPrintingModel {
+@@ -105,6 +105,14 @@ class screen_printing_data_t : public ScreenPrintingModel {
      EndResultBody::DateBufferT w_etime_value_buffer;
      EndResultBody end_result_body;
  
-+    window_icon_t sp_bed_cleared_icon;
 +    window_icon_t sp_print_finished_icon;
 +
 +    enum class EndScreenState{
 +        end_screen,
-+        bed_cleared_screen,
 +        print_result_screen,
 +    };
 +    EndScreenState end_screen_state;
@@ -19,7 +17,7 @@ index 0714477bf4858eddd62ce262edda514e40190481..fb73bd3bcafc79e7d20e9af6c129266c
      enum class CurrentlyShowing {
          remaining_time, // time until end of print
          end_time, // 'date' of end of print
-@@ -137,7 +147,6 @@ private:
+@@ -137,7 +145,6 @@ private:
      void set_tune_icon_and_label();
      void set_stop_icon_and_label();
      void change_print_state();

@@ -1,14 +1,15 @@
 diff --git a/src/gui/resolution_480x320/screen_printing_layout.hpp b/src/gui/resolution_480x320/screen_printing_layout.hpp
-index 89c1c0e87095de9dcada65dd43ac61886cfc4c14..21a7e51ffb6c8671583eb80146fdf44f79e912e9 100644
+index 89c1c0e87095de9dcada65dd43ac61886cfc4c14..977930cf468971d3483b1bc339e7ec68762ff1d0 100644
 --- a/src/gui/resolution_480x320/screen_printing_layout.hpp
 +++ b/src/gui/resolution_480x320/screen_printing_layout.hpp
-@@ -14,5 +14,8 @@ inline constexpr WindowMultiIconButton::Pngs icon_resources[] = {
+@@ -14,5 +14,9 @@ inline constexpr WindowMultiIconButton::Pngs icon_resources[] = {
      { img::resume_80x80, img::resume_80x80_focused, img::resume_80x80_disabled },
      { img::home_80x80, img::home_80x80_focused, img::home_80x80_disabled },
      { img::reprint_80x80, img::reprint_80x80_focused, img::reprint_80x80_disabled },
 -    { img::disconnect_80x80, img::disconnect_80x80_focused, img::disconnect_80x80_disabled }
 +    { img::disconnect_80x80, img::disconnect_80x80_focused, img::disconnect_80x80_disabled },
-+    { img::resume_80x80, img::resume_80x80_focused, img::resume_80x80_disabled },
-+    { img::stop_80x80, img::stop_80x80_focused, img::stop_80x80_disabled },
-+    { img::home_80x80, img::home_80x80_focused, img::home_80x80_disabled }
++    { img::sp_print_ok, img::sp_print_ok_focused, img::sp_print_ok_disabled },
++    { img::sp_print_failed, img::sp_print_failed_focused, img::sp_print_failed_disabled },
++    { img::sp_next_queue_item, img::sp_next_queue_item_focused, img::sp_next_queue_item_disabled },
++
  };
