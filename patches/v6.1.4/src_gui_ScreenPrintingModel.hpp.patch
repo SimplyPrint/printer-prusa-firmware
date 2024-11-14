@@ -1,5 +1,5 @@
 diff --git a/src/gui/ScreenPrintingModel.hpp b/src/gui/ScreenPrintingModel.hpp
-index 52d667d6f3dd01ff7e9eb3f926ab74696639b02c..b3ffc4819ea6d33f60c99fdb536f287f7d3a4a28 100644
+index 52d667d6f3dd01ff7e9eb3f926ab74696639b02c..3248270fa33689eb08293720a9e9df6e71212e4f 100644
 --- a/src/gui/ScreenPrintingModel.hpp
 +++ b/src/gui/ScreenPrintingModel.hpp
 @@ -28,6 +28,9 @@ protected:
@@ -24,13 +24,14 @@ index 52d667d6f3dd01ff7e9eb3f926ab74696639b02c..b3ffc4819ea6d33f60c99fdb536f287f
          _count,
          _last = _count - 1,
      };
-@@ -58,7 +66,11 @@ protected:
+@@ -58,7 +66,12 @@ protected:
      void SetButtonLabel(BtnSocket btn, LabelRes res);
      void DisableButton(BtnSocket btn);
      void EnableButton(BtnSocket btn);
 +    void SetButtonVisible(BtnSocket btn, bool visible);
 +    void SetButtonRect(BtnSocket btn, Rect16 rect);
 +    void ResetButtonRect(BtnSocket btn);
++    void SetLabelVisible(BtnSocket idx, bool visible);
  
  public:
      ScreenPrintingModel(string_view_utf8 caption);

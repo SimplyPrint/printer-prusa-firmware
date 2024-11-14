@@ -1,5 +1,5 @@
 diff --git a/src/gui/ScreenPrintingModel.cpp b/src/gui/ScreenPrintingModel.cpp
-index 47dd8eb774c168a83f7ba5e78e03e5c67d4e941d..d268203e96e851a594979658b1dbe6e0c19634f7 100644
+index 47dd8eb774c168a83f7ba5e78e03e5c67d4e941d..0cdc124c40e05db33a3ec63ef77012bc5a27f5e0 100644
 --- a/src/gui/ScreenPrintingModel.cpp
 +++ b/src/gui/ScreenPrintingModel.cpp
 @@ -7,41 +7,57 @@
@@ -48,7 +48,7 @@ index 47dd8eb774c168a83f7ba5e78e03e5c67d4e941d..d268203e96e851a594979658b1dbe6e0
 +            N_("Print OK"),
 +            N_("Print Failed"),
 +            N_(" "),
-+            N_("Next_Queue_Item"),
++            N_("Next Q Item"),
 +            N_("Disabled"),
 +    };
  } // namespace
@@ -100,7 +100,7 @@ index 47dd8eb774c168a83f7ba5e78e03e5c67d4e941d..d268203e96e851a594979658b1dbe6e0
  }
  
  void ScreenPrintingModel::SetButtonIconAndLabel(BtnSocket idx, BtnRes ico_res, LabelRes txt_res) {
-@@ -107,3 +124,60 @@ void ScreenPrintingModel::EnableButton(BtnSocket idx) {
+@@ -107,3 +124,36 @@ void ScreenPrintingModel::EnableButton(BtnSocket idx) {
      buttons[btn_idx].Enable();
      buttons[btn_idx].Invalidate();
  }
@@ -119,6 +119,15 @@ index 47dd8eb774c168a83f7ba5e78e03e5c67d4e941d..d268203e96e851a594979658b1dbe6e0
 +    }
 +}
 +
++void ScreenPrintingModel::SetLabelVisible(BtnSocket idx, bool visible){
++    const size_t btn_idx = ftrstd::to_underlying(idx);
++    if (visible) {
++        labels[btn_idx].Show();
++    } else {
++        labels[btn_idx].Hide();
++    }
++}
++
 +
 +void ScreenPrintingModel::ResetButtonRect(BtnSocket idx) {
 +    SetButtonRect(idx, GetButtonRect(ftrstd::to_underlying(idx)));
@@ -126,39 +135,6 @@ index 47dd8eb774c168a83f7ba5e78e03e5c67d4e941d..d268203e96e851a594979658b1dbe6e0
 +
 +void ScreenPrintingModel::SetButtonRect(BtnSocket idx, Rect16 rect) {
 +    const size_t btn_idx = ftrstd::to_underlying(idx);
-+
-+//    bool isFocused = buttons[btn_idx].IsFocused();
-+    bool isShadowed = buttons[btn_idx].IsShadowed();
-+    bool isEnabled = buttons[btn_idx].IsEnabled();
-+    ButtonCallback cb;
-+    switch (idx) {
-+        case BtnSocket::Left:
-+            cb = [this](window_t &) { tuneAction(); };
-+            break;
-+        case BtnSocket::Middle:
-+            cb = [this](window_t &) { PauseAction(); };
-+            break;
-+        case BtnSocket::Right:
-+            cb = [this](window_t &) { StopAction(); };
-+            break;
-+        default:
-+            return;
-+    }
-+    buttons[btn_idx].Hide();
-+    buttons[btn_idx].Disable();
-+    buttons[btn_idx] = WindowMultiIconButton(this, rect, &icon_resources[ftrstd::to_underlying(BtnRes::Settings)], cb);
-+//    buttons[btn_idx].ResetFocusedWindow();
-+//    if (isFocused) {
-+//        buttons[btn_idx].SetFocus();
-+//    }
-+    if (isShadowed) {
-+        buttons[btn_idx].Shadow();
-+    }
-+    if (isEnabled) {
-+        buttons[btn_idx].Enable();
-+    } else {
-+        buttons[btn_idx].Disable();
-+        buttons[btn_idx].SetFocus();
-+    }
++    buttons[btn_idx].SetRect(rect);
 +}
 \ No newline at end of file
