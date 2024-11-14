@@ -1,5 +1,5 @@
 diff --git a/src/gui/screen_printing.cpp b/src/gui/screen_printing.cpp
-index 83e8b4be072ab21d4d770f8ea18303b9a947d88a..f4bab016eb1218f12ef049e955395023d33af066 100644
+index 83e8b4be072ab21d4d770f8ea18303b9a947d88a..19923d792980a6e6d6e02f72b8f596d81b1efef3 100644
 --- a/src/gui/screen_printing.cpp
 +++ b/src/gui/screen_printing.cpp
 @@ -19,6 +19,8 @@
@@ -282,7 +282,7 @@ index 83e8b4be072ab21d4d770f8ea18303b9a947d88a..f4bab016eb1218f12ef049e955395023
  #if HAS_LARGE_DISPLAY()
      if (shown_end_result && event == GUI_event_t::ENC_DN
          && ((buttons[0].IsEnabled() && buttons[0].IsFocused()) || (!buttons[0].IsEnabled() && buttons[1].IsFocused()))) {
-@@ -375,41 +462,106 @@ void screen_printing_data_t::windowEvent(window_t *sender, GUI_event_t event, vo
+@@ -375,41 +462,113 @@ void screen_printing_data_t::windowEvent(window_t *sender, GUI_event_t event, vo
          return;
      }
  
@@ -315,6 +315,11 @@ index 83e8b4be072ab21d4d770f8ea18303b9a947d88a..f4bab016eb1218f12ef049e955395023
  
      hide_time_information(); // OK because currently we never show remaining time at the end
  
++    /*DEBUGGING REMOVE FOR PROD*/
++    /********************************************/
++    connect_client::is_print_network = true;
++    /********************************************/
++
      // show end result
 +    if (connect_client::is_print_network){
 +        connect_client::is_print_network = false;
@@ -355,9 +360,11 @@ index 83e8b4be072ab21d4d770f8ea18303b9a947d88a..f4bab016eb1218f12ef049e955395023
 +        case EndScreenState::print_result_screen:
 +            header.SetText(_("Print Result"));
 +            sp_print_finished_icon.Show();
-+            SetButtonVisible(BtnSocket::Middle, false);
-+            SetButtonRect(BtnSocket::Left, sp_big_button_l);
-+            SetButtonRect(BtnSocket::Right, sp_big_button_r);
++            DisableButton(BtnSocket::Left);
++//            SetButtonVisible(BtnSocket::Middle, false);
++
++//            SetButtonRect(BtnSocket::Left, sp_big_button_l);
++//            SetButtonRect(BtnSocket::Right, sp_big_button_r);
 +            SetButtonIconAndLabel(BtnSocket::Left, BtnRes::Print_OK, LabelRes::Print_OK);
 +            SetButtonIconAndLabel(BtnSocket::Right, BtnRes::Print_Failed, LabelRes::Print_Failed);
 +            EnableButton(BtnSocket::Left);
@@ -378,7 +385,6 @@ index 83e8b4be072ab21d4d770f8ea18303b9a947d88a..f4bab016eb1218f12ef049e955395023
 +            SetButtonVisible(BtnSocket::Middle, true);
 +            ResetButtonRect(BtnSocket::Middle);
 +            ResetButtonRect(BtnSocket::Right);
-+
 +            sp_print_finished_icon.Hide();
 +            SetButtonIconAndLabel(BtnSocket::Middle, BtnRes::Reprint, LabelRes::Reprint);
 +            SetButtonIconAndLabel(BtnSocket::Left, BtnRes::Next_Queue_Item, LabelRes::Next_Queue_Item);
@@ -391,9 +397,10 @@ index 83e8b4be072ab21d4d770f8ea18303b9a947d88a..f4bab016eb1218f12ef049e955395023
 +        case EndScreenState::print_result_screen:
 +            header.SetText(_("Print Result"));
 +            sp_print_finished_icon.Show();
++            EnableButton(BtnSocket::Left);
 +            SetButtonVisible(BtnSocket::Middle, false);
-+            SetButtonRect(BtnSocket::Left, sp_big_button_l);
-+            SetButtonRect(BtnSocket::Right, sp_big_button_r);
++//            SetButtonRect(BtnSocket::Left, sp_big_button_l);
++//            SetButtonRect(BtnSocket::Right, sp_big_button_r);
 +            SetButtonIconAndLabel(BtnSocket::Left, BtnRes::Print_OK, LabelRes::Print_OK);
 +            SetButtonIconAndLabel(BtnSocket::Right, BtnRes::Print_Failed, LabelRes::Print_Failed);
 +            EnableButton(BtnSocket::Left);
@@ -405,7 +412,7 @@ index 83e8b4be072ab21d4d770f8ea18303b9a947d88a..f4bab016eb1218f12ef049e955395023
      // show previous
      for (auto &button : buttons) {
          button.Show();
-@@ -437,6 +589,8 @@ void screen_printing_data_t::hide_end_result_fields() {
+@@ -437,6 +596,8 @@ void screen_printing_data_t::hide_end_result_fields() {
  void screen_printing_data_t::show_time_information() {
      w_etime_label.Show();
      w_etime_value.Show();
@@ -414,7 +421,7 @@ index 83e8b4be072ab21d4d770f8ea18303b9a947d88a..f4bab016eb1218f12ef049e955395023
  
  #if HAS_LARGE_DISPLAY()
      rotating_circles.Show();
-@@ -560,6 +714,12 @@ void screen_printing_data_t::set_pause_icon_and_label() {
+@@ -560,6 +721,12 @@ void screen_printing_data_t::set_pause_icon_and_label() {
      case printing_state_t::COUNT:
      case printing_state_t::INITIAL:
      case printing_state_t::PRINTING:
@@ -427,7 +434,7 @@ index 83e8b4be072ab21d4d770f8ea18303b9a947d88a..f4bab016eb1218f12ef049e955395023
      case printing_state_t::MBL_FAILED:
          EnableButton(BtnSocket::Middle);
          SetButtonIconAndLabel(BtnSocket::Middle, BtnRes::Pause, LabelRes::Pause);
-@@ -669,93 +829,93 @@ void screen_printing_data_t::change_print_state() {
+@@ -669,93 +836,93 @@ void screen_printing_data_t::change_print_state() {
      printing_state_t st = printing_state_t::COUNT;
  
      switch (marlin_vars()->print_state) {

@@ -1,5 +1,5 @@
 diff --git a/src/gui/ScreenPrintingModel.cpp b/src/gui/ScreenPrintingModel.cpp
-index 47dd8eb774c168a83f7ba5e78e03e5c67d4e941d..909a47d6f47a894993908b9e6a7b59ece9286430 100644
+index 47dd8eb774c168a83f7ba5e78e03e5c67d4e941d..d268203e96e851a594979658b1dbe6e0c19634f7 100644
 --- a/src/gui/ScreenPrintingModel.cpp
 +++ b/src/gui/ScreenPrintingModel.cpp
 @@ -7,41 +7,57 @@
@@ -100,7 +100,7 @@ index 47dd8eb774c168a83f7ba5e78e03e5c67d4e941d..909a47d6f47a894993908b9e6a7b59ec
  }
  
  void ScreenPrintingModel::SetButtonIconAndLabel(BtnSocket idx, BtnRes ico_res, LabelRes txt_res) {
-@@ -107,3 +124,56 @@ void ScreenPrintingModel::EnableButton(BtnSocket idx) {
+@@ -107,3 +124,60 @@ void ScreenPrintingModel::EnableButton(BtnSocket idx) {
      buttons[btn_idx].Enable();
      buttons[btn_idx].Invalidate();
  }
@@ -111,9 +111,11 @@ index 47dd8eb774c168a83f7ba5e78e03e5c67d4e941d..909a47d6f47a894993908b9e6a7b59ec
 +    if (visible) {
 +        EnableButton(idx);
 +        buttons[btn_idx].Show();
++        labels[btn_idx].Show();
 +    } else {
 +        DisableButton(idx);
 +        buttons[btn_idx].Hide();
++        labels[btn_idx].Hide();
 +    }
 +}
 +
@@ -142,8 +144,10 @@ index 47dd8eb774c168a83f7ba5e78e03e5c67d4e941d..909a47d6f47a894993908b9e6a7b59ec
 +        default:
 +            return;
 +    }
++    buttons[btn_idx].Hide();
++    buttons[btn_idx].Disable();
 +    buttons[btn_idx] = WindowMultiIconButton(this, rect, &icon_resources[ftrstd::to_underlying(BtnRes::Settings)], cb);
-+    buttons[btn_idx].ResetFocusedWindow();
++//    buttons[btn_idx].ResetFocusedWindow();
 +//    if (isFocused) {
 +//        buttons[btn_idx].SetFocus();
 +//    }
