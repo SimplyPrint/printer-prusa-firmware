@@ -1,0 +1,12 @@
+diff --git a/src/mmu2/mmu2_error_converter.cpp b/src/mmu2/mmu2_error_converter.cpp
+index 88e94d0761902826432540638d4127b1ae4c5a2d..0c8c15ed2de67d71f27406acebfb326e2fef770d 100644
+--- a/src/mmu2/mmu2_error_converter.cpp
++++ b/src/mmu2/mmu2_error_converter.cpp
+@@ -276,6 +276,7 @@ Buttons ButtonAvailable(ErrorCode ec) {
+     case ButtonOperations::ResetMMU:
+         return Buttons::ResetMMU;
+     case ButtonOperations::StopPrint:
++        SERIAL_ECHO_MSG("M118 A1 action:pause");
+         return Buttons::StopPrint;
+     case ButtonOperations::DisableMMU:
+         return Buttons::DisableMMU;
