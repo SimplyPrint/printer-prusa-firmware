@@ -1,5 +1,5 @@
 diff --git a/src/gui/screen_printing.cpp b/src/gui/screen_printing.cpp
-index 83e8b4be072ab21d4d770f8ea18303b9a947d88a..6d713dd35612bcd406d688435a418eae99e8e4c9 100644
+index 83e8b4be072ab21d4d770f8ea18303b9a947d88a..03e0771c95d0433b7c740d1d4bac81aa82753d7a 100644
 --- a/src/gui/screen_printing.cpp
 +++ b/src/gui/screen_printing.cpp
 @@ -19,6 +19,8 @@
@@ -262,7 +262,7 @@ index 83e8b4be072ab21d4d770f8ea18303b9a947d88a..6d713dd35612bcd406d688435a418eae
      w_filename.SetText(string_view_utf8::MakeRAM(text_filename.data()));
  
      w_etime_label.set_font(Font::small);
-@@ -262,6 +361,14 @@ void screen_printing_data_t::windowEvent(window_t *sender, GUI_event_t event, vo
+@@ -262,6 +361,15 @@ void screen_printing_data_t::windowEvent(window_t *sender, GUI_event_t event, vo
  
      /// -- close screen when print is done / stopped and USB media is removed
      if (!marlin_vars()->media_inserted && (p_state == printing_state_t::PRINTED || p_state == printing_state_t::STOPPED)) {
@@ -273,11 +273,12 @@ index 83e8b4be072ab21d4d770f8ea18303b9a947d88a..6d713dd35612bcd406d688435a418eae
 +        SetButtonVisible(BtnSocket::Middle, true);
 +        SetButtonVisible(BtnSocket::Right, true);
 +        was_network_print = false;
++        second_click_left = false;
 +
          marlin_client::print_exit();
          return;
      }
-@@ -322,18 +429,18 @@ void screen_printing_data_t::windowEvent(window_t *sender, GUI_event_t event, vo
+@@ -322,18 +430,18 @@ void screen_printing_data_t::windowEvent(window_t *sender, GUI_event_t event, vo
              string_view_utf8 txt;
              switch (*reason) {
              case MMU2::MaintenanceReason::Failures:
@@ -302,7 +303,7 @@ index 83e8b4be072ab21d4d770f8ea18303b9a947d88a..6d713dd35612bcd406d688435a418eae
                  break;
              }
  
-@@ -342,6 +449,9 @@ void screen_printing_data_t::windowEvent(window_t *sender, GUI_event_t event, vo
+@@ -342,10 +450,22 @@ void screen_printing_data_t::windowEvent(window_t *sender, GUI_event_t event, vo
      }
  #endif
  
@@ -310,9 +311,23 @@ index 83e8b4be072ab21d4d770f8ea18303b9a947d88a..6d713dd35612bcd406d688435a418eae
 +    ScreenPrintingModel::windowEvent(sender, event, param);
 +}
  #if HAS_LARGE_DISPLAY()
++    if (shown_end_result && event == GUI_event_t::ENC_UP){
++        second_click_left = false;
++    }
      if (shown_end_result && event == GUI_event_t::ENC_DN
          && ((buttons[0].IsEnabled() && buttons[0].IsFocused()) || (!buttons[0].IsEnabled() && buttons[1].IsFocused()))) {
-@@ -375,41 +485,132 @@ void screen_printing_data_t::windowEvent(window_t *sender, GUI_event_t event, vo
+-        start_showing_end_result();
++        if (second_click_left){
++            start_showing_end_result();
++            second_click_left = false;
++        }
++        else{
++            second_click_left = true;
++        }
+         return;
+     }
+ 
+@@ -375,41 +495,133 @@ void screen_printing_data_t::windowEvent(window_t *sender, GUI_event_t event, vo
          return;
      }
  
@@ -363,7 +378,9 @@ index 83e8b4be072ab21d4d770f8ea18303b9a947d88a..6d713dd35612bcd406d688435a418eae
 +            for (auto &button : buttons) {
 +                button.Hide();
 +            }
-+
+ 
+-    end_result_body.Show();
+-    CaptureNormalWindow(end_result_body);
 +            for (auto &label : labels) {
 +                label.Hide();
 +            }
@@ -389,9 +406,7 @@ index 83e8b4be072ab21d4d770f8ea18303b9a947d88a..6d713dd35612bcd406d688435a418eae
 +
 +            end_result_body.Show();
 +            CaptureNormalWindow(end_result_body);
- 
--    end_result_body.Show();
--    CaptureNormalWindow(end_result_body);
++
 +
 +            break;
 +
@@ -415,6 +430,7 @@ index 83e8b4be072ab21d4d770f8ea18303b9a947d88a..6d713dd35612bcd406d688435a418eae
  
      showing_end_result = true;
      shown_end_result = true;
++    second_click_left = false;
  }
  
  void screen_printing_data_t::stop_showing_end_result() {
@@ -461,7 +477,7 @@ index 83e8b4be072ab21d4d770f8ea18303b9a947d88a..6d713dd35612bcd406d688435a418eae
      // show previous
      for (auto &button : buttons) {
          button.Show();
-@@ -560,6 +761,12 @@ void screen_printing_data_t::set_pause_icon_and_label() {
+@@ -560,6 +772,12 @@ void screen_printing_data_t::set_pause_icon_and_label() {
      case printing_state_t::COUNT:
      case printing_state_t::INITIAL:
      case printing_state_t::PRINTING:
@@ -474,7 +490,7 @@ index 83e8b4be072ab21d4d770f8ea18303b9a947d88a..6d713dd35612bcd406d688435a418eae
      case printing_state_t::MBL_FAILED:
          EnableButton(BtnSocket::Middle);
          SetButtonIconAndLabel(BtnSocket::Middle, BtnRes::Pause, LabelRes::Pause);
-@@ -669,93 +876,93 @@ void screen_printing_data_t::change_print_state() {
+@@ -669,93 +887,93 @@ void screen_printing_data_t::change_print_state() {
      printing_state_t st = printing_state_t::COUNT;
  
      switch (marlin_vars()->print_state) {
