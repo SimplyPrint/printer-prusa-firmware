@@ -1,5 +1,5 @@
 diff --git a/src/gui/screen_printing_serial.hpp b/src/gui/screen_printing_serial.hpp
-index 493e2a5db7d70a0136e058c7321f114c57228384..4886d85370351b80aa12064c684c03253c951152 100644
+index 493e2a5db7d70a0136e058c7321f114c57228384..760b22d62b7e97476cefb943d62ca1a4c3238edb 100644
 --- a/src/gui/screen_printing_serial.hpp
 +++ b/src/gui/screen_printing_serial.hpp
 @@ -6,11 +6,12 @@
@@ -32,6 +32,6 @@ index 493e2a5db7d70a0136e058c7321f114c57228384..4886d85370351b80aa12064c684c0325
      virtual void pauseAction() override;
      virtual void tuneAction() override;
 +    window_term_t term; // Declare term object for message display
-+    term_buff_t<20, 8> term_buff;
++    term_buff_t<30, 8> term_buff; //20,8
 +    marlin_server::State last_state;
  };
