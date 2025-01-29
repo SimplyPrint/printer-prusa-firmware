@@ -1,5 +1,5 @@
 diff --git a/src/connect/connect.cpp b/src/connect/connect.cpp
-index 11f458c1000216b402a39bc7534708111cf36e18..7095b8e8f9f4214ecd91afe63304e3886b9acc37 100644
+index 11f458c1000216b402a39bc7534708111cf36e18..5f537897576d0eb61b64709e8c07c923ee35804e 100644
 --- a/src/connect/connect.cpp
 +++ b/src/connect/connect.cpp
 @@ -20,6 +20,8 @@
@@ -114,25 +114,25 @@ index 11f458c1000216b402a39bc7534708111cf36e18..7095b8e8f9f4214ecd91afe63304e388
  
 +int send_simplyprint(const std::string &data) {
 +    bool timeout = true;
-+    for (int i = 0; i < 10; i++) {
++    for (int i = 0; i < 100; i++) {
 +        if (sp_conn_ready) { // Use .load() for atomic reads
 +            sp_send_string = data;
 +            sp_conn_ready = false; // Use .store() for atomic writes
 +            timeout = false;
 +            break;
 +        }
-+        vTaskDelay(pdMS_TO_TICKS(1000)); // Delay for 1000 ms (1 second)
++        vTaskDelay(pdMS_TO_TICKS(100)); // Delay for 1000 ms (1 second)
 +    }
 +    if (timeout){
 +        return -1;
 +    }
 +    sp_data_to_send = true;
-+    for (int i = 0; i < 10; i++) {
++    for (int i = 0; i < 100; i++) {
 +        if (sp_conn_ready) {
 +            sp_conn_ready = false;
 +            return sp_conn_result;
 +        }
-+        vTaskDelay(pdMS_TO_TICKS(1000)); // Delay for 1000 ms (1 second)
++        vTaskDelay(pdMS_TO_TICKS(100)); // Delay for 1000 ms (1 second)
 +    }
 +    sp_conn_ready = false;
 +    return -1;
