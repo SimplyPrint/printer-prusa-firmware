@@ -1,5 +1,5 @@
 diff --git a/src/connect/connect.cpp b/src/connect/connect.cpp
-index 11f458c1000216b402a39bc7534708111cf36e18..d831dc1616879ced3a60d9e5843ba216f2f3805d 100644
+index 11f458c1000216b402a39bc7534708111cf36e18..7095b8e8f9f4214ecd91afe63304e3886b9acc37 100644
 --- a/src/connect/connect.cpp
 +++ b/src/connect/connect.cpp
 @@ -20,6 +20,8 @@
@@ -108,7 +108,7 @@ index 11f458c1000216b402a39bc7534708111cf36e18..d831dc1616879ced3a60d9e5843ba216
                  planner().command(command);
                  break;
              }
-@@ -621,6 +690,61 @@ CommResult Connect::prepare_connection(CachedFactory &conn_factory, const Printe
+@@ -621,6 +690,62 @@ CommResult Connect::prepare_connection(CachedFactory &conn_factory, const Printe
      return monostate {};
  }
  
@@ -119,6 +119,7 @@ index 11f458c1000216b402a39bc7534708111cf36e18..d831dc1616879ced3a60d9e5843ba216
 +            sp_send_string = data;
 +            sp_conn_ready = false; // Use .store() for atomic writes
 +            timeout = false;
++            break;
 +        }
 +        vTaskDelay(pdMS_TO_TICKS(1000)); // Delay for 1000 ms (1 second)
 +    }
@@ -170,7 +171,7 @@ index 11f458c1000216b402a39bc7534708111cf36e18..d831dc1616879ced3a60d9e5843ba216
  CommResult Connect::send_command(CachedFactory &conn_factory, const Printer::Config &config, Action &&action, optional<CommandId> background_command_id) {
      log_debug(connect, "Sending to connect");
      BasicRequest request(printer, config, action, background_command_id);
-@@ -794,8 +918,13 @@ void Connect::run() {
+@@ -794,8 +919,13 @@ void Connect::run() {
      log_debug(connect, "%s", "Connect client starts\n");
  
      CachedFactory conn_factory;
@@ -184,7 +185,7 @@ index 11f458c1000216b402a39bc7534708111cf36e18..d831dc1616879ced3a60d9e5843ba216
          auto reg_wanted = registration.load();
          auto reg_running = holds_alternative<Registrator>(guts);
          if (reg_wanted && reg_running) {
-@@ -819,6 +948,7 @@ void Connect::run() {
+@@ -819,6 +949,7 @@ void Connect::run() {
              const auto new_status = communicate(conn_factory);
              process_status(new_status, ConnectionStatus::Error);
          }
