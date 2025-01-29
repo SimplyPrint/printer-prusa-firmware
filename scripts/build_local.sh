@@ -45,7 +45,7 @@ done
 
 # Use the existing Pipenv environment
 export BUDDY_NO_VIRTUALENV=1
-pipenv run python utils/build.py --preset $presets --build-type release --final --build-dir "${ROOTDIR}/build" --generate-bbf --bootloader yes
+pipenv run python utils/build.py --preset $presets --build-type release --signing-key "${ROOTDIR}/firmware_signing_key.pem" --final --build-dir "${ROOTDIR}/build" --generate-bbf --bootloader yes
 
 if [ $? -eq 0 ]; then
   cd "${ROOTDIR}"
