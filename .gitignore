@@ -1,3 +1,4 @@
 build/
 Prusa*/
 new_patches/
+firmware_signing_key.pem
