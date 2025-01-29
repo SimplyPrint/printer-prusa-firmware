@@ -1,0 +1,12 @@
+diff --git a/src/common/CMakeLists.txt b/src/common/CMakeLists.txt
+index 336385cdf754959eb64a50d36007eab73b6c8dd8..ef0da134c1d2c2c826d83d107720a5434da98a12 100644
+--- a/src/common/CMakeLists.txt
++++ b/src/common/CMakeLists.txt
+@@ -77,6 +77,7 @@ if(BOARD MATCHES ".*BUDDY")
+             wdt.cpp
+             z_calibration_fsm.cpp
+             Z_probe.cpp
++            screen_lock.cpp
+     )
+   if(BOARD MATCHES "XLBUDDY")
+     target_sources(firmware PRIVATE hwio_XLBuddy.cpp)

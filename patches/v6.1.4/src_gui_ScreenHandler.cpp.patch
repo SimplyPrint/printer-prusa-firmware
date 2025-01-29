@@ -1,0 +1,109 @@
+diff --git a/src/gui/ScreenHandler.cpp b/src/gui/ScreenHandler.cpp
+index 7eacb3bef0ddae031f1bdd9dfec46f5444a45268..26c2a99816db882f3db5ccb306d30da3cfe9c8ca 100644
+--- a/src/gui/ScreenHandler.cpp
++++ b/src/gui/ScreenHandler.cpp
+@@ -1,19 +1,14 @@
+ #include "ScreenHandler.hpp"
+ #include "bsod.h"
++#include "../common/screen_lock.hpp"
+ 
+ static const uint32_t MENU_TIMEOUT_MS = 30000;
+ 
+ Screens *Screens::instance = nullptr;
+ 
+ Screens::Screens(screen_node screen_creator)
+-    : stack_iterator(stack.begin())
+-    , current(nullptr)
+-    , creator_node(screen_creator)
+-    , close(false)
+-    , close_all(false)
+-    , close_printing(false)
+-    , display_reinitialized(false)
+-    , timeout_tick(0) {
++        : stack_iterator(stack.begin()), current(nullptr), creator_node(screen_creator), close(false), close_all(false),
++          close_printing(false), display_reinitialized(false), timeout_tick(0), screen_timeout_tick(0) {
+ }
+ 
+ void Screens::Init(screen_node screen_creator) {
+@@ -54,9 +49,11 @@ void Screens::EnableMenuTimeout() {
+     ResetTimeout();
+     menu_timeout_enabled = true;
+ }
++
+ void Screens::DisableMenuTimeout() {
+     menu_timeout_enabled = false;
+ }
++
+ bool Screens::GetMenuTimeout() { return menu_timeout_enabled; }
+ 
+ // Push enabled creators on stack - in reverted order
+@@ -173,7 +170,12 @@ void Screens::ResetTimeout() {
+     timeout_tick = gui::GetTick();
+ }
+ 
++void Screens::reset_lock_timeout() {
++    screen_timeout_tick = gui::GetTick();
++}
++
+ void Screens::Loop() {
++    auto &sl = screen_lock::instance();
+     if (display_reinitialized) {
+         screen_t *pScr = Get();
+         if (pScr) {
+@@ -181,6 +183,20 @@ void Screens::Loop() {
+         }
+         display_reinitialized = false;
+     }
++
++    if (sl.get_locking_status() && !sl.get_screen_locked()) {
++        if (gui::GetTick() - screen_timeout_tick > (static_cast<uint32_t>(sl.get_lock_time() * 1000))) {
++            while (Get() && Get()->ClosedOnTimeout() && stack_iterator != stack.begin()) {
++                close = true;
++                InnerLoop();
++            }
++            sl.set_screen_locked(true);
++            return;
++        } else {
++            reset_lock_timeout(); // in case timeout was enabled while menu was opened
++        }
++
++    }
+     /// menu timeout logic:
+     /// when timeout is expired on current screen,
+     /// we iterate through whole stack and close every screen that should be closed
+@@ -222,8 +238,10 @@ void Screens::InnerLoop() {
+     if (close_all) {
+         if (stack_iterator != stack.begin()) { // is there something to close? (we never close screen[0])
+             if (!creator_node.IsEmpty()) { // have creator, have to emulate opening
+-                if ((stack_iterator)->creator == creator_node.creator) { // screen to be opened is already opened (on top of stack)
+-                    *(stack.begin() + 1) = *stack_iterator; // move (copy) current screen_node, init data does not matter - they are set after screen is closed
++                if ((stack_iterator)->creator ==
++                    creator_node.creator) { // screen to be opened is already opened (on top of stack)
++                    *(stack.begin() +
++                      1) = *stack_iterator; // move (copy) current screen_node, init data does not matter - they are set after screen is closed
+                     stack_iterator = stack.begin() + 1; // point to current screen_node
+                     if (creator_node.init_data.IsValid()) { // have some new meaningful data
+                         current->InitState(creator_node.init_data); // reinitialize
+@@ -251,7 +269,8 @@ void Screens::InnerLoop() {
+         if (stack_iterator != stack.begin()) { // is there something to close?
+             auto backup = creator_node; // backup creator (in case we need to both close and open at the same time)
+             creator_node.creator = nullptr; // erase creator node
+-            while (stack_iterator != stack.begin() && ((Get() && Get()->ClosedOnPrint()) || (stack_iterator)->creator == backup.creator)) {
++            while (stack_iterator != stack.begin() &&
++                   ((Get() && Get()->ClosedOnPrint()) || (stack_iterator)->creator == backup.creator)) {
+                 close = true;
+                 InnerLoop(); // call recursively - but with only single level of recursion .. this will just close single screen (we already know it should be closed)
+             }
+@@ -263,8 +282,10 @@ void Screens::InnerLoop() {
+     // special case open + close
+     if (close && !creator_node.IsEmpty()) {
+         if (stack_iterator != stack.begin()) { // is there something to close? (we never close screen[0])
+-            if ((stack_iterator)->creator == creator_node.creator) { // screen to be opened is already opened (on top of stack)
+-                *(stack_iterator - 1) = *stack_iterator; // move (copy) current screen_node 1 position up on stack, init data does not matter - they are set after screen is closed
++            if ((stack_iterator)->creator ==
++                creator_node.creator) { // screen to be opened is already opened (on top of stack)
++                *(stack_iterator -
++                  1) = *stack_iterator; // move (copy) current screen_node 1 position up on stack, init data does not matter - they are set after screen is closed
+                 --stack_iterator; // point to current screen_node
+                 if (creator_node.init_data.IsValid()) { // have some new meaningful data
+                     current->InitState(creator_node.init_data); // reinitialize

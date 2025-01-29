@@ -1,5 +1,5 @@
 diff --git a/src/connect/connect.hpp b/src/connect/connect.hpp
-index 43957bd5136c2963bd2b7b9060c73c435712e48b..78516a738fd219f9024ce8c75c1691904b90b1dc 100644
+index 43957bd5136c2963bd2b7b9060c73c435712e48b..18314de4eeaa9328088e3343fdd2b1c33445e8d6 100644
 --- a/src/connect/connect.hpp
 +++ b/src/connect/connect.hpp
 @@ -14,6 +14,8 @@
@@ -11,11 +11,28 @@ index 43957bd5136c2963bd2b7b9060c73c435712e48b..78516a738fd219f9024ce8c75c169190
  class CachedFactory;
  
  OnlineStatus last_status();
-@@ -85,6 +87,7 @@ private:
- public:
-     Connect(Printer &printer, SharedBuffer &buffer);
-     void run(void) __attribute__((noreturn));
-+    int send_simplyprint(const std::string &data);
+@@ -48,6 +50,15 @@ enum class RequestType {
+     SendInfo,
  };
  
- } // namespace connect_client
++
++extern std::atomic<bool> sp_conn_ready;
++extern std::atomic<bool> sp_data_to_send;
++extern std::atomic<int> sp_conn_result;
++
++// Non-atomic variables that aren't modified concurrently
++extern std::string sp_send_string;
++int send_simplyprint(const std::string &data);
++
+ class Connect {
+ private:
+     std::variant<Planner, Registrator> guts;
+@@ -81,6 +92,8 @@ private:
+     ServerResp handle_server_resp(http::Response response, CommandId command_id);
+     Connect(const Connect &other) = delete;
+     Connect(Connect &&other) = delete;
++    void send_simplyprint_internal(CachedFactory &conn_factory);
++
+ 
+ public:
+     Connect(Printer &printer, SharedBuffer &buffer);

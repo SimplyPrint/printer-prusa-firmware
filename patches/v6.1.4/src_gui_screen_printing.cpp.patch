@@ -1,5 +1,5 @@
 diff --git a/src/gui/screen_printing.cpp b/src/gui/screen_printing.cpp
-index 83e8b4be072ab21d4d770f8ea18303b9a947d88a..03e0771c95d0433b7c740d1d4bac81aa82753d7a 100644
+index 83e8b4be072ab21d4d770f8ea18303b9a947d88a..b668529bbadfda4e019c292b9ce72e4c3743ebe2 100644
 --- a/src/gui/screen_printing.cpp
 +++ b/src/gui/screen_printing.cpp
 @@ -19,6 +19,8 @@
@@ -11,15 +11,12 @@ index 83e8b4be072ab21d4d770f8ea18303b9a947d88a..03e0771c95d0433b7c740d1d4bac81aa
  #if HAS_MMU2()
      #include <feature/prusa/MMU2/mmu2_mk4.h>
      #include <window_msgbox.hpp>
-@@ -32,11 +34,24 @@
+@@ -32,11 +34,21 @@
      #include "../Marlin/src/feature/prusa/crash_recovery.hpp"
  #endif
  
 +bool send_message_sp(std::string message, const char * error_message) {
-+    connect_client::MarlinPrinter connect_printer;
-+    SharedBuffer buffer;
-+    connect_client::Connect client(connect_printer, buffer);
-+    int response_code = client.send_simplyprint(message);
++    int response_code = connect_client::send_simplyprint(message);
 +    if (response_code / 100 != 2) {
 +        MsgBoxWarning(_(error_message), Responses_Ok);
 +        return false;
@@ -36,7 +33,7 @@ index 83e8b4be072ab21d4d770f8ea18303b9a947d88a..03e0771c95d0433b7c740d1d4bac81aa
  printing_state_t screen_printing_data_t::GetState() const {
      return state__readonly__use_change_print_state;
  }
-@@ -45,21 +60,62 @@ void screen_printing_data_t::tuneAction() {
+@@ -45,21 +57,62 @@ void screen_printing_data_t::tuneAction() {
      if (buttons[ftrstd::to_underlying(BtnSocket::Left)].IsShadowed()) {
          return;
      }
@@ -46,7 +43,7 @@ index 83e8b4be072ab21d4d770f8ea18303b9a947d88a..03e0771c95d0433b7c740d1d4bac81aa
 +            case EndScreenState::end_screen:
 +                break;
 +            case EndScreenState::print_result_screen:
-+                send_message_sp("print succeeded", "Failed to send print result message.");
++                send_message_sp("ps", "Failed to send print result message.");
 +                end_screen_state = EndScreenState::end_screen;
 +                start_showing_end_result();
 +                break;
@@ -69,7 +66,7 @@ index 83e8b4be072ab21d4d770f8ea18303b9a947d88a..03e0771c95d0433b7c740d1d4bac81aa
 +            break;
 +        case printing_state_t::STOPPED:
 +        case printing_state_t::PRINTED:
-+            send_message_sp("next queue item", "Failed to send next_queue message.");
++            send_message_sp("nqi", "Failed to send next_queue message.");
 +            ResetButtonRect(BtnSocket::Left);
 +            ResetButtonRect(BtnSocket::Middle);
 +            ResetButtonRect(BtnSocket::Right);
@@ -106,15 +103,15 @@ index 83e8b4be072ab21d4d770f8ea18303b9a947d88a..03e0771c95d0433b7c740d1d4bac81aa
      switch (GetState()) {
      case printing_state_t::PRINTING:
          marlin_client::print_pause();
-@@ -75,6 +131,7 @@ void screen_printing_data_t::pauseAction() {
+@@ -75,6 +128,7 @@ void screen_printing_data_t::pauseAction() {
          break;
      case printing_state_t::STOPPED:
      case printing_state_t::PRINTED:
-+        send_message_sp("bed cleared", "Failed to send bed clear message.");
++        send_message_sp("bc", "Failed to send bed clear message.");
          screen_printing_reprint();
          change_print_state();
          break;
-@@ -83,13 +140,40 @@ void screen_printing_data_t::pauseAction() {
+@@ -83,13 +137,40 @@ void screen_printing_data_t::pauseAction() {
      }
  }
  
@@ -131,7 +128,7 @@ index 83e8b4be072ab21d4d770f8ea18303b9a947d88a..03e0771c95d0433b7c740d1d4bac81aa
 +        case EndScreenState::end_screen:
 +            break;
 +        case EndScreenState::print_result_screen:
-+            send_message_sp("print failed", "Failed to send print result message.");
++            send_message_sp("pf", "Failed to send print result message.");
 +            end_screen_state = EndScreenState::end_screen;
 +            start_showing_end_result();
 +            break;
@@ -143,7 +140,7 @@ index 83e8b4be072ab21d4d770f8ea18303b9a947d88a..03e0771c95d0433b7c740d1d4bac81aa
      switch (GetState()) {
      case printing_state_t::STOPPED:
      case printing_state_t::PRINTED:
-+        send_message_sp("bed cleared", "Failed to send bed clear message.");
++        send_message_sp("bc", "Failed to send bed clear message.");
 +        ResetButtonRect(BtnSocket::Left);
 +        ResetButtonRect(BtnSocket::Middle);
 +        ResetButtonRect(BtnSocket::Right);
@@ -155,7 +152,7 @@ index 83e8b4be072ab21d4d770f8ea18303b9a947d88a..03e0771c95d0433b7c740d1d4bac81aa
          marlin_client::print_exit();
          return;
      case printing_state_t::PAUSING:
-@@ -107,6 +191,7 @@ void screen_printing_data_t::stopAction() {
+@@ -107,6 +188,7 @@ void screen_printing_data_t::stopAction() {
          }
      }
      }
@@ -163,7 +160,7 @@ index 83e8b4be072ab21d4d770f8ea18303b9a947d88a..03e0771c95d0433b7c740d1d4bac81aa
  }
  
  /******************************************************************************/
-@@ -138,49 +223,63 @@ constexpr size_t rotating_circles_height { 5 };
+@@ -138,49 +220,63 @@ constexpr size_t rotating_circles_height { 5 };
  constexpr size_t rotating_circles_width { 35 };
  constexpr size_t rotating_circles_left_offset { 0 };
  constexpr Rect16 rotating_circles_rect { column_left + rotating_circles_left_offset, get_row(1) + height(etime_val_font) + 5, rotating_circles_width, rotating_circles_height };
@@ -253,7 +250,7 @@ index 83e8b4be072ab21d4d770f8ea18303b9a947d88a..03e0771c95d0433b7c740d1d4bac81aa
      strlcpy(text_filament.data(), "999m", text_filament.size());
  
  #if HAS_MINI_DISPLAY()
-@@ -217,7 +316,7 @@ screen_printing_data_t::screen_printing_data_t()
+@@ -217,7 +313,7 @@ screen_printing_data_t::screen_printing_data_t()
  
      strlcpy(text_filename.data(), GCodeInfo::getInstance().GetGcodeFilename(), text_filename.size());
      w_filename.set_font(Font::big);
@@ -262,7 +259,7 @@ index 83e8b4be072ab21d4d770f8ea18303b9a947d88a..03e0771c95d0433b7c740d1d4bac81aa
      w_filename.SetText(string_view_utf8::MakeRAM(text_filename.data()));
  
      w_etime_label.set_font(Font::small);
-@@ -262,6 +361,15 @@ void screen_printing_data_t::windowEvent(window_t *sender, GUI_event_t event, vo
+@@ -262,6 +358,15 @@ void screen_printing_data_t::windowEvent(window_t *sender, GUI_event_t event, vo
  
      /// -- close screen when print is done / stopped and USB media is removed
      if (!marlin_vars()->media_inserted && (p_state == printing_state_t::PRINTED || p_state == printing_state_t::STOPPED)) {
@@ -278,7 +275,7 @@ index 83e8b4be072ab21d4d770f8ea18303b9a947d88a..03e0771c95d0433b7c740d1d4bac81aa
          marlin_client::print_exit();
          return;
      }
-@@ -322,18 +430,18 @@ void screen_printing_data_t::windowEvent(window_t *sender, GUI_event_t event, vo
+@@ -322,18 +427,18 @@ void screen_printing_data_t::windowEvent(window_t *sender, GUI_event_t event, vo
              string_view_utf8 txt;
              switch (*reason) {
              case MMU2::MaintenanceReason::Failures:
@@ -303,7 +300,7 @@ index 83e8b4be072ab21d4d770f8ea18303b9a947d88a..03e0771c95d0433b7c740d1d4bac81aa
                  break;
              }
  
-@@ -342,10 +450,22 @@ void screen_printing_data_t::windowEvent(window_t *sender, GUI_event_t event, vo
+@@ -342,10 +447,22 @@ void screen_printing_data_t::windowEvent(window_t *sender, GUI_event_t event, vo
      }
  #endif
  
@@ -327,7 +324,7 @@ index 83e8b4be072ab21d4d770f8ea18303b9a947d88a..03e0771c95d0433b7c740d1d4bac81aa
          return;
      }
  
-@@ -375,41 +495,133 @@ void screen_printing_data_t::windowEvent(window_t *sender, GUI_event_t event, vo
+@@ -375,41 +492,133 @@ void screen_printing_data_t::windowEvent(window_t *sender, GUI_event_t event, vo
          return;
      }
  
@@ -477,7 +474,7 @@ index 83e8b4be072ab21d4d770f8ea18303b9a947d88a..03e0771c95d0433b7c740d1d4bac81aa
      // show previous
      for (auto &button : buttons) {
          button.Show();
-@@ -560,6 +772,12 @@ void screen_printing_data_t::set_pause_icon_and_label() {
+@@ -560,6 +769,12 @@ void screen_printing_data_t::set_pause_icon_and_label() {
      case printing_state_t::COUNT:
      case printing_state_t::INITIAL:
      case printing_state_t::PRINTING:
@@ -490,7 +487,7 @@ index 83e8b4be072ab21d4d770f8ea18303b9a947d88a..03e0771c95d0433b7c740d1d4bac81aa
      case printing_state_t::MBL_FAILED:
          EnableButton(BtnSocket::Middle);
          SetButtonIconAndLabel(BtnSocket::Middle, BtnRes::Pause, LabelRes::Pause);
-@@ -669,93 +887,93 @@ void screen_printing_data_t::change_print_state() {
+@@ -669,93 +884,93 @@ void screen_printing_data_t::change_print_state() {
      printing_state_t st = printing_state_t::COUNT;
  
      switch (marlin_vars()->print_state) {

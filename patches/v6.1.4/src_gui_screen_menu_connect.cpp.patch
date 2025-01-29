@@ -1,26 +1,24 @@
 diff --git a/src/gui/screen_menu_connect.cpp b/src/gui/screen_menu_connect.cpp
-index b545985f3369eb372084382491b8d677b8f0495d..d252d981110d0d923be6b51533251834109f0d0d 100644
+index b545985f3369eb372084382491b8d677b8f0495d..4f68c9a4eef884f729c720798c5d06ee19255b2e 100644
 --- a/src/gui/screen_menu_connect.cpp
 +++ b/src/gui/screen_menu_connect.cpp
-@@ -14,11 +14,31 @@
+@@ -14,11 +14,29 @@
  using connect_client::ConnectionStatus;
  using connect_client::OnlineError;
  
 +
 +MI_SEND_SIMPLYPRINT::MI_SEND_SIMPLYPRINT()
-+        : IWindowMenuItem(_("Send 'Hello World' to Simplyprint"), nullptr, is_enabled_t::yes, is_hidden_t::no, expands_t::no) {}
++        : IWindowMenuItem(_("Test messages connection to Simplyprint"), nullptr, is_enabled_t::yes, is_hidden_t::no, expands_t::no) {}
 +
 +void MI_SEND_SIMPLYPRINT::click([[maybe_unused]] IWindowMenu &window_menu) {
-+    SharedBuffer buffer;
-+    connect_client::MarlinPrinter connect_printer;
-+    connect_client::Connect client(connect_printer, buffer);
 +
-+    int rc = client.send_simplyprint("Hello World");
-+    if (rc /100  == 2){
-+        MsgBoxInfo(_("Message sent to Simplyprint!"), Responses_Ok);
++    int rc = connect_client::send_simplyprint("test message");
++    if (rc /100 == 2){
++        MsgBoxInfo(_("Success"), Responses_Ok);
 +    }
 +    else {
-+        MsgBoxError(_("Failed to send message to Simplyprint!"), Responses_Ok);
++        std::string errorMsg = "An error occurred, http code " + std::to_string(rc);
++        MsgBoxError(_(errorMsg.c_str()), Responses_Ok);
 +    }
 +
 +}
@@ -34,7 +32,7 @@ index b545985f3369eb372084382491b8d677b8f0495d..d252d981110d0d923be6b51533251834
      // Connect will catch up with new config in its next iteration
  }
  
-@@ -97,12 +117,12 @@ MI_CONNECT_LOAD_SETTINGS::MI_CONNECT_LOAD_SETTINGS()
+@@ -97,12 +115,12 @@ MI_CONNECT_LOAD_SETTINGS::MI_CONNECT_LOAD_SETTINGS()
  void MI_CONNECT_LOAD_SETTINGS::click([[maybe_unused]] IWindowMenu &window_menu) {
      if (connect_client::MarlinPrinter::load_cfg_from_ini()) {
          if (config_store().connect_enabled.get()) {
@@ -50,7 +48,7 @@ index b545985f3369eb372084382491b8d677b8f0495d..d252d981110d0d923be6b51533251834
      }
  }
  
-@@ -121,7 +141,7 @@ ScreenMenuConnect::ScreenMenuConnect()
+@@ -121,7 +139,7 @@ ScreenMenuConnect::ScreenMenuConnect()
  void ScreenMenuConnect::windowEvent(window_t *sender, GUI_event_t event, void *param) {
      if (event == GUI_event_t::CHILD_CLICK || event == GUI_event_t::LOOP) {
          update_all_updatable_items();

@@ -1,0 +1,28 @@
+diff --git a/src/gui/ScreenHandler.hpp b/src/gui/ScreenHandler.hpp
+index 6bddee8acd9f9d012fb988ff064eb7bd140e473c..389a041f04b80423b92b1f7e7825282c78e9f17e 100644
+--- a/src/gui/ScreenHandler.hpp
++++ b/src/gui/ScreenHandler.hpp
+@@ -36,6 +36,7 @@ class Screens {
+     bool display_reinitialized;
+ 
+     uint32_t timeout_tick;
++    uint32_t screen_timeout_tick;
+ 
+     Screens(screen_node screen_creator);
+     Screens(const Screens &) = delete;
+@@ -68,6 +69,7 @@ public:
+ 
+     void Draw();
+     void ResetTimeout();
++    void reset_lock_timeout();
+ 
+     void ScreenEvent(window_t *sender, GUI_event_t event, void *param);
+     void WindowEvent(GUI_event_t event, void *param);
+@@ -151,7 +153,6 @@ public:
+ 
+ private:
+     void InnerLoop(); // call inside Loop of this class
+-
+     bool menu_timeout_enabled = true;
+     using r_iter = std::reverse_iterator<const screen_node *>;
+     static r_iter rfind_enabled_node(r_iter begin, r_iter end); // reverse find method
