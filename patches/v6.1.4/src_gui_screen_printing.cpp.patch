@@ -1,5 +1,5 @@
 diff --git a/src/gui/screen_printing.cpp b/src/gui/screen_printing.cpp
-index 83e8b4be072ab21d4d770f8ea18303b9a947d88a..468299786959abd90dc6e8c8bc1b1993f094fc38 100644
+index 83e8b4be072ab21d4d770f8ea18303b9a947d88a..dda9ea8cd6f21b1747523ef054ca7ddcc9bff00b 100644
 --- a/src/gui/screen_printing.cpp
 +++ b/src/gui/screen_printing.cpp
 @@ -19,6 +19,7 @@
@@ -330,7 +330,7 @@ index 83e8b4be072ab21d4d770f8ea18303b9a947d88a..468299786959abd90dc6e8c8bc1b1993
          return;
      }
  
-@@ -375,41 +498,133 @@ void screen_printing_data_t::windowEvent(window_t *sender, GUI_event_t event, vo
+@@ -375,41 +498,141 @@ void screen_printing_data_t::windowEvent(window_t *sender, GUI_event_t event, vo
          return;
      }
  
@@ -387,6 +387,8 @@ index 83e8b4be072ab21d4d770f8ea18303b9a947d88a..468299786959abd90dc6e8c8bc1b1993
 +            }
 +            header.SetText(_("Finished"));
 +            sp_print_finished_icon.Hide();
++            w_filename.Show();
++            w_progress.Show();
 +            ResetButtonRect(BtnSocket::Left);
 +            SetButtonVisible(BtnSocket::Middle, true);
 +            ResetButtonRect(BtnSocket::Middle);
@@ -416,6 +418,8 @@ index 83e8b4be072ab21d4d770f8ea18303b9a947d88a..468299786959abd90dc6e8c8bc1b1993
 +        case EndScreenState::print_result_screen:
 +            header.SetText(_("Print Result"));
 +            sp_print_finished_icon.Show();
++            w_filename.Hide();
++            w_progress.Hide();
 +            DisableButton(BtnSocket::Middle);
 +            SetButtonVisible(BtnSocket::Left, true); //
 +            SetButtonVisible(BtnSocket::Middle, false);
@@ -446,6 +450,8 @@ index 83e8b4be072ab21d4d770f8ea18303b9a947d88a..468299786959abd90dc6e8c8bc1b1993
 +            ResetButtonRect(BtnSocket::Middle);
 +            ResetButtonRect(BtnSocket::Right);
 +            sp_print_finished_icon.Hide();
++            w_filename.Show();
++            w_progress.Show();
 +            SetButtonIconAndLabel(BtnSocket::Middle, BtnRes::Reprint, LabelRes::Reprint);
 +            if (was_network_print){
 +                EnableButton(BtnSocket::Left);
@@ -463,6 +469,8 @@ index 83e8b4be072ab21d4d770f8ea18303b9a947d88a..468299786959abd90dc6e8c8bc1b1993
 +        case EndScreenState::print_result_screen:
 +            header.SetText(_("Print Result"));
 +            sp_print_finished_icon.Show();
++            w_filename.Hide();
++            w_progress.Hide();
 +            EnableButton(BtnSocket::Left);
 +            SetButtonVisible(BtnSocket::Middle, false);
 +            SetLabelVisible(BtnSocket::Right, false);
@@ -480,7 +488,7 @@ index 83e8b4be072ab21d4d770f8ea18303b9a947d88a..468299786959abd90dc6e8c8bc1b1993
      // show previous
      for (auto &button : buttons) {
          button.Show();
-@@ -560,6 +775,12 @@ void screen_printing_data_t::set_pause_icon_and_label() {
+@@ -560,6 +783,12 @@ void screen_printing_data_t::set_pause_icon_and_label() {
      case printing_state_t::COUNT:
      case printing_state_t::INITIAL:
      case printing_state_t::PRINTING:
@@ -493,7 +501,7 @@ index 83e8b4be072ab21d4d770f8ea18303b9a947d88a..468299786959abd90dc6e8c8bc1b1993
      case printing_state_t::MBL_FAILED:
          EnableButton(BtnSocket::Middle);
          SetButtonIconAndLabel(BtnSocket::Middle, BtnRes::Pause, LabelRes::Pause);
-@@ -669,93 +890,97 @@ void screen_printing_data_t::change_print_state() {
+@@ -669,93 +898,97 @@ void screen_printing_data_t::change_print_state() {
      printing_state_t st = printing_state_t::COUNT;
  
      switch (marlin_vars()->print_state) {
