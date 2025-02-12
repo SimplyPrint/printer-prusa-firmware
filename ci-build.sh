@@ -1,7 +1,7 @@
 #!/bin/bash
 
 source /venv/bin/activate
-
+export PIPENV_IGNORE_VIRTUALENVS=1
 ./local_build.sh $1
 
 input=$1
