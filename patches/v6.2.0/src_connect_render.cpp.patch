@@ -1,0 +1,13 @@
+diff --git a/src/connect/render.cpp b/src/connect/render.cpp
+index ff378d25d09c848841acd87d6dd39ac548c1dcfc..573f4ac86979d340a3eea3eefae5caf4f2942db4 100644
+--- a/src/connect/render.cpp
++++ b/src/connect/render.cpp
+@@ -290,7 +290,7 @@ namespace {
+             // JSON_... macros don't work in a nested switch :-(.
+             if (event.type == EventType::Info) {
+                 JSON_FIELD_OBJ("data");
+-                    JSON_FIELD_STR("firmware", info.firmware_version) JSON_COMMA;
++                    JSON_FIELD_STR_FORMAT("firmware", "%s%s", info.firmware_version, "SP") JSON_COMMA;
+                     JSON_FIELD_STR_FORMAT("printer_type", "%hhu.%hhu.%hhu", params.version.type, params.version.version, params.version.subversion) JSON_COMMA;
+                     JSON_FIELD_STR("sn", info.serial_number.begin()) JSON_COMMA;
+                     JSON_FIELD_BOOL("appendix", info.appendix) JSON_COMMA;

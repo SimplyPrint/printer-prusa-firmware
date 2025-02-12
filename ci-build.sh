@@ -2,7 +2,7 @@
 
 source /venv/bin/activate
 export PIPENV_IGNORE_VIRTUALENVS=1
-./local_build.sh $1
+./local_build.sh $1 $2
 
 input=$1
 stripped=${input:1}

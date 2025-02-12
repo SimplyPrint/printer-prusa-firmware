@@ -14,7 +14,7 @@ cd .. || exit
 
 # Check if ready to build
 if [ "$ready_to_build" == true ]; then
-    scripts/build_local.sh $1 coreone,mk4
+    scripts/build_local.sh $1 $2
 else
-    scripts/build.sh $1 coreone,mk4
+    scripts/build.sh $1 $2
 fi
