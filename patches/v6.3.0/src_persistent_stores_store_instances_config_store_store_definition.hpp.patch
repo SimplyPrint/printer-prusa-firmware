@@ -1,0 +1,42 @@
+diff --git a/src/persistent_stores/store_instances/config_store/store_definition.hpp b/src/persistent_stores/store_instances/config_store/store_definition.hpp
+index 735982a5ecb1cb9d57cb5c5ea612fbf201a3d70a..54524cbb00a50b8360698bf9cc03b65bd25c2ad7 100644
+--- a/src/persistent_stores/store_instances/config_store/store_definition.hpp
++++ b/src/persistent_stores/store_instances/config_store/store_definition.hpp
+@@ -246,6 +246,16 @@ struct CurrentStore
+ 
+     StoreItem<side_fsensor_remap::Mapping, defaults::side_fs_remap, journal::hash("Side FS Remap")> side_fs_remap; ///< Side filament sensor remapping
+ 
++    //screen lock
++    void set_screen_password(uint32_t password);
++    uint32_t get_screen_password();
++    void set_screen_lock_enabled(bool enabled);
++    bool get_screen_lock_enabled();
++    void set_screen_lock_time(uint32_t time);
++    uint32_t get_screen_lock_time();
++
++
++
+     //// Helper array-like access functions for filament sensors
+     int32_t get_extruder_fs_ref_nins_value(uint8_t index);
+     int32_t get_extruder_fs_ref_ins_value(uint8_t index);
+@@ -507,6 +517,11 @@ struct CurrentStore
+     input_shaper::AxisConfig get_input_shaper_axis_config(AxisEnum axis);
+     void set_input_shaper_axis_config(AxisEnum axis, const input_shaper::AxisConfig &);
+ 
++    //screen_password
++    StoreItem<uint32_t, 0000, journal::hash("Screen Password")> screen_password;
++    StoreItem<bool, false, journal::hash("Screen Lock Enabled")> screen_lock_enabled;
++    StoreItem<uint32_t, 120, journal::hash("Screen Lock Time")> screen_lock_time;
++
+ #if PRINTER_IS_PRUSA_MK3_5()
+     StoreItem<bool, false, journal::hash("Has Alt Fans")> has_alt_fans;
+ #endif
+@@ -648,6 +663,8 @@ struct DeprecatedStore
+     StoreItem<uint8_t, 0, journal::hash("Nozzle Type")> nozzle_type;
+ 
+     StoreItem<bool, true, journal::hash("Enable Side LEDs")> side_leds_enabled;
++
++
+ };
+ 
+ } // namespace config_store_ns

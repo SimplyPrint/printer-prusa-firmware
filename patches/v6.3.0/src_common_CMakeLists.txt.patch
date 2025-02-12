@@ -1,0 +1,12 @@
+diff --git a/src/common/CMakeLists.txt b/src/common/CMakeLists.txt
+index 39d64e874a36628b9ae2197c4d391b0da3db1ee1..f3c5d294736b8387fcbc29d14a65793e6873fde0 100644
+--- a/src/common/CMakeLists.txt
++++ b/src/common/CMakeLists.txt
+@@ -77,6 +77,7 @@ if(BOARD IN_LIST BUDDY_BOARDS)
+             w25x.cpp
+             w25x_communication.cpp
+             wdt.cpp
++            screen_lock.cpp
+     )
+   add_subdirectory(async_job)
+ 

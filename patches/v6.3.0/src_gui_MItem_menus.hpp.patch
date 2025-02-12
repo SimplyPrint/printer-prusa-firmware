@@ -1,0 +1,13 @@
+diff --git a/src/gui/MItem_menus.hpp b/src/gui/MItem_menus.hpp
+index fcf631c95dd25d9ac131f93c58c8702389a95695..d9b8ae79b3d10a607b272b606eb049b07fde8ba1 100644
+--- a/src/gui/MItem_menus.hpp
++++ b/src/gui/MItem_menus.hpp
+@@ -91,7 +91,7 @@ using MI_MESSAGES
+     = MI_SCREEN<N_("Message History"), class screen_messages_data_t>;
+ 
+ using MI_PRUSA_CONNECT
+-    = MI_SCREEN<N_("Prusa Connect"), class ScreenMenuConnect>;
++    = MI_SCREEN<N_("Simplyprint"), class ScreenMenuConnect>;
+ 
+ using MI_PRUSALINK
+     = MI_SCREEN<N_("PrusaLink"), class ScreenMenuPrusaLink>;

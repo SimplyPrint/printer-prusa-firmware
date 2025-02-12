@@ -1,13 +1,14 @@
 #!/usr/bin/env bash
-
+rm -rf Prusa-Firmware-Buddy
+git clone https://github.com/prusa3d/Prusa-Firmware-Buddy.git Prusa-Firmware-Buddy
 SCRIPTDIR="$( cd "$( dirname "${BASH_SOURCE[0]}" )" && pwd )"
 ROOTDIR="$( cd "${SCRIPTDIR}/.." && pwd )"
 
 # Go into submodule directory
-cd "${ROOTDIR}/Prusa-Firmware-Buddy"
+
+cd "${ROOTDIR}/Prusa-Firmware-Buddy" || (echo "I died like a bitch" && exit)
 
 git remote set-url --push origin DISABLED
-
 # Ensure tags are fetched
 git fetch --tags
 
@@ -46,7 +47,7 @@ done
 pipenv --python 3.12 install pip==22.0
 export BUDDY_NO_VIRTUALENV=1
 # Source shell into current shell
-pipenv run python3.12 utils/build.py --preset $presets --build-type release --final --signing-key "${ROOTDIR}/firmware_signing_key.pem" --build-dir "${ROOTDIR}/build" --generate-bbf --bootloader yes
+pipenv run python3.12 utils/build.py --preset $presets --build-type release --final --signing-key "${ROOTDIR}/firmware_signing_key.pem" --build-dir "${ROOTDIR}/build"  --bootloader yes
 
 if [ $? -eq 0 ]; then
   cd "${ROOTDIR}"
