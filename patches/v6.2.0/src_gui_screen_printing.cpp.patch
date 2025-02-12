@@ -1,5 +1,5 @@
 diff --git a/src/gui/screen_printing.cpp b/src/gui/screen_printing.cpp
-index 02e47ef3ef909d861eb62de825e35bdd39fb297d..06f60aa4c2707763dadb2580b1631ae278ecbaae 100644
+index 02e47ef3ef909d861eb62de825e35bdd39fb297d..34db64ab4cec6cfda48dac68968e668e8565bad3 100644
 --- a/src/gui/screen_printing.cpp
 +++ b/src/gui/screen_printing.cpp
 @@ -19,30 +19,45 @@
@@ -341,8 +341,8 @@ index 02e47ef3ef909d861eb62de825e35bdd39fb297d..06f60aa4c2707763dadb2580b1631ae2
  #elif HAS_LARGE_DISPLAY()
 -    , popup_rect(Rect16(30, get_row(0), 250, 70)) // Rect for printing messages from marlin.
 -    , end_result_body(this, end_result_body_rect) // safe to pass even if order changes because EndScreen constructor doesn't use it (therefore guaranteed to be valid)
-+, sp_print_finished_icon(this, sp_rect, &img::sp_print_finished)
 +, popup_rect(Rect16(30, get_row(0), 250, 70)) // Rect for printing messages from marlin.
++, sp_print_finished_icon(this, sp_rect, &img::sp_print_finished)
 +, end_result_body(this, end_result_body_rect) // safe to pass even if order changes because EndScreen constructor doesn't use it (therefore guaranteed to be valid)
  #endif // USE_<display>
  {
