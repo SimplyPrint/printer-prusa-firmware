@@ -1,5 +1,5 @@
 diff --git a/src/common/utils/color.hpp b/src/common/utils/color.hpp
-index 345d151e69df2d1922ef0a9b5bd3fa954e88a896..0c1bf9495337db6926135bc01325d166506578b9 100644
+index 345d151e69df2d1922ef0a9b5bd3fa954e88a896..f9fdfa661e15b181707f8f6fcd86c92e0a112a73 100644
 --- a/src/common/utils/color.hpp
 +++ b/src/common/utils/color.hpp
 @@ -80,5 +80,8 @@ constexpr Color COLOR_LIGHT_GREEN = Color::from_raw(0x40b040);
@@ -9,6 +9,6 @@ index 345d151e69df2d1922ef0a9b5bd3fa954e88a896..0c1bf9495337db6926135bc01325d166
 -constexpr Color COLOR_ORANGE = Color::from_raw(0xF8651B);
 +//constexpr Color COLOR_ORANGE = Color::from_raw(0xF8651B);
  constexpr Color COLOR_DARK_KHAKI = Color::from_raw(0xDBD76B);
-+constexpr Color COLOR_PRUSA_ORANGE = Color::from_raw(0x001B65F8L);
-+constexpr Color COLOR_SP_BLUE = Color::from_raw(0x00ffB638L);
++constexpr Color COLOR_PRUSA_ORANGE = Color::from_raw(0xF8651B);
++constexpr Color COLOR_SP_BLUE = Color::from_raw(0x38B6FF);
 +constexpr Color COLOR_ORANGE = COLOR_SP_BLUE;

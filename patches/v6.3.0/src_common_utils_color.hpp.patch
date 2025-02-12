@@ -9,6 +9,6 @@ index f581c0dcf0bba82ffebdd2f957e42422335d2344..dd49a6511ab322b8291894eb653cbc3f
 -constexpr Color COLOR_ORANGE = Color::from_raw(0xF8651B);
 +//constexpr Color COLOR_ORANGE = Color::from_raw(0xF8651B);
  constexpr Color COLOR_DARK_KHAKI = Color::from_raw(0xDBD76B);
-+constexpr Color COLOR_PRUSA_ORANGE = Color::from_raw(0x001B65F8L);
-+constexpr Color COLOR_SP_BLUE = Color::from_raw(0x00ffB638L);
++constexpr Color COLOR_PRUSA_ORANGE = Color::from_raw(0xF8651B);
++constexpr Color COLOR_SP_BLUE = Color::from_raw(0x38B6FF);
 +constexpr Color COLOR_ORANGE = COLOR_SP_BLUE;

@@ -1,5 +1,5 @@
 diff --git a/src/connect/connect.cpp b/src/connect/connect.cpp
-index 99c50f97844838f808b00f377f56f6b45592f3c6..2ea1516d9ddcc6e40b35f96085ce3eab589cb318 100644
+index 99c50f97844838f808b00f377f56f6b45592f3c6..cb37661de6685a7eb83ba233c5d594900c5b3462 100644
 --- a/src/connect/connect.cpp
 +++ b/src/connect/connect.cpp
 @@ -20,6 +20,8 @@
@@ -161,7 +161,7 @@ index 99c50f97844838f808b00f377f56f6b45592f3c6..2ea1516d9ddcc6e40b35f96085ce3eab
  CommResult Connect::send_command(CachedFactory &conn_factory, const Printer::Config &config, Action &&action, optional<CommandId> background_command_id) {
      log_debug(connect, "Sending to connect");
      BasicRequest request(printer, config, action, background_command_id);
-@@ -862,8 +984,13 @@ void Connect::run() {
+@@ -862,10 +984,17 @@ void Connect::run() {
      log_debug(connect, "%s", "Connect client starts\n");
  
      CachedFactory conn_factory;
@@ -171,15 +171,11 @@ index 99c50f97844838f808b00f377f56f6b45592f3c6..2ea1516d9ddcc6e40b35f96085ce3eab
 +    sp_conn_result = 0;
  
      while (true) {
-+
++        send_simplyprint_internal(conn_factory);
++        
          auto reg_wanted = registration.load();
          auto reg_running = holds_alternative<Registrator>(guts);
++
          if (reg_wanted && reg_running) {
-@@ -887,6 +1014,7 @@ void Connect::run() {
-             const auto new_status = communicate(conn_factory);
-             process_status(new_status, ConnectionStatus::Error);
-         }
-+        send_simplyprint_internal(conn_factory);
-     }
- }
- 
+             const auto new_status = get<Registrator>(guts).communicate(conn_factory);
+             process_status(new_status, ConnectionStatus::RegistrationError);
