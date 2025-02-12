@@ -1,5 +1,5 @@
 diff --git a/src/connect/tls/certificate.h b/src/connect/tls/certificate.h
-index 64ede0bd177e9679e530a91bfe486ae19954fdcc..739e4064526922a4c188a7a5bfd7a2a2b9573e4f 100644
+index 64ede0bd177e9679e530a91bfe486ae19954fdcc..d8d7a8cf7078a5214675050b2d869c5b8b5926f7 100644
 --- a/src/connect/tls/certificate.h
 +++ b/src/connect/tls/certificate.h
 @@ -2,7 +2,54 @@
@@ -65,9 +65,8 @@ index 64ede0bd177e9679e530a91bfe486ae19954fdcc..739e4064526922a4c188a7a5bfd7a2a2
 -constexpr unsigned int ca_cert_der_len = sizeof(ca_cert_der);
 +constexpr unsigned int ca_cert_der_len_new = sizeof(ca_cert_der_new);
  
--constexpr std::array<std::span<const unsigned char>, 1> certificates = {
+ constexpr std::array<std::span<const unsigned char>, 1> certificates = {
 -    std::span { ca_cert_der, ca_cert_der_len }
-+constexpr std::array<std::span<const unsigned char>, 1> certificates = {
 +    //std::span { ca_cert_der_old, ca_cert_der_len_old },
 +    std::span { ca_cert_der_new, ca_cert_der_len_new }
  };
