@@ -1,5 +1,5 @@
 diff --git a/src/connect/planner.cpp b/src/connect/planner.cpp
-index 7614bc0ee755a091cf1f7938813e38b46e9dbb16..d49c851b41962817a6c150da09922e63c1fd68da 100644
+index 7614bc0ee755a091cf1f7938813e38b46e9dbb16..4b83e7ac816b082a47a63304abb9df60df7fcd28 100644
 --- a/src/connect/planner.cpp
 +++ b/src/connect/planner.cpp
 @@ -28,6 +28,7 @@
@@ -22,7 +22,7 @@ index 7614bc0ee755a091cf1f7938813e38b46e9dbb16..d49c851b41962817a6c150da09922e63
  JC(Stop, "No print to stop")
  
  void Planner::command(const Command &command, const StartPrint &params) {
-+    connect_client::is_print_network = true;
++//    connect_client::is_print_network = true;
      const char *path = params.path.path();
  
      const char *reason = nullptr;
@@ -30,7 +30,7 @@ index 7614bc0ee755a091cf1f7938813e38b46e9dbb16..d49c851b41962817a6c150da09922e63
          command.id,
          params.job_id,
      };
-+    connect_client::is_print_network = true;
++//    connect_client::is_print_network = true;
      planned_event->start_cmd_id = print_start_cmd;
  }
  

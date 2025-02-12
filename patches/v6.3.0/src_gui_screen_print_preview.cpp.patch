@@ -1,5 +1,5 @@
 diff --git a/src/gui/screen_print_preview.cpp b/src/gui/screen_print_preview.cpp
-index 451fc1675eff81d50ebf48a1dd09474c7dc735fa..be3489ed18512b6a417d9aa43203bc847e0ef02a 100644
+index 451fc1675eff81d50ebf48a1dd09474c7dc735fa..1809ab3c35f6f4a472465cfced5f08d72452c4d2 100644
 --- a/src/gui/screen_print_preview.cpp
 +++ b/src/gui/screen_print_preview.cpp
 @@ -19,6 +19,7 @@
@@ -19,7 +19,14 @@ index 451fc1675eff81d50ebf48a1dd09474c7dc735fa..be3489ed18512b6a417d9aa43203bc84
          tools_mapping.reset();
          header.set_show_bed_info(false);
      }
-@@ -77,6 +78,9 @@ void ScreenPrintPreview::Change(fsm::BaseData data) {
+@@ -71,12 +72,16 @@ void ScreenPrintPreview::Change(fsm::BaseData data) {
+         break;
+ 
+     case PhasesPrintPreview::download_wait:
++        connect_client::is_print_network = true;
+         pMsgbox = makeMsgBoxWait(_("Downloading..."));
+         break;
+ 
      case PhasesPrintPreview::main_dialog:
          gcode_description.update(gcode);
          assert(gcode.is_loaded() && "GCodeInfo must be initialized before ScreenPrintPreview is created");
@@ -29,7 +36,7 @@ index 451fc1675eff81d50ebf48a1dd09474c7dc735fa..be3489ed18512b6a417d9aa43203bc84
          show_main_dialog();
          break;
  
-@@ -114,6 +118,9 @@ void ScreenPrintPreview::Change(fsm::BaseData data) {
+@@ -114,6 +119,9 @@ void ScreenPrintPreview::Change(fsm::BaseData data) {
  
  #if HAS_TOOLCHANGER() || HAS_MMU2()
      case PhasesPrintPreview::tools_mapping:

@@ -1,8 +1,8 @@
 diff --git a/src/connect/tls/certificate.h b/src/connect/tls/certificate.h
-index 739e4064526922a4c188a7a5bfd7a2a2b9573e4f..664cdda2b7526ee806a822315de4d266271a6487 100644
+index 739e4064526922a4c188a7a5bfd7a2a2b9573e4f..c1ce7c9027d0c56aea39245f44d011375f9d9115 100644
 --- a/src/connect/tls/certificate.h
 +++ b/src/connect/tls/certificate.h
-@@ -4,102 +4,105 @@
+@@ -4,97 +4,100 @@
  // xxd -i x.der
  // old certificate, expires around october 2024, should be removed after
  constexpr const unsigned char ca_cert_der_old[] = {
@@ -184,10 +184,3 @@ index 739e4064526922a4c188a7a5bfd7a2a2b9573e4f..664cdda2b7526ee806a822315de4d266
  };
  
  constexpr unsigned int ca_cert_der_len_new = sizeof(ca_cert_der_new);
- 
--constexpr std::array<std::span<const unsigned char>, 2> certificates = {
--    std::span { ca_cert_der_old, ca_cert_der_len_old },
-+constexpr std::array<std::span<const unsigned char>, 1> certificates = {
-+//    std::span { ca_cert_der_old, ca_cert_der_len_old },
-     std::span { ca_cert_der_new, ca_cert_der_len_new }
- };
