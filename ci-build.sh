@@ -1,7 +1,6 @@
 #!/bin/bash
 
 source /venv/bin/activate
-mv /app/Prusa-Firmware-Buddy Prusa-Firmware-Buddy
 
 ./local_build.sh $1
 

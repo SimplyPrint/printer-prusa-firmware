@@ -13,9 +13,7 @@ RUN apt-get update && apt-get install -y git curl wget software-properties-commo
 RUN bash -c "source venv/bin/activate \
     && uv pip install pipenv setuptools wheel"
 
-RUN mkdir /app
-COPY Prusa-Firmware-Buddy/ /app/Prusa-Firmware-Buddy
-RUN bash -c "source venv/bin/activate && cd /app/Prusa-Firmware-Buddy/ && pipenv --python 3.12 install pip==22.0"
+RUN apt install -y python3-venv python3-pip
 
 WORKDIR /app
 

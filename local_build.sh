@@ -2,7 +2,12 @@
 
 # Ensure submodules are initialized
 ready_to_build=true
-cd Prusa-Firmware-Buddy || (mkdir Prusa-Firmware-Buddy && git clone https://github.com/prusa3d/Prusa-Firmware-Buddy.git Prusa-Firmware-Buddy && cd Prusa-Firmware-Buddy && ready_to_build=false)
+if ! cd Prusa-Firmware-Buddy; then
+    mkdir Prusa-Firmware-Buddy
+    git clone https://github.com/prusa3d/Prusa-Firmware-Buddy.git Prusa-Firmware-Buddy
+    cd Prusa-Firmware-Buddy
+    ready_to_build=false
+fi
 
 git stash
 cd .. || exit
