@@ -15,6 +15,10 @@ PATCH_DIR="patches/$PATCH_VERSION"
 FAILED_PATCHES=()
 CONFLICT_FILES=()
 
+rm -rf $REPO_PATH
+
+git clone https://github.com/prusa3d/Prusa-Firmware-Buddy.git $REPO_PATH
+
 # Navigate to repo
 cd "$REPO_PATH" || { echo "Error: Repository '$REPO_PATH' not found"; exit 1; }
 
@@ -45,10 +49,9 @@ fi
 # Apply patches
 echo "Applying patches from '../$PATCH_DIR/'..."
 for patch in "${PATCH_FILES[@]}"; do
-    if git am --3way "$patch"; then
+    if git apply -p1 "$patch"; then
         echo "✅ Applied: $(basename "$patch")"
     else
-        echo "❌ Failed: $(basename "$patch")"
         FAILED_PATCHES+=("$patch")
 
         # Check if `git am` is in progress before aborting
