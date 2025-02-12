@@ -67,7 +67,7 @@ index 64ede0bd177e9679e530a91bfe486ae19954fdcc..739e4064526922a4c188a7a5bfd7a2a2
  
 -constexpr std::array<std::span<const unsigned char>, 1> certificates = {
 -    std::span { ca_cert_der, ca_cert_der_len }
-+constexpr std::array<std::span<const unsigned char>, 2> certificates = {
++constexpr std::array<std::span<const unsigned char>, 1> certificates = {
 +    //std::span { ca_cert_der_old, ca_cert_der_len_old },
 +    std::span { ca_cert_der_new, ca_cert_der_len_new }
  };
