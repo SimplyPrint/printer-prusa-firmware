@@ -1,5 +1,5 @@
 diff --git a/src/connect/connect.cpp b/src/connect/connect.cpp
-index 99c50f97844838f808b00f377f56f6b45592f3c6..e7e853a265dfd56761698faaa041179c7a1c9521 100644
+index 99c50f97844838f808b00f377f56f6b45592f3c6..6fcd03d18962863271580206e1ee985d32d3e337 100644
 --- a/src/connect/connect.cpp
 +++ b/src/connect/connect.cpp
 @@ -20,6 +20,8 @@
@@ -11,7 +11,7 @@ index 99c50f97844838f808b00f377f56f6b45592f3c6..e7e853a265dfd56761698faaa041179c
  
  using namespace http;
  using json::ChunkRenderer;
-@@ -44,7 +46,65 @@ LOG_COMPONENT_DEF(connect, logging::Severity::info);
+@@ -44,7 +46,66 @@ LOG_COMPONENT_DEF(connect, logging::Severity::info);
  
  namespace connect_client {
  
@@ -25,6 +25,7 @@ index 99c50f97844838f808b00f377f56f6b45592f3c6..e7e853a265dfd56761698faaa041179c
 +    class SimplyPrintRequest final : public http::Request {
 +    private:
 +        std::unique_ptr<HeaderOut[]> headers; // Heap-allocated headers
++
 +        std::unique_ptr<std::string> data;    // Heap-allocated data
 +        size_t offset = 0;                    // Add offset to track progress through data
 +
@@ -77,7 +78,7 @@ index 99c50f97844838f808b00f377f56f6b45592f3c6..e7e853a265dfd56761698faaa041179c
  
      // Send a ping if there's no activity from us during this time (15_000 ms = 15s)
      constexpr uint32_t ping_inactivity = 15000;
-@@ -249,13 +309,19 @@ Connect::ServerResp Connect::handle_server_resp(http::Response resp, CommandId c
+@@ -249,13 +310,19 @@ Connect::ServerResp Connect::handle_server_resp(http::Response resp, CommandId c
      // whole request-response pair a successful one. That's OK, because on the
      // lower-level it is - we consumed all the data and are allowed to reuse
      // the connection and all that.
@@ -98,7 +99,7 @@ index 99c50f97844838f808b00f377f56f6b45592f3c6..e7e853a265dfd56761698faaa041179c
      default:;
          // If it's unknown content type, then it's unknown command because we
          // have no idea what to do about it / how to even parse it.
-@@ -682,6 +748,62 @@ CommResult Connect::prepare_connection(CachedFactory &conn_factory, const Printe
+@@ -682,6 +749,62 @@ CommResult Connect::prepare_connection(CachedFactory &conn_factory, const Printe
      return monostate {};
  }
  
@@ -161,7 +162,7 @@ index 99c50f97844838f808b00f377f56f6b45592f3c6..e7e853a265dfd56761698faaa041179c
  CommResult Connect::send_command(CachedFactory &conn_factory, const Printer::Config &config, Action &&action, optional<CommandId> background_command_id) {
      log_debug(connect, "Sending to connect");
      BasicRequest request(printer, config, action, background_command_id);
-@@ -862,10 +984,16 @@ void Connect::run() {
+@@ -862,10 +985,16 @@ void Connect::run() {
      log_debug(connect, "%s", "Connect client starts\n");
  
      CachedFactory conn_factory;
@@ -178,7 +179,7 @@ index 99c50f97844838f808b00f377f56f6b45592f3c6..e7e853a265dfd56761698faaa041179c
          if (reg_wanted && reg_running) {
              const auto new_status = get<Registrator>(guts).communicate(conn_factory);
              process_status(new_status, ConnectionStatus::RegistrationError);
-@@ -887,6 +1015,8 @@ void Connect::run() {
+@@ -887,6 +1016,8 @@ void Connect::run() {
              const auto new_status = communicate(conn_factory);
              process_status(new_status, ConnectionStatus::Error);
          }

@@ -1,5 +1,5 @@
 diff --git a/src/gui/screen_printing.cpp b/src/gui/screen_printing.cpp
-index 02e47ef3ef909d861eb62de825e35bdd39fb297d..34db64ab4cec6cfda48dac68968e668e8565bad3 100644
+index 02e47ef3ef909d861eb62de825e35bdd39fb297d..c565c867b3e7d19b84d4e2530353576d079060cc 100644
 --- a/src/gui/screen_printing.cpp
 +++ b/src/gui/screen_printing.cpp
 @@ -19,30 +19,45 @@
