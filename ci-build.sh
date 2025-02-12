@@ -32,9 +32,11 @@ while true; do
 
 
 # Upload the built file in the background
-
-curl --header "JOB-TOKEN: ${CI_JOB_TOKEN}" --upload-file "build/mk4_release_boot/firmware.bbf" "${CI_API_V4_URL}/projects/${CI_PROJECT_ID}/packages/generic/$1/$stripped/mk4_firmware.bbf"
-curl --header "JOB-TOKEN: ${CI_JOB_TOKEN}" --upload-file "build/coreone_release_boot/firmware.bbf" "${CI_API_V4_URL}/projects/${CI_PROJECT_ID}/packages/generic/$1/$stripped/coreone_firmware.bbf"
-
+IFS=',' read -ra names <<< "$2"  # Split $2 into an array
+for name in "${names[@]}"; do
+    curl --header "JOB-TOKEN: ${CI_JOB_TOKEN}" \
+         --upload-file "build/${name}_release_boot/firmware.bbf" \
+         "${CI_API_V4_URL}/projects/${CI_PROJECT_ID}/packages/generic/$1/$stripped/${name}_firmware.bbf"
+done
 # Wait for all background jobs to complete
 echo "Build and upload process completed."
