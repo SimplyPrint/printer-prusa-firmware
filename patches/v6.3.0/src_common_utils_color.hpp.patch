@@ -1,5 +1,5 @@
 diff --git a/src/common/utils/color.hpp b/src/common/utils/color.hpp
-index f581c0dcf0bba82ffebdd2f957e42422335d2344..dd49a6511ab322b8291894eb653cbc3fceac9e00 100644
+index f581c0dcf0bba82ffebdd2f957e42422335d2344..8a7e17f361d62bf5b4160f078cf3ed26f9666ccb 100644
 --- a/src/common/utils/color.hpp
 +++ b/src/common/utils/color.hpp
 @@ -84,5 +84,8 @@ constexpr Color COLOR_LIGHT_GREEN = Color::from_raw(0x40b040);
