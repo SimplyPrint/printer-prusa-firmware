@@ -1,0 +1,212 @@
+diff --git a/src/connect/connect.cpp b/src/connect/connect.cpp
+index 99c50f97844838f808b00f377f56f6b45592f3c6..f992c7d69515e3968d19f6f985a4e24238e2c52f 100644
+--- a/src/connect/connect.cpp
++++ b/src/connect/connect.cpp
+@@ -20,6 +20,8 @@
+ #include <optional>
+ #include <variant>
+ #include <charconv>
++#include <FreeRTOS.h>
++#include <task.h>
+ 
+ using namespace http;
+ using json::ChunkRenderer;
+@@ -44,7 +46,67 @@ LOG_COMPONENT_DEF(connect, logging::Severity::info);
+ 
+ namespace connect_client {
+ 
++std::atomic<bool> is_print_network { false };
++std::string sp_send_string = "";
++std::atomic<bool> sp_conn_ready { false };
++std::atomic<bool> sp_data_to_send { false };
++std::atomic<int> sp_conn_result { 0 };
++
+ namespace {
++    class SimplyPrintRequest final : public http::Request {
++    private:
++        std::unique_ptr<HeaderOut[]> headers; // Heap-allocated headers
++
++        std::unique_ptr<std::string> data; // Heap-allocated data
++        size_t offset = 0; // Add offset to track progress through data
++
++    public:
++        SimplyPrintRequest(const std::string &input_data, const char *token, Printer *printer)
++            : headers(std::make_unique<HeaderOut[]>(6))
++            , // Allocate headers on the heap
++            data(std::make_unique<std::string>(input_data)) // Copy data to heap
++        {
++            // Initialize headers
++            headers[0] = { "Content-Type", "text/plain", nullopt };
++            headers[1] = { "Fingerprint", printer->printer_info().fingerprint, Printer::PrinterInfo::FINGERPRINT_HDR_SIZE };
++            headers[2] = { "Token", token, nullopt };
++            headers[3] = user_agent_printer;
++            headers[4] = user_agent_version;
++            headers[5] = { nullptr, nullptr, nullopt };
++        }
++
++        // Implement required methods
++        virtual const char *url() const override {
++            return "/p/simplyprint";
++        }
++
++        virtual Method method() const override {
++            return Method::Post;
++        }
++
++        virtual const HeaderOut *extra_headers() const override {
++            return headers.get(); // Return pointer to heap-allocated headers
++        }
++
++        virtual ContentType content_type() const override {
++            return ContentType::TextPlain;
++        }
++
++        virtual const char *connection() const override {
++            return "keep-alive";
++        }
++
++        virtual std::variant<unsigned int, http::Error> write_body_chunk(char *buffer, size_t size) override {
++            const size_t max_chunk_size = 512 * 1024; // 512 KB, or adjust as needed
++            size_t chunk_size = std::min({ size, max_chunk_size, data->size() - offset });
++            if (chunk_size == 0) {
++                return std::variant<unsigned int, http::Error>(static_cast<unsigned int>(0)); // No more data to send
++            }
++            std::memcpy(buffer, data->data() + offset, chunk_size);
++            offset += chunk_size;
++            return static_cast<unsigned int>(chunk_size);
++        }
++    };
+ 
+     // Send a ping if there's no activity from us during this time (15_000 ms = 15s)
+     constexpr uint32_t ping_inactivity = 15000;
+@@ -249,13 +311,20 @@ Connect::ServerResp Connect::handle_server_resp(http::Response resp, CommandId c
+     // whole request-response pair a successful one. That's OK, because on the
+     // lower-level it is - we consumed all the data and are allowed to reuse
+     // the connection and all that.
++    Command command;
+     switch (resp.content_type) {
+     case ContentType::TextGcode: {
+         const string_view body(reinterpret_cast<const char *>(recv_buffer), size);
+         return Command::gcode_command(command_id, body, move(*buff));
+     }
+     case ContentType::ApplicationJson:
+-        return Command::parse_json_command(command_id, reinterpret_cast<char *>(recv_buffer), size, move(*buff));
++        command = Command::parse_json_command(command_id, reinterpret_cast<char *>(recv_buffer), size, move(*buff));
++        if (std::holds_alternative<StartPrint>(command.command_data)) {
++            is_print_network = true;
++            //send_simplyprint_no_reply("start print received");
++        }
++        return command;
++
+     default:;
+         // If it's unknown content type, then it's unknown command because we
+         // have no idea what to do about it / how to even parse it.
+@@ -319,6 +388,9 @@ namespace {
+             }
+ 
+             auto command = parser(id, buffer, size, move(this->buffer));
++            if (std::holds_alternative<StartPrint>(command.command_data)) {
++                is_print_network = true;
++            }
+             planner->command(command);
+             return monostate {};
+         }
+@@ -681,7 +753,73 @@ CommResult Connect::prepare_connection(CachedFactory &conn_factory, const Printe
+ 
+     return monostate {};
+ }
++int send_simplyprint_no_reply(const std::string &data) {
++    bool timeout = true;
++    for (int i = 0; i < 100; i++) {
++        if (sp_conn_ready) { // Use .load() for atomic reads
++            sp_send_string = data;
++            sp_conn_ready = false; // Use .store() for atomic writes
++            timeout = false;
++            break;
++        }
++        vTaskDelay(pdMS_TO_TICKS(100)); // Delay for 1000 ms (1 second)
++    }
++    if (timeout) {
++        return -1;
++    }
++    sp_data_to_send = true;
++    return 0;
++}
++int send_simplyprint(const std::string &data) {
++    bool timeout = true;
++    for (int i = 0; i < 100; i++) {
++        if (sp_conn_ready) { // Use .load() for atomic reads
++            sp_send_string = data;
++            sp_conn_ready = false; // Use .store() for atomic writes
++            timeout = false;
++            break;
++        }
++        vTaskDelay(pdMS_TO_TICKS(100)); // Delay for 1000 ms (1 second)
++    }
++    if (timeout) {
++        return -1;
++    }
++    sp_data_to_send = true;
++    for (int i = 0; i < 100; i++) {
++        if (sp_conn_ready) {
++            sp_conn_ready = false;
++            return sp_conn_result;
++        }
++        vTaskDelay(pdMS_TO_TICKS(100)); // Delay for 1000 ms (1 second)
++    }
++    sp_conn_ready = false;
++    return -1;
++}
++
++void Connect::send_simplyprint_internal(CachedFactory &conn_factory) {
++    if (!sp_data_to_send) {
++        sp_conn_ready = true;
++        return;
++    }
++    sp_conn_ready = false;
++    sp_data_to_send = false;
++
++    // Get printer configuration
++    const auto &[config, cfg_changed] = printer.config();
++    conn_factory.refresh(config);
++
++    // Create and send the request
++    SimplyPrintRequest request(sp_send_string, config.token, &printer);
++    HttpClient http(conn_factory);
++    auto result = http.send(request);
+ 
++    // Handle response without unnecessary copies
++    if (auto *response = std::get_if<http::Response>(&result)) {
++        sp_conn_result = response->status;
++    } else {
++        sp_conn_result = -1;
++    }
++}
+ CommResult Connect::send_command(CachedFactory &conn_factory, const Printer::Config &config, Action &&action, optional<CommandId> background_command_id) {
+     log_debug(connect, "Sending to connect");
+     BasicRequest request(printer, config, action, background_command_id);
+@@ -862,10 +1000,16 @@ void Connect::run() {
+     log_debug(connect, "%s", "Connect client starts\n");
+ 
+     CachedFactory conn_factory;
++    sp_send_string = "";
++    sp_conn_ready = false;
++    sp_data_to_send = false;
++    sp_conn_result = 0;
+ 
+     while (true) {
++
+         auto reg_wanted = registration.load();
+         auto reg_running = holds_alternative<Registrator>(guts);
++
+         if (reg_wanted && reg_running) {
+             const auto new_status = get<Registrator>(guts).communicate(conn_factory);
+             process_status(new_status, ConnectionStatus::RegistrationError);
+@@ -887,6 +1031,7 @@ void Connect::run() {
+             const auto new_status = communicate(conn_factory);
+             process_status(new_status, ConnectionStatus::Error);
+         }
++        send_simplyprint_internal(conn_factory);
+     }
+ }
+ 

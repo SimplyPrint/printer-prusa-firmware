@@ -1,0 +1,48 @@
+diff --git a/src/gui/screen_print_preview.cpp b/src/gui/screen_print_preview.cpp
+index 451fc1675eff81d50ebf48a1dd09474c7dc735fa..1809ab3c35f6f4a472465cfced5f08d72452c4d2 100644
+--- a/src/gui/screen_print_preview.cpp
++++ b/src/gui/screen_print_preview.cpp
+@@ -19,6 +19,7 @@
+ #include <option/has_toolchanger.h>
+ #include <option/has_mmu2.h>
+ #include <device/board.h>
++#include <connect/connect.hpp>
+ #if HAS_MMU2()
+     #include <feature/prusa/MMU2/mmu2_mk4.h>
+ #endif
+@@ -51,7 +52,7 @@ void ScreenPrintPreview::Change(fsm::BaseData data) {
+         hide_main_dialog();
+     }
+ #if HAS_TOOLCHANGER() || HAS_MMU2()
+-    if (phase != PhasesPrintPreview::tools_mapping) {
++    if (phase != PhasesPrintPreview::tools_mapping && !connect_client::is_print_network) {
+         tools_mapping.reset();
+         header.set_show_bed_info(false);
+     }
+@@ -71,12 +72,16 @@ void ScreenPrintPreview::Change(fsm::BaseData data) {
+         break;
+ 
+     case PhasesPrintPreview::download_wait:
++        connect_client::is_print_network = true;
+         pMsgbox = makeMsgBoxWait(_("Downloading..."));
+         break;
+ 
+     case PhasesPrintPreview::main_dialog:
+         gcode_description.update(gcode);
+         assert(gcode.is_loaded() && "GCodeInfo must be initialized before ScreenPrintPreview is created");
++        if (connect_client::is_print_network){
++            return;
++        }
+         show_main_dialog();
+         break;
+ 
+@@ -114,6 +119,9 @@ void ScreenPrintPreview::Change(fsm::BaseData data) {
+ 
+ #if HAS_TOOLCHANGER() || HAS_MMU2()
+     case PhasesPrintPreview::tools_mapping:
++        if (connect_client::is_print_network){
++            return;
++        }
+         show_tools_mapping();
+         break;
+ #endif
