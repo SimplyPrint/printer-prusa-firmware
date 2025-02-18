@@ -1,5 +1,5 @@
 diff --git a/src/connect/connect.hpp b/src/connect/connect.hpp
-index 06dcd410c5789d566731cf6d655522525a256cc4..0a0cc987bbe987fa0df4be180a4c1ba9d9d55005 100644
+index 06dcd410c5789d566731cf6d655522525a256cc4..c0e800878a3ed3cce174e3be297151441935f353 100644
 --- a/src/connect/connect.hpp
 +++ b/src/connect/connect.hpp
 @@ -14,6 +14,8 @@
@@ -23,7 +23,7 @@ index 06dcd410c5789d566731cf6d655522525a256cc4..0a0cc987bbe987fa0df4be180a4c1ba9
 +// Non-atomic variables that aren't modified concurrently
 +extern std::string sp_send_string;
 +int send_simplyprint(const std::string &data);
-+int send_simplyprint_no_reply(const std::string &data);
++int send_simplyprint_no_return(const std::string &data);
  class Connect {
  private:
      std::variant<Planner, Registrator> guts;

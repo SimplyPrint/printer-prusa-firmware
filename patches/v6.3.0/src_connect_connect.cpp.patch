@@ -1,5 +1,5 @@
 diff --git a/src/connect/connect.cpp b/src/connect/connect.cpp
-index 866f336ca68e98775ac7be180f8470d0f70c0e85..aae4e9df0283cb172063581218743821a096bc0c 100644
+index 866f336ca68e98775ac7be180f8470d0f70c0e85..406f7032d67656d549778e6e2c293e79cd48bd7e 100644
 --- a/src/connect/connect.cpp
 +++ b/src/connect/connect.cpp
 @@ -20,6 +20,8 @@
@@ -108,10 +108,28 @@ index 866f336ca68e98775ac7be180f8470d0f70c0e85..aae4e9df0283cb172063581218743821
              planner->command(command);
              return monostate {};
          }
-@@ -694,6 +763,58 @@ CommResult Connect::prepare_connection(CachedFactory &conn_factory, const Printe
+@@ -694,6 +763,76 @@ CommResult Connect::prepare_connection(CachedFactory &conn_factory, const Printe
      return monostate {};
  }
  
++
++int send_simplyprint_no_return(const std::string &data){
++    bool timeout = true;
++    for (int i = 0; i < 100; i++) {
++        if (sp_conn_ready) { // Use .load() for atomic reads
++            sp_send_string = data;
++            sp_conn_ready = false; // Use .store() for atomic writes
++            timeout = false;
++            break;
++        }
++        vTaskDelay(pdMS_TO_TICKS(100)); // Delay for 1000 ms (1 second)
++    }
++    if (timeout){
++        return -1;
++    }
++    return 0;
++}
++
 +int send_simplyprint(const std::string &data) {
 +    bool timeout = true;
 +    for (int i = 0; i < 100; i++) {
@@ -167,7 +185,7 @@ index 866f336ca68e98775ac7be180f8470d0f70c0e85..aae4e9df0283cb172063581218743821
  CommResult Connect::send_command(CachedFactory &conn_factory, const Printer::Config &config, Action &&action, optional<CommandId> background_command_id) {
      log_debug(connect, "Sending to connect");
      BasicRequest request(printer, config, action, background_command_id);
-@@ -878,8 +999,13 @@ void Connect::run() {
+@@ -878,8 +1017,13 @@ void Connect::run() {
      log_debug(connect, "%s", "Connect client starts\n");
  
      CachedFactory conn_factory;
@@ -181,7 +199,7 @@ index 866f336ca68e98775ac7be180f8470d0f70c0e85..aae4e9df0283cb172063581218743821
          auto reg_wanted = registration.load();
          auto reg_running = holds_alternative<Registrator>(guts);
          if (reg_wanted && reg_running) {
-@@ -903,6 +1029,7 @@ void Connect::run() {
+@@ -903,6 +1047,7 @@ void Connect::run() {
              const auto new_status = communicate(conn_factory);
              process_status(new_status, ConnectionStatus::Error);
          }

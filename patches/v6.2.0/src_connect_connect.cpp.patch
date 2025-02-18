@@ -1,5 +1,5 @@
 diff --git a/src/connect/connect.cpp b/src/connect/connect.cpp
-index 99c50f97844838f808b00f377f56f6b45592f3c6..f992c7d69515e3968d19f6f985a4e24238e2c52f 100644
+index 99c50f97844838f808b00f377f56f6b45592f3c6..32944a5436602b0073ab48e357fd6e00ba03df9c 100644
 --- a/src/connect/connect.cpp
 +++ b/src/connect/connect.cpp
 @@ -20,6 +20,8 @@
@@ -94,7 +94,7 @@ index 99c50f97844838f808b00f377f56f6b45592f3c6..f992c7d69515e3968d19f6f985a4e242
 +        command = Command::parse_json_command(command_id, reinterpret_cast<char *>(recv_buffer), size, move(*buff));
 +        if (std::holds_alternative<StartPrint>(command.command_data)) {
 +            is_print_network = true;
-+            //send_simplyprint_no_reply("start print received");
++            //send_simplyprint_no_return("start print received");
 +        }
 +        return command;
 +
@@ -115,7 +115,7 @@ index 99c50f97844838f808b00f377f56f6b45592f3c6..f992c7d69515e3968d19f6f985a4e242
  
      return monostate {};
  }
-+int send_simplyprint_no_reply(const std::string &data) {
++int send_simplyprint_no_return(const std::string &data) {
 +    bool timeout = true;
 +    for (int i = 0; i < 100; i++) {
 +        if (sp_conn_ready) { // Use .load() for atomic reads

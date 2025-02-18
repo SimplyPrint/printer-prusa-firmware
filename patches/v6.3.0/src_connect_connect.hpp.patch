@@ -1,5 +1,5 @@
 diff --git a/src/connect/connect.hpp b/src/connect/connect.hpp
-index 06dcd410c5789d566731cf6d655522525a256cc4..8f51eb7b822e362e76146cc1f684e30a2c0b0412 100644
+index 06dcd410c5789d566731cf6d655522525a256cc4..6605ceb76a2ea0015dca7d9371130e2eb42cd16f 100644
 --- a/src/connect/connect.hpp
 +++ b/src/connect/connect.hpp
 @@ -14,6 +14,8 @@
@@ -11,7 +11,7 @@ index 06dcd410c5789d566731cf6d655522525a256cc4..8f51eb7b822e362e76146cc1f684e30a
  class CachedFactory;
  
  OnlineStatus last_status();
-@@ -50,6 +52,15 @@ enum class RequestType {
+@@ -50,6 +52,16 @@ enum class RequestType {
      SendInfo,
  };
  
@@ -23,11 +23,12 @@ index 06dcd410c5789d566731cf6d655522525a256cc4..8f51eb7b822e362e76146cc1f684e30a
 +// Non-atomic variables that aren't modified concurrently
 +extern std::string sp_send_string;
 +int send_simplyprint(const std::string &data);
++int send_simplyprint_no_return(const std::string &data);
 +
  class Connect {
  private:
      std::variant<Planner, Registrator> guts;
-@@ -83,6 +94,8 @@ private:
+@@ -83,6 +95,8 @@ private:
      ServerResp handle_server_resp(http::Response response, CommandId command_id);
      Connect(const Connect &other) = delete;
      Connect(Connect &&other) = delete;
