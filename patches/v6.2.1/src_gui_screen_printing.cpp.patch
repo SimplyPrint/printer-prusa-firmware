@@ -1,5 +1,5 @@
 diff --git a/src/gui/screen_printing.cpp b/src/gui/screen_printing.cpp
-index 02e47ef3ef909d861eb62de825e35bdd39fb297d..c565c867b3e7d19b84d4e2530353576d079060cc 100644
+index 02e47ef3ef909d861eb62de825e35bdd39fb297d..c84167c8c8bbdcbfdbae2706c1f8c4ffd7a4d09d 100644
 --- a/src/gui/screen_printing.cpp
 +++ b/src/gui/screen_printing.cpp
 @@ -19,30 +19,45 @@
@@ -226,10 +226,10 @@ index 02e47ef3ef909d861eb62de825e35bdd39fb297d..c565c867b3e7d19b84d4e2530353576d
 +
 +
 +            marlin_client::print_exit();
-             return;
++            return;
 +        case printing_state_t::PAUSING:
 +        case printing_state_t::RESUMING:
-+            return;
+             return;
 +        default: {
 +            if (MsgBoxWarning(_("Are you sure to stop this printing?"), Responses_YesNo, 1)
 +                == Response::Yes) {
@@ -278,7 +278,7 @@ index 02e47ef3ef909d861eb62de825e35bdd39fb297d..c565c867b3e7d19b84d4e2530353576d
  }
  
  #if HAS_MINI_DISPLAY()
-@@ -157,42 +256,44 @@ constexpr size_t rotating_circles_left_offset { 0 };
+@@ -157,42 +256,45 @@ constexpr size_t rotating_circles_left_offset { 0 };
  constexpr Rect16 rotating_circles_rect { column_left + rotating_circles_left_offset, get_row(1) + height(etime_val_font) + 5, rotating_circles_width, rotating_circles_height };
  
  constexpr Rect16 end_result_body_rect { 0, row_0 - EndResultBody::extra_top_space, GuiDefaults::ScreenWidth, GuiDefaults::ScreenHeight - GuiDefaults::FooterHeight - row_0 };
@@ -338,6 +338,7 @@ index 02e47ef3ef909d861eb62de825e35bdd39fb297d..c565c867b3e7d19b84d4e2530353576d
 -    , time_end_format(PT_t::init)
 +, popup_rect(Rect16::Merge(std::array<Rect16, 4>({ w_time_label.GetRect(), w_time_value.GetRect(), w_etime_label.GetRect(), w_etime_value.GetRect() })))
 +, time_end_format(PT_t::init)
++//, sp_print_finished_icon(this, sp_rect, &img::sp_print_finished_200x200)
  #elif HAS_LARGE_DISPLAY()
 -    , popup_rect(Rect16(30, get_row(0), 250, 70)) // Rect for printing messages from marlin.
 -    , end_result_body(this, end_result_body_rect) // safe to pass even if order changes because EndScreen constructor doesn't use it (therefore guaranteed to be valid)
@@ -347,19 +348,21 @@ index 02e47ef3ef909d861eb62de825e35bdd39fb297d..c565c867b3e7d19b84d4e2530353576d
  #endif // USE_<display>
  {
      // we will handle HELD_RELEASED event in this window
-@@ -231,10 +332,17 @@ screen_printing_data_t::screen_printing_data_t()
+@@ -230,11 +332,19 @@ screen_printing_data_t::screen_printing_data_t()
+ 
      w_etime_label.SetTextColor(COLOR_SILVER);
      w_progress_txt.set_font(EndResultBody::progress_font);
- #endif // USE_<display>
--
+-#endif // USE_<display>
 +    sp_print_finished_icon.Disable();
 +    sp_print_finished_icon.Unshadow();
 +    sp_print_finished_icon.Hide();
++    end_screen_state = EndScreenState::end_screen;
+ 
++#endif // USE_<display>
 +    was_network_print = false;
 +    EnableButton(BtnSocket::Left);
 +    EnableButton(BtnSocket::Middle);
 +    EnableButton(BtnSocket::Right);
-+    end_screen_state = EndScreenState::end_screen;
      strlcpy(text_filename.data(), GCodeInfo::getInstance().GetGcodeFilename(), text_filename.size());
      w_filename.set_font(Font::big);
 -    w_filename.SetPadding({ 0, 0, 0, 0 });
@@ -367,7 +370,7 @@ index 02e47ef3ef909d861eb62de825e35bdd39fb297d..c565c867b3e7d19b84d4e2530353576d
      w_filename.SetText(string_view_utf8::MakeRAM(text_filename.data()));
  
      w_etime_label.set_font(Font::small);
-@@ -263,10 +371,10 @@ void screen_printing_data_t::windowEvent(window_t *sender, GUI_event_t event, vo
+@@ -263,10 +373,10 @@ void screen_printing_data_t::windowEvent(window_t *sender, GUI_event_t event, vo
      /// check stop clicked when MBL is running
      printing_state_t p_state = GetState();
      if (
@@ -382,7 +385,7 @@ index 02e47ef3ef909d861eb62de825e35bdd39fb297d..c565c867b3e7d19b84d4e2530353576d
          marlin_client::print_abort();
          waiting_for_abort = false;
          return;
-@@ -278,7 +386,17 @@ void screen_printing_data_t::windowEvent(window_t *sender, GUI_event_t event, vo
+@@ -278,7 +388,20 @@ void screen_printing_data_t::windowEvent(window_t *sender, GUI_event_t event, vo
      updateTimes();
  
      /// -- close screen when print is done / stopped and USB media is removed
@@ -396,12 +399,15 @@ index 02e47ef3ef909d861eb62de825e35bdd39fb297d..c565c867b3e7d19b84d4e2530353576d
 +        SetButtonVisible(BtnSocket::Middle, true);
 +        SetButtonVisible(BtnSocket::Right, true);
 +        was_network_print = false;
++#if HAS_LARGE_DISPLAY()
 +        second_click_left = false;
++#endif
++
 +
          marlin_client::print_exit();
          return;
      }
-@@ -339,18 +457,18 @@ void screen_printing_data_t::windowEvent(window_t *sender, GUI_event_t event, vo
+@@ -339,18 +462,18 @@ void screen_printing_data_t::windowEvent(window_t *sender, GUI_event_t event, vo
              string_view_utf8 txt;
              switch (*reason) {
              case MMU2::MaintenanceReason::Failures:
@@ -426,14 +432,15 @@ index 02e47ef3ef909d861eb62de825e35bdd39fb297d..c565c867b3e7d19b84d4e2530353576d
                  break;
              }
  
-@@ -359,10 +477,22 @@ void screen_printing_data_t::windowEvent(window_t *sender, GUI_event_t event, vo
+@@ -359,10 +482,23 @@ void screen_printing_data_t::windowEvent(window_t *sender, GUI_event_t event, vo
      }
  #endif
  
++
+ #if HAS_LARGE_DISPLAY()
 +    if (end_screen_state != EndScreenState::end_screen || !showing_end_result) {
 +        ScreenPrintingModel::windowEvent(sender, event, param);
 +    }
- #if HAS_LARGE_DISPLAY()
 +    if (shown_end_result && event == GUI_event_t::ENC_UP){
 +        second_click_left = false;
 +    }
@@ -450,7 +457,7 @@ index 02e47ef3ef909d861eb62de825e35bdd39fb297d..c565c867b3e7d19b84d4e2530353576d
          return;
      }
  
-@@ -392,41 +522,142 @@ void screen_printing_data_t::windowEvent(window_t *sender, GUI_event_t event, vo
+@@ -392,41 +528,142 @@ void screen_printing_data_t::windowEvent(window_t *sender, GUI_event_t event, vo
          return;
      }
  
@@ -494,16 +501,16 @@ index 02e47ef3ef909d861eb62de825e35bdd39fb297d..c565c867b3e7d19b84d4e2530353576d
 +        was_network_print = true;
 +        end_screen_state = EndScreenState::print_result_screen;
 +    }
- 
--    end_result_body.Show();
--    CaptureNormalWindow(end_result_body);
++
 +    switch (end_screen_state) {
 +        case EndScreenState::end_screen:
 +             // hide previous
 +            for (auto &button : buttons) {
 +                button.Hide();
 +            }
-+
+ 
+-    end_result_body.Show();
+-    CaptureNormalWindow(end_result_body);
 +            for (auto &label : labels) {
 +                label.Hide();
 +            }
@@ -608,7 +615,7 @@ index 02e47ef3ef909d861eb62de825e35bdd39fb297d..c565c867b3e7d19b84d4e2530353576d
      // show previous
      for (auto &button : buttons) {
          button.Show();
-@@ -574,67 +805,73 @@ void screen_printing_data_t::set_pause_icon_and_label() {
+@@ -574,67 +811,73 @@ void screen_printing_data_t::set_pause_icon_and_label() {
      // todo it is static, because menu tune is not dialog
      // switch (state__readonly__use_change_print_state)
      switch (GetState()) {
@@ -739,7 +746,7 @@ index 02e47ef3ef909d861eb62de825e35bdd39fb297d..c565c867b3e7d19b84d4e2530353576d
      }
  }
  
-@@ -642,51 +879,51 @@ void screen_printing_data_t::set_tune_icon_and_label() {
+@@ -642,51 +885,51 @@ void screen_printing_data_t::set_tune_icon_and_label() {
      SetButtonIconAndLabel(BtnSocket::Left, BtnRes::Settings, LabelRes::Settings);
  
      switch (GetState()) {
@@ -829,7 +836,7 @@ index 02e47ef3ef909d861eb62de825e35bdd39fb297d..c565c867b3e7d19b84d4e2530353576d
      }
  }
  
-@@ -694,93 +931,98 @@ void screen_printing_data_t::change_print_state() {
+@@ -694,93 +937,98 @@ void screen_printing_data_t::change_print_state() {
      printing_state_t st = printing_state_t::COUNT;
  
      switch (marlin_vars().print_state) {

@@ -1,0 +1,14 @@
+diff --git a/src/gui/resolution_240x320/screen_printing_layout.hpp b/src/gui/resolution_240x320/screen_printing_layout.hpp
+index e231d37734e55d21ff8effb6d4147264404de959..729313b88b02b23fbfcbe4d69c8fae2146610c39 100644
+--- a/src/gui/resolution_240x320/screen_printing_layout.hpp
++++ b/src/gui/resolution_240x320/screen_printing_layout.hpp
+@@ -16,4 +16,8 @@ inline constexpr WindowMultiIconButton::Pngs icon_resources[] = {
+     { img::reprint_64x64, img::reprint_64x64_focused, img::reprint_64x64_disabled },
+     { img::disconnect_64x64, img::disconnect_64x64_focused, img::disconnect_64x64_disabled },
+     { img::set_ready_64x64, img::set_ready_64x64_focused, img::set_ready_64x64_disabled },
+-};
++{ img::sp_print_ok, img::sp_print_ok_focused, img::sp_print_ok_disabled },
++{ img::sp_print_failed, img::sp_print_failed_focused, img::sp_print_failed_disabled },
++{ img::sp_next_queue_item_64x64, img::sp_next_queue_item_focused_64x64, img::sp_next_queue_item_disabled_64x64 },
++
++    };
