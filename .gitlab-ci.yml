@@ -18,7 +18,7 @@ build-job:
     - mkdir secure_files
     - curl --silent "https://gitlab.com/gitlab-org/incubation-engineering/mobile-devops/download-secure-files/-/raw/main/installer" | bash
     - mv secure_files/* .
-    - bash ci-build.sh v6.2.0 mk4
+    - bash ci-build.sh v6.2.0 mk4,xl,mk3.5
     - bash ci-build.sh v6.3.0 coreone
   tags: [ "docker_build" ]
 
