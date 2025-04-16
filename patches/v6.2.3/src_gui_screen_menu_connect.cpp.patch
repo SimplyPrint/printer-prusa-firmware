@@ -1,0 +1,50 @@
+diff --git a/src/gui/screen_menu_connect.cpp b/src/gui/screen_menu_connect.cpp
+index b545985f3369eb372084382491b8d677b8f0495d..0ba4b2ad3a245c6b9875486317ede727df2faf32 100644
+--- a/src/gui/screen_menu_connect.cpp
++++ b/src/gui/screen_menu_connect.cpp
+@@ -14,11 +14,29 @@
+ using connect_client::ConnectionStatus;
+ using connect_client::OnlineError;
+ 
++
++MI_SEND_SIMPLYPRINT::MI_SEND_SIMPLYPRINT()
++        : IWindowMenuItem(_("Test messages connection to Simplyprint"), nullptr, is_enabled_t::yes, is_hidden_t::no, expands_t::no) {}
++
++void MI_SEND_SIMPLYPRINT::click([[maybe_unused]] IWindowMenu &window_menu) {
++
++    int rc = connect_client::send_simplyprint("test message");
++    if (rc / 100 == 2 || rc == 0){
++        MsgBoxInfo(_("Success"), Responses_Ok);
++    }
++    else {
++        std::string errorMsg = "An error occurred, http code " + std::to_string(rc);
++        MsgBoxError(_(errorMsg.c_str()), Responses_Ok);
++    }
++
++}
++
+ MI_CONNECT_ENABLED::MI_CONNECT_ENABLED()
+     : WI_ICON_SWITCH_OFF_ON_t(config_store().connect_enabled.get(), _(label), nullptr, is_enabled_t::yes, is_hidden_t::no) {}
+ 
+ void MI_CONNECT_ENABLED::OnChange([[maybe_unused]] size_t old_index) {
+     config_store().connect_enabled.set(static_cast<bool>(index));
++
+     // Connect will catch up with new config in its next iteration
+ }
+ 
+@@ -97,12 +115,12 @@ MI_CONNECT_LOAD_SETTINGS::MI_CONNECT_LOAD_SETTINGS()
+ void MI_CONNECT_LOAD_SETTINGS::click([[maybe_unused]] IWindowMenu &window_menu) {
+     if (connect_client::MarlinPrinter::load_cfg_from_ini()) {
+         if (config_store().connect_enabled.get()) {
+-            MsgBoxInfo(_("Loaded successfully. Connect will activate shortly."), Responses_Ok);
++            MsgBoxInfo(_("Loaded successfully. Simplyprint will activate shortly."), Responses_Ok);
+         } else {
+-            MsgBoxInfo(_("Loaded successfully. Enable Connect to activate."), Responses_Ok);
++            MsgBoxInfo(_("Loaded successfully. Enable Simplyprint to activate."), Responses_Ok);
+         }
+     } else {
+-        MsgBoxError(_("Failed to load config. Make sure the ini file downloaded from Connect is on the USB drive and try again."), Responses_Ok);
++        MsgBoxError(_("Failed to load config. Make sure the ini file downloaded from Simplyprint is on the USB drive and try again."), Responses_Ok);
+     }
+ }
+ 

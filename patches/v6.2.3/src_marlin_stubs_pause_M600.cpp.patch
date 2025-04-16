@@ -1,0 +1,20 @@
+diff --git a/src/marlin_stubs/pause/M600.cpp b/src/marlin_stubs/pause/M600.cpp
+index cb3805fb3bc757e135c85e5da3e9041701bc2e43..b70b4ee3296d08d9ebb9f9c00b2216b315b93c6a 100644
+--- a/src/marlin_stubs/pause/M600.cpp
++++ b/src/marlin_stubs/pause/M600.cpp
+@@ -119,6 +119,7 @@ void GcodeSuite::M600() {
+ #endif
+ 
+     if (do_manual_m600) {
++        SERIAL_ECHO_MSG("M118 A1 action:pause");
+         M600_manual();
+     }
+ 
+@@ -331,6 +332,7 @@ void M600_execute(xyz_pos_t park_point, uint8_t target_extruder, xyze_float_t re
+ /// Enabled for LoadCell equipped printers
+ #if HAS_LOADCELL()
+ void PrusaGcodeSuite::M1601() {
++    SERIAL_ECHO_MSG("M118 A1 action:pause");
+     M600_execute(
+         XYZ_NOZZLE_PARK_POINT_M600,
+         active_extruder,

@@ -1,0 +1,12 @@
+diff --git a/src/gui/MItem_menus.cpp b/src/gui/MItem_menus.cpp
+index af521c4d3e61eb93777c7543f0e5c3d3e44f2d37..a1832ad3946675367cd11132281388e447868718 100644
+--- a/src/gui/MItem_menus.cpp
++++ b/src/gui/MItem_menus.cpp
+@@ -137,6 +137,7 @@ template struct MI_SCREEN_CTOR<ScreenMenuSTSCalibrations>;
+ #if PRINTER_IS_PRUSA_MK3_5() || PRINTER_IS_PRUSA_MINI()
+ template struct MI_SCREEN_CTOR<ScreenMenuBedLevelCorrection>;
+ #endif
++//TODO add code to handle setting the lock screen password
+ 
+ /**********************************************************************************************/
+ // MI_SERIAL_PRINTING_SCREEN_ENABLE
