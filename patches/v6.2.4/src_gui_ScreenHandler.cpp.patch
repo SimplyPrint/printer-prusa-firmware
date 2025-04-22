@@ -1,0 +1,94 @@
+diff --git a/src/gui/ScreenHandler.cpp b/src/gui/ScreenHandler.cpp
+index a3d73871cf7d8740e59c397f4c24ca4c3943ae49..ab690d6b335d34bb56a82392befcc1736d65d891 100644
+--- a/src/gui/ScreenHandler.cpp
++++ b/src/gui/ScreenHandler.cpp
+@@ -2,6 +2,7 @@
+ #include "bsod.h"
+ 
+ #include <gui.hpp>
++#include "../common/screen_lock.hpp"
+ 
+ static const uint32_t MENU_TIMEOUT_MS = 30000;
+ 
+@@ -22,6 +23,10 @@ void Screens::Init(screen_node screen_creator) {
+     instance = &s;
+ }
+ 
++void Screens::reset_lock_timeout() {
++    screen_timeout_tick = gui::GetTick();
++}
++
+ Screens::iter Screens::find_enabled_node(iter begin, iter end) {
+     return std::find_if(begin, end, [](const screen_node &node) { return node.creator != nullptr; });
+ }
+@@ -55,9 +60,11 @@ void Screens::EnableMenuTimeout() {
+     ResetTimeout();
+     menu_timeout_enabled = true;
+ }
++
+ void Screens::DisableMenuTimeout() {
+     menu_timeout_enabled = false;
+ }
++
+ bool Screens::GetMenuTimeout() { return menu_timeout_enabled; }
+ 
+ // Push enabled creators on stack - in reverted order
+@@ -202,6 +209,22 @@ void Screens::ResetTimeout() {
+ }
+ 
+ void Screens::Loop() {
++    auto &sl = screen_lock::instance();
++
++
++    if (sl.get_locking_status() && !sl.get_screen_locked()) {
++        if (gui::GetTick() - screen_timeout_tick > (static_cast<uint32_t>(sl.get_lock_time() * 1000))) {
++            while (Get() && Get()->ClosedOnTimeout() && stack_iterator != stack.begin()) {
++                close = true;
++                InnerLoop();
++            }
++            sl.set_screen_locked(true);
++            return;
++        } else {
++            reset_lock_timeout(); // in case timeout was enabled while menu was opened
++        }
++
++    }
+     /// menu timeout logic:
+     /// when timeout is expired on current screen,
+     /// we iterate through whole stack and close every screen that should be closed
+@@ -243,8 +266,10 @@ void Screens::InnerLoop() {
+     if (close_all) {
+         if (stack_iterator != stack.begin()) { // is there something to close? (we never close screen[0])
+             if (!creator_node.IsEmpty()) { // have creator, have to emulate opening
+-                if ((stack_iterator)->creator == creator_node.creator) { // screen to be opened is already opened (on top of stack)
+-                    *(stack.begin() + 1) = *stack_iterator; // move (copy) current screen_node, init data does not matter - they are set after screen is closed
++                if ((stack_iterator)->creator ==
++                    creator_node.creator) { // screen to be opened is already opened (on top of stack)
++                    *(stack.begin() +
++                      1) = *stack_iterator; // move (copy) current screen_node, init data does not matter - they are set after screen is closed
+                     stack_iterator = stack.begin() + 1; // point to current screen_node
+                     if (creator_node.init_data.IsValid()) { // have some new meaningful data
+                         current->InitState(creator_node.init_data); // reinitialize
+@@ -272,7 +297,8 @@ void Screens::InnerLoop() {
+         if (stack_iterator != stack.begin()) { // is there something to close?
+             auto backup = creator_node; // backup creator (in case we need to both close and open at the same time)
+             creator_node.creator = nullptr; // erase creator node
+-            while (stack_iterator != stack.begin() && ((Get() && Get()->ClosedOnPrint()) || (stack_iterator)->creator == backup.creator)) {
++            while (stack_iterator != stack.begin() &&
++                   ((Get() && Get()->ClosedOnPrint()) || (stack_iterator)->creator == backup.creator)) {
+                 close = true;
+                 InnerLoop(); // call recursively - but with only single level of recursion .. this will just close single screen (we already know it should be closed)
+             }
+@@ -284,8 +310,10 @@ void Screens::InnerLoop() {
+     // special case open + close
+     if (close && !creator_node.IsEmpty()) {
+         if (stack_iterator != stack.begin()) { // is there something to close? (we never close screen[0])
+-            if ((stack_iterator)->creator == creator_node.creator) { // screen to be opened is already opened (on top of stack)
+-                *(stack_iterator - 1) = *stack_iterator; // move (copy) current screen_node 1 position up on stack, init data does not matter - they are set after screen is closed
++            if ((stack_iterator)->creator ==
++                creator_node.creator) { // screen to be opened is already opened (on top of stack)
++                *(stack_iterator -
++                  1) = *stack_iterator; // move (copy) current screen_node 1 position up on stack, init data does not matter - they are set after screen is closed
+                 --stack_iterator; // point to current screen_node
+                 if (creator_node.init_data.IsValid()) { // have some new meaningful data
+                     current->InitState(creator_node.init_data); // reinitialize

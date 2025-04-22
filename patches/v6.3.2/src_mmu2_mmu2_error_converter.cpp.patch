@@ -1,0 +1,20 @@
+diff --git a/src/mmu2/mmu2_error_converter.cpp b/src/mmu2/mmu2_error_converter.cpp
+index 88e94d0761902826432540638d4127b1ae4c5a2d..c210b7a4f347ccdd723ac3c94d5538b731ba9c3b 100644
+--- a/src/mmu2/mmu2_error_converter.cpp
++++ b/src/mmu2/mmu2_error_converter.cpp
+@@ -4,6 +4,7 @@
+ #include "../../lib/Marlin/Marlin/src/feature/prusa/MMU2/mmu2_error_converter.h"
+ #include "../../lib/Prusa-Firmware-MMU/src/logic/error_codes.h"
+ #include "utility_extensions.hpp"
++#include "../../lib/Marlin/Marlin/src/core/serial.h"
+ 
+ #include <algorithm>
+ 
+@@ -276,6 +277,7 @@ Buttons ButtonAvailable(ErrorCode ec) {
+     case ButtonOperations::ResetMMU:
+         return Buttons::ResetMMU;
+     case ButtonOperations::StopPrint:
++        SERIAL_ECHO_MSG("M118 A1 action:pause");
+         return Buttons::StopPrint;
+     case ButtonOperations::DisableMMU:
+         return Buttons::DisableMMU;

@@ -1,0 +1,12 @@
+diff --git a/src/gui/CMakeLists.txt b/src/gui/CMakeLists.txt
+index 27959eb9a67bb7a06d989ea2d739e59cd121148e..8c2e0362beb4ebd67003a942c05be7aa77ab6008 100644
+--- a/src/gui/CMakeLists.txt
++++ b/src/gui/CMakeLists.txt
+@@ -85,6 +85,7 @@ target_sources(
+           screen_network_setup.cpp
+           screen_print_preview.cpp
+           screen_printer_setup.cpp
++          screen_menu_screen_lock.cpp
+           screen_printing.cpp
+           screen_printing_end_result.cpp
+           screen_prusa_link.cpp

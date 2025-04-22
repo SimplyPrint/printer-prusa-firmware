@@ -1,0 +1,22 @@
+diff --git a/src/marlin_stubs/pause/M600.cpp b/src/marlin_stubs/pause/M600.cpp
+index 8bc7360833a5211c7f688510f4b6e666787f01d9..19ac83fc44e80ead8d1e093dc9bcd65abf397290 100644
+--- a/src/marlin_stubs/pause/M600.cpp
++++ b/src/marlin_stubs/pause/M600.cpp
+@@ -133,6 +133,7 @@ void GcodeSuite::M600() {
+ #endif
+ 
+     if (do_manual_m600) {
++        SERIAL_ECHO_MSG("M118 A1 action:pause");
+         M600_manual(p);
+     }
+ 
+@@ -200,6 +201,9 @@ void M600_execute(xyz_pos_t park_point, uint8_t target_extruder, xyze_float_t re
+     std::optional<Color> filament_colour, std::optional<FilamentType> filament_type,
+     bool is_filament_stuck) {
+ 
++    if (is_filament_stuck){
++        SERIAL_ECHO_MSG("M118 A1 action:pause");
++    }
+     // Ignore estalls during filament change
+     BlockEStallDetection estall_blocker;
+ 

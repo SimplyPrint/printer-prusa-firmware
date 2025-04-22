@@ -1,0 +1,1014 @@
+diff --git a/src/gui/screen_printing.cpp b/src/gui/screen_printing.cpp
+index 02e47ef3ef909d861eb62de825e35bdd39fb297d..c84167c8c8bbdcbfdbae2706c1f8c4ffd7a4d09d 100644
+--- a/src/gui/screen_printing.cpp
++++ b/src/gui/screen_printing.cpp
+@@ -19,30 +19,45 @@
+ #include <option/has_loadcell.h>
+ #include <option/has_mmu2.h>
+ #include <option/has_toolchanger.h>
++#include <connect/connect.hpp>
++
+ #if HAS_MMU2()
+-    #include <feature/prusa/MMU2/mmu2_mk4.h>
+-    #include <window_msgbox.hpp>
+-    #include <mmu2/maintenance.hpp>
++#include <feature/prusa/MMU2/mmu2_mk4.h>
++#include <window_msgbox.hpp>
++#include <mmu2/maintenance.hpp>
+ #endif
+ 
+ #include "Marlin/src/module/motion.h"
+ #include "Marlin/src/feature/bed_preheat.hpp"
+ 
+ #if ENABLED(CRASH_RECOVERY)
+-    #include "../Marlin/src/feature/prusa/crash_recovery.hpp"
++#include "../Marlin/src/feature/prusa/crash_recovery.hpp"
+ #endif
+ 
+ #include <option/buddy_enable_connect.h>
++
+ #if BUDDY_ENABLE_CONNECT()
+-    #include <connect/connect.hpp>
+-    #include <connect/marlin_printer.hpp>
++#include <connect/connect.hpp>
++#include <connect/marlin_printer.hpp>
+ #endif
+ 
++
++bool send_message_sp(std::string message, const char *error_message) {
++    int response_code = connect_client::send_simplyprint(message);
++    if (response_code / 100 != 2) {
++        MsgBoxWarning(_(error_message), Responses_Ok);
++        return false;
++    }
++    return true;
++}
++
++
+ using namespace marlin_server;
+ 
+ void screen_printing_data_t::invalidate_print_state() {
+     state__readonly__use_change_print_state = printing_state_t::COUNT;
+ }
++
+ printing_state_t screen_printing_data_t::GetState() const {
+     return state__readonly__use_change_print_state;
+ }
+@@ -59,19 +74,43 @@ void screen_printing_data_t::tuneAction() {
+     if (buttons[ftrstd::to_underlying(BtnSocket::Left)].IsShadowed()) {
+         return;
+     }
+-    switch (GetState()) {
+-    case printing_state_t::PRINTING:
+-    case printing_state_t::ABSORBING_HEAT:
+-    case printing_state_t::PAUSED:
+-        Screens::Access()->Open(ScreenFactory::Screen<ScreenMenuTune>);
+-        break;
+-    case printing_state_t::PRINTED:
+-        if (is_waiting_for_connect_set_ready()) {
+-            connect_client::MarlinPrinter::set_printer_ready(true);
+-            set_tune_icon_and_label(); // Disable Set Ready button
++#if HAS_LARGE_DISPLAY()
++    if (showing_end_result) {
++        switch (end_screen_state){
++            case EndScreenState::end_screen:
++                break;
++            case EndScreenState::print_result_screen:
++                send_message_sp("ps", "Failed to send print result message.");
++                end_screen_state = EndScreenState::end_screen;
++                start_showing_end_result();
++                break;
+         }
+-    default:
+-        break;
++        return;
++    }
++#endif
++
++    switch (GetState()) {
++        case printing_state_t::PRINTING:
++        case printing_state_t::ABSORBING_HEAT:
++        case printing_state_t::PAUSED:
++            Screens::Access()->Open(ScreenFactory::Screen<ScreenMenuTune>);
++            break;
++        case printing_state_t::PRINTED:
++            if (is_waiting_for_connect_set_ready()) {
++                connect_client::MarlinPrinter::set_printer_ready(true);
++            }
++            send_message_sp("nqi", "Failed to send next_queue message.");
++            ResetButtonRect(BtnSocket::Left);
++            ResetButtonRect(BtnSocket::Middle);
++            ResetButtonRect(BtnSocket::Right);
++            SetButtonVisible(BtnSocket::Left, true);
++            SetButtonVisible(BtnSocket::Middle, true);
++            SetButtonVisible(BtnSocket::Right, true);
++            was_network_print = false;
++            marlin_client::print_exit();
++            return;
++        default:
++            break;
+     }
+ }
+ 
+@@ -79,65 +118,125 @@ void screen_printing_data_t::pauseAction() {
+     if (buttons[ftrstd::to_underlying(BtnSocket::Middle)].IsShadowed()) {
+         return;
+     }
++#if HAS_LARGE_DISPLAY()
++    if (showing_end_result) {
++
++               switch (end_screen_state) {
++               case EndScreenState::end_screen:
++                       change_print_state();
++                       break;
++                   case EndScreenState::print_result_screen:
++                       break;
++               }
++       return;
++   }
++#endif
+     switch (GetState()) {
+-    case printing_state_t::PRINTING:
+-        marlin_client::print_pause();
+-        change_print_state();
+-        break;
+-    case printing_state_t::ABSORBING_HEAT:
+-        bed_preheat.skip_preheat();
+-        change_print_state();
+-        break;
+-    case printing_state_t::PAUSED:
+-        marlin_client::print_resume();
+-        change_print_state();
+-        break;
+-    case printing_state_t::STOPPED:
+-    case printing_state_t::PRINTED:
+-        screen_printing_reprint();
+-        change_print_state();
+-        break;
+-    default:
+-        break;
++        case printing_state_t::PRINTING:
++            marlin_client::print_pause();
++            change_print_state();
++            break;
++        case printing_state_t::ABSORBING_HEAT:
++            bed_preheat.skip_preheat();
++            change_print_state();
++            break;
++        case printing_state_t::PAUSED:
++            marlin_client::print_resume();
++            change_print_state();
++            break;
++        case printing_state_t::STOPPED:
++        case printing_state_t::PRINTED:
++            if (was_network_print) {
++                send_message_sp("rp", "Failed to send bed clear message.");
++                was_network_print = false;
++                connect_client::is_print_network = true;
++            }
++            screen_printing_reprint();
++            change_print_state();
++            break;
++        default:
++            break;
+     }
+ }
+ 
++
+ void screen_printing_data_t::stopAction() {
+     if (buttons[ftrstd::to_underlying(BtnSocket::Right)].IsShadowed()) {
+         return;
+     }
+-    switch (GetState()) {
+-    case printing_state_t::STOPPED:
+-    case printing_state_t::PRINTED:
+-        marlin_client::print_exit();
+-        return;
+-    case printing_state_t::PAUSING:
+-    case printing_state_t::RESUMING:
++#if HAS_LARGE_DISPLAY()
++    if (showing_end_result) {
++
++    switch (end_screen_state){
++        case EndScreenState::end_screen:
++            break;
++        case EndScreenState::print_result_screen:
++            send_message_sp("pf", "Failed to send print result message.");
++            end_screen_state = EndScreenState::end_screen;
++            start_showing_end_result();
++            break;
++        }
+         return;
+-    default: {
+-        if (MsgBoxWarning(_("Are you sure to stop this printing?"), Responses_YesNo, 1)
+-            == Response::Yes) {
+-            stop_pressed = true;
+-            waiting_for_abort = true;
+-            marlin_client::print_abort();
+-            change_print_state();
+-        } else {
++    }
++#endif
++
++    switch (GetState()) {
++        case printing_state_t::STOPPED:
++        case printing_state_t::PRINTED:
++            if (was_network_print) {
++                send_message_sp("bc", "Failed to send bed clear message.");
++                was_network_print = false;
++            }
++            ResetButtonRect(BtnSocket::Left);
++            ResetButtonRect(BtnSocket::Middle);
++            ResetButtonRect(BtnSocket::Right);
++            SetButtonVisible(BtnSocket::Left, true);
++            SetButtonVisible(BtnSocket::Middle, true);
++            SetButtonVisible(BtnSocket::Right, true);
++
++
++            marlin_client::print_exit();
++            return;
++        case printing_state_t::PAUSING:
++        case printing_state_t::RESUMING:
+             return;
++        default: {
++            if (MsgBoxWarning(_("Are you sure to stop this printing?"), Responses_YesNo, 1)
++                == Response::Yes) {
++                stop_pressed = true;
++                waiting_for_abort = true;
++                marlin_client::print_abort();
++                change_print_state();
++            } else {
++                return;
++            }
+         }
+     }
+-    }
++
+ }
+ 
+ /******************************************************************************/
+ 
+ namespace {
+-constexpr size_t column_left { 30 };
+-
+-constexpr size_t row_0 { 104 };
+-constexpr size_t row_height { 20 };
+-
+-constexpr size_t get_row(size_t idx) {
+-    return row_0 + idx * row_height;
++    constexpr size_t
++    column_left {
++    30
++};
++constexpr size_t
++button_width {
++200};
++constexpr size_t
++row_0 {
++104 };
++constexpr size_t
++row_height {
++20 };
++
++constexpr size_t
++get_row(size_t
++idx) {
++return row_0 +
++idx *row_height;
+ }
+ 
+ #if HAS_MINI_DISPLAY()
+@@ -157,42 +256,45 @@ constexpr size_t rotating_circles_left_offset { 0 };
+ constexpr Rect16 rotating_circles_rect { column_left + rotating_circles_left_offset, get_row(1) + height(etime_val_font) + 5, rotating_circles_width, rotating_circles_height };
+ 
+ constexpr Rect16 end_result_body_rect { 0, row_0 - EndResultBody::extra_top_space, GuiDefaults::ScreenWidth, GuiDefaults::ScreenHeight - GuiDefaults::FooterHeight - row_0 };
++constexpr Rect16 sp_rect { 0, 15, GuiDefaults::ScreenWidth, 63 };
++constexpr Rect16 sp_big_button_l { 30 , 90, button_width, button_width };
++constexpr Rect16 sp_big_button_r { GuiDefaults::ScreenWidth - 30 - button_width, 90, button_width, button_width };
+ #endif
+ 
+ } // namespace
+ 
+ screen_printing_data_t::screen_printing_data_t()
+-    : ScreenPrintingModel(_(caption))
++        : ScreenPrintingModel(_(caption))
+ #if (HAS_LARGE_DISPLAY())
+-    , print_progress(this)
+-    , arrow_left(this, arrow_left_rect, arrow_left_res)
+-    , rotating_circles(this, rotating_circles_rect, ftrstd::to_underlying(CurrentlyShowing::_count))
++        , print_progress(this)
++        , arrow_left(this, arrow_left_rect, arrow_left_res)
++        , rotating_circles(this, rotating_circles_rect, ftrstd::to_underlying(CurrentlyShowing::_count))
+ #endif
+ #if HAS_MINI_DISPLAY()
+-    , w_filename(this, Rect16(10, 33, 220, 29))
+-    , w_progress(this, Rect16(10, 70, GuiDefaults::RectScreen.Width() - 2 * 10, 16))
+-    , w_progress_txt(this, Rect16(10, 86, GuiDefaults::RectScreen.Width() - 2 * 10, 30)) // font: Normal (11x18 px)
+-    , w_time_label(this, Rect16(10, 128, 101, 20), is_multiline::no)
+-    , w_time_value(this, Rect16(10, 148, 101, 20), is_multiline::no)
+-    , w_etime_label(this, Rect16(130, 128, 101, 20), is_multiline::no)
+-    , w_etime_value(this, Rect16(120, 148, 111, 37), is_multiline::yes)
++        , w_filename(this, Rect16(10, 33, 220, 29))
++        , w_progress(this, Rect16(10, 70, GuiDefaults::RectScreen.Width() - 2 * 10, 16))
++        , w_progress_txt(this, Rect16(10, 86, GuiDefaults::RectScreen.Width() - 2 * 10, 30)) // font: Normal (11x18 px)
++        , w_time_label(this, Rect16(10, 128, 101, 20), is_multiline::no)
++        , w_time_value(this, Rect16(10, 148, 101, 20), is_multiline::no)
++        , w_etime_label(this, Rect16(130, 128, 101, 20), is_multiline::no)
++        , w_etime_value(this, Rect16(120, 148, 111, 37), is_multiline::yes)
+ #elif HAS_LARGE_DISPLAY()
+-    , w_filename(this, Rect16(30, 38, 420, 24))
+-    , w_progress(this, Rect16(30, 65, GuiDefaults::RectScreen.Width() - 2 * 30, 16))
+-    , w_progress_txt(this, EndResultBody::get_progress_txt_rect(row_0)) // Left side option: 30, 115, 100, 54 | font: Large (53x30 px)
+-    , w_etime_label(this, Rect16(30, get_row(0), 150, 20), is_multiline::no) // Right side option: 300, 118, 150, 20
+-    , w_etime_value(this, Rect16(30, get_row(1), 200, 23), is_multiline::no) // Right side option: 250, 138, 200, 23
++        , w_filename(this, Rect16(30, 38, 420, 24))
++        , w_progress(this, Rect16(30, 65, GuiDefaults::RectScreen.Width() - 2 * 30, 16))
++        , w_progress_txt(this, EndResultBody::get_progress_txt_rect(row_0)) // Left side option: 30, 115, 100, 54 | font: Large (53x30 px)
++        , w_etime_label(this, Rect16(30, get_row(0), 150, 20), is_multiline::no) // Right side option: 300, 118, 150, 20
++        , w_etime_value(this, Rect16(30, get_row(1), 200, 23), is_multiline::no) // Right side option: 250, 138, 200, 23
+ #endif // USE_<display>
+-    , message_timer(0)
+-    , stop_pressed(false)
+-    , waiting_for_abort(false)
+-    , state__readonly__use_change_print_state(printing_state_t::COUNT)
++        , message_timer(0), stop_pressed(false), waiting_for_abort(false),
++          state__readonly__use_change_print_state(printing_state_t::COUNT)
+ #if HAS_MINI_DISPLAY()
+-    , popup_rect(Rect16::Merge(std::array<Rect16, 4>({ w_time_label.GetRect(), w_time_value.GetRect(), w_etime_label.GetRect(), w_etime_value.GetRect() })))
+-    , time_end_format(PT_t::init)
++, popup_rect(Rect16::Merge(std::array<Rect16, 4>({ w_time_label.GetRect(), w_time_value.GetRect(), w_etime_label.GetRect(), w_etime_value.GetRect() })))
++, time_end_format(PT_t::init)
++//, sp_print_finished_icon(this, sp_rect, &img::sp_print_finished_200x200)
+ #elif HAS_LARGE_DISPLAY()
+-    , popup_rect(Rect16(30, get_row(0), 250, 70)) // Rect for printing messages from marlin.
+-    , end_result_body(this, end_result_body_rect) // safe to pass even if order changes because EndScreen constructor doesn't use it (therefore guaranteed to be valid)
++, popup_rect(Rect16(30, get_row(0), 250, 70)) // Rect for printing messages from marlin.
++, end_result_body(this, end_result_body_rect) // safe to pass even if order changes because EndScreen constructor doesn't use it (therefore guaranteed to be valid)
++, sp_print_finished_icon(this, sp_rect, &img::sp_print_finished)
+ #endif // USE_<display>
+ {
+     // we will handle HELD_RELEASED event in this window
+@@ -230,11 +332,19 @@ screen_printing_data_t::screen_printing_data_t()
+ 
+     w_etime_label.SetTextColor(COLOR_SILVER);
+     w_progress_txt.set_font(EndResultBody::progress_font);
+-#endif // USE_<display>
++    sp_print_finished_icon.Disable();
++    sp_print_finished_icon.Unshadow();
++    sp_print_finished_icon.Hide();
++    end_screen_state = EndScreenState::end_screen;
+ 
++#endif // USE_<display>
++    was_network_print = false;
++    EnableButton(BtnSocket::Left);
++    EnableButton(BtnSocket::Middle);
++    EnableButton(BtnSocket::Right);
+     strlcpy(text_filename.data(), GCodeInfo::getInstance().GetGcodeFilename(), text_filename.size());
+     w_filename.set_font(Font::big);
+-    w_filename.SetPadding({ 0, 0, 0, 0 });
++    w_filename.SetPadding({0, 0, 0, 0});
+     w_filename.SetText(string_view_utf8::MakeRAM(text_filename.data()));
+ 
+     w_etime_label.set_font(Font::small);
+@@ -263,10 +373,10 @@ void screen_printing_data_t::windowEvent(window_t *sender, GUI_event_t event, vo
+     /// check stop clicked when MBL is running
+     printing_state_t p_state = GetState();
+     if (
+-        stop_pressed
+-        && waiting_for_abort
+-        && marlin_client::get_command() != Cmd::G29
+-        && (p_state == printing_state_t::ABORTING || p_state == printing_state_t::PAUSED)) {
++            stop_pressed
++            && waiting_for_abort
++            && marlin_client::get_command() != Cmd::G29
++            && (p_state == printing_state_t::ABORTING || p_state == printing_state_t::PAUSED)) {
+         marlin_client::print_abort();
+         waiting_for_abort = false;
+         return;
+@@ -278,7 +388,20 @@ void screen_printing_data_t::windowEvent(window_t *sender, GUI_event_t event, vo
+     updateTimes();
+ 
+     /// -- close screen when print is done / stopped and USB media is removed
+-    if (!marlin_vars().media_inserted && (p_state == printing_state_t::PRINTED || p_state == printing_state_t::STOPPED)) {
++    if (!marlin_vars().media_inserted &&
++        (p_state == printing_state_t::PRINTED || p_state == printing_state_t::STOPPED)) {
++        ResetButtonRect(BtnSocket::Left);
++        ResetButtonRect(BtnSocket::Middle);
++        ResetButtonRect(BtnSocket::Right);
++        SetButtonVisible(BtnSocket::Left, true);
++        SetButtonVisible(BtnSocket::Middle, true);
++        SetButtonVisible(BtnSocket::Right, true);
++        was_network_print = false;
++#if HAS_LARGE_DISPLAY()
++        second_click_left = false;
++#endif
++
++
+         marlin_client::print_exit();
+         return;
+     }
+@@ -339,18 +462,18 @@ void screen_printing_data_t::windowEvent(window_t *sender, GUI_event_t event, vo
+             string_view_utf8 txt;
+             switch (*reason) {
+             case MMU2::MaintenanceReason::Failures:
+-    #if HAS_LOADCELL()
++#if HAS_LOADCELL()
+                 txt = _("Printer has detected multiple consecutive filament loading errors. We recommend checking Nextruder main-plate. Visit prusa.io/mmu-care");
+-    #else
++#else
+                 txt = _("Printer has detected multiple consecutive filament loading errors. We recommend checking the extruder. Visit prusa.io/mmu-care");
+-    #endif
++#endif
+                 break;
+             case MMU2::MaintenanceReason::Changes:
+-    #if HAS_LOADCELL()
++#if HAS_LOADCELL()
+                 txt = _("Maintenance Reminder. Filament changes have reached main-plate lifespan. Inspect the part and ensure you have a spare plate available. Visit prusa.io/mmu-care");
+-    #else
++#else
+                 txt = _("Maintenance Reminder. Filament changes have reached 30k. Inspect and clean the extruder. Visit prusa.io/mmu-care");
+-    #endif
++#endif
+                 break;
+             }
+ 
+@@ -359,10 +482,23 @@ void screen_printing_data_t::windowEvent(window_t *sender, GUI_event_t event, vo
+     }
+ #endif
+ 
++
+ #if HAS_LARGE_DISPLAY()
++    if (end_screen_state != EndScreenState::end_screen || !showing_end_result) {
++        ScreenPrintingModel::windowEvent(sender, event, param);
++    }
++    if (shown_end_result && event == GUI_event_t::ENC_UP){
++        second_click_left = false;
++    }
+     if (shown_end_result && event == GUI_event_t::ENC_DN
+         && ((buttons[0].IsEnabled() && buttons[0].IsFocused()) || (!buttons[0].IsEnabled() && buttons[1].IsFocused()))) {
+-        start_showing_end_result();
++        if (second_click_left){
++            start_showing_end_result();
++            second_click_left = false;
++        }
++        else{
++            second_click_left = true;
++        }
+         return;
+     }
+ 
+@@ -392,41 +528,142 @@ void screen_printing_data_t::windowEvent(window_t *sender, GUI_event_t event, vo
+         return;
+     }
+ 
+-    if (!showing_end_result) {
+-        ScreenPrintingModel::windowEvent(sender, event, param);
+-    }
++//    if (!showing_end_result) {
++//        ScreenPrintingModel::windowEvent(sender, event, param);
++//    }
+ #else
+-    ScreenPrintingModel::windowEvent(sender, event, param);
++//    ScreenPrintingModel::windowEvent(sender, event, param);
+ #endif
+ }
+ 
+ #if HAS_LARGE_DISPLAY()
+ void screen_printing_data_t::start_showing_end_result() {
+ 
+-    // hide previous
+-    for (auto &button : buttons) {
+-        button.Hide();
+-    }
+-
+-    for (auto &label : labels) {
+-        label.Hide();
+-    }
+-
+     arrow_left.Hide();
+     w_progress_txt.Hide();
+ 
+     hide_time_information(); // OK because currently we never show remaining time at the end
+ 
++    /*DEBUGGING REMOVE FOR PROD*/
++    /********************************************/
++//    connect_client::is_print_network = true;
++    /********************************************/
++
+     // show end result
++    if (connect_client::is_print_network){
++        connect_client::is_print_network = false;
++        was_network_print = true;
++        end_screen_state = EndScreenState::print_result_screen;
++    }
++
++    switch (end_screen_state) {
++        case EndScreenState::end_screen:
++             // hide previous
++            for (auto &button : buttons) {
++                button.Hide();
++            }
+ 
+-    end_result_body.Show();
+-    CaptureNormalWindow(end_result_body);
++            for (auto &label : labels) {
++                label.Hide();
++            }
++            header.SetText(_("Finished"));
++            sp_print_finished_icon.Hide();
++            w_filename.Show();
++            w_progress.Show();
++            ResetButtonRect(BtnSocket::Left);
++            SetButtonVisible(BtnSocket::Middle, true);
++            ResetButtonRect(BtnSocket::Middle);
++            ResetButtonRect(BtnSocket::Right);
++            SetButtonIconAndLabel(BtnSocket::Middle, BtnRes::Reprint, LabelRes::Reprint);
++            if (was_network_print){
++                EnableButton(BtnSocket::Left);
++                SetButtonIconAndLabel(BtnSocket::Left, BtnRes::Next_Queue_Item, LabelRes::Next_Queue_Item);
++            }
++            else{
++                DisableButton(BtnSocket::Left);
++                SetButtonIconAndLabel(BtnSocket::Left, BtnRes::Settings, LabelRes::Settings);
++
++            }
++            SetButtonIconAndLabel(BtnSocket::Right, BtnRes::Home, LabelRes::Home);
++            EnableButton(BtnSocket::Middle);
++            EnableButton(BtnSocket::Right);
++
++            end_result_body.Show();
++            CaptureNormalWindow(end_result_body);
++
++
++            break;
++
++        case EndScreenState::print_result_screen:
++            header.SetText(_("Print Result"));
++            sp_print_finished_icon.Show();
++            w_filename.Hide();
++            w_progress.Hide();
++            DisableButton(BtnSocket::Middle);
++            SetButtonVisible(BtnSocket::Left, true); //
++            SetButtonVisible(BtnSocket::Middle, false);
++            SetButtonVisible(BtnSocket::Right, true);
++            SetLabelVisible(BtnSocket::Right, false);
++            SetLabelVisible(BtnSocket::Left, false);
++            SetButtonRect(BtnSocket::Right, sp_big_button_r);
++            SetButtonRect(BtnSocket::Left, sp_big_button_l);
++            SetButtonIconAndLabel(BtnSocket::Left, BtnRes::Print_OK, LabelRes::Print_OK);
++            SetButtonIconAndLabel(BtnSocket::Right, BtnRes::Print_Failed, LabelRes::Print_Failed);
++            EnableButton(BtnSocket::Left);
++            EnableButton(BtnSocket::Right);
++            break;
++    }
+ 
+     showing_end_result = true;
+     shown_end_result = true;
++    second_click_left = false;
+ }
+ 
+ void screen_printing_data_t::stop_showing_end_result() {
++
++    switch (end_screen_state) {
++        case EndScreenState::end_screen:
++            header.SetText(_("Finished"));
++            ResetButtonRect(BtnSocket::Left);
++            SetButtonVisible(BtnSocket::Middle, true);
++            ResetButtonRect(BtnSocket::Middle);
++            ResetButtonRect(BtnSocket::Right);
++            sp_print_finished_icon.Hide();
++            w_filename.Show();
++            w_progress.Show();
++            SetButtonIconAndLabel(BtnSocket::Middle, BtnRes::Reprint, LabelRes::Reprint);
++            if (was_network_print){
++                EnableButton(BtnSocket::Left);
++                SetButtonIconAndLabel(BtnSocket::Left, BtnRes::Next_Queue_Item, LabelRes::Next_Queue_Item);
++            }
++            else{
++                DisableButton(BtnSocket::Left);
++                SetButtonIconAndLabel(BtnSocket::Left, BtnRes::Settings, LabelRes::Settings);
++
++            }
++            EnableButton(BtnSocket::Middle);
++            EnableButton(BtnSocket::Right);
++            break;
++
++        case EndScreenState::print_result_screen:
++            header.SetText(_("Print Result"));
++            sp_print_finished_icon.Show();
++            w_filename.Hide();
++            w_progress.Hide();
++            EnableButton(BtnSocket::Left);
++            SetButtonVisible(BtnSocket::Middle, false);
++            SetLabelVisible(BtnSocket::Right, false);
++            SetLabelVisible(BtnSocket::Left, false);
++            SetButtonRect(BtnSocket::Left, sp_big_button_l);
++            SetButtonRect(BtnSocket::Right, sp_big_button_r);
++            SetButtonIconAndLabel(BtnSocket::Left, BtnRes::Print_OK, LabelRes::Print_OK);
++            SetButtonIconAndLabel(BtnSocket::Right, BtnRes::Print_Failed, LabelRes::Print_Failed);
++            EnableButton(BtnSocket::Left);
++            EnableButton(BtnSocket::Right);
++
++            return;
++    }
++
+     // show previous
+     for (auto &button : buttons) {
+         button.Show();
+@@ -574,67 +811,73 @@ void screen_printing_data_t::set_pause_icon_and_label() {
+     // todo it is static, because menu tune is not dialog
+     // switch (state__readonly__use_change_print_state)
+     switch (GetState()) {
+-    case printing_state_t::COUNT:
+-    case printing_state_t::INITIAL:
+-    case printing_state_t::PRINTING:
+-    case printing_state_t::MBL_FAILED:
+-        EnableButton(BtnSocket::Middle);
+-        SetButtonIconAndLabel(BtnSocket::Middle, BtnRes::Pause, LabelRes::Pause);
+-        break;
+-    case printing_state_t::ABSORBING_HEAT:
+-        EnableButton(BtnSocket::Middle);
+-        SetButtonIconAndLabel(BtnSocket::Middle, BtnRes::Resume, LabelRes::Skip);
+-        break;
+-    case printing_state_t::PAUSING:
+-        DisableButton(BtnSocket::Middle);
+-        SetButtonIconAndLabel(BtnSocket::Middle, BtnRes::Pause, LabelRes::Pausing);
+-        break;
+-    case printing_state_t::PAUSED:
+-        EnableButton(BtnSocket::Middle);
+-        SetButtonIconAndLabel(BtnSocket::Middle, BtnRes::Resume, LabelRes::Resume);
+-        if (!marlin_vars().media_inserted) {
++        case printing_state_t::COUNT:
++        case printing_state_t::INITIAL:
++        case printing_state_t::PRINTING:
++            EnableButton(BtnSocket::Left);
++            EnableButton(BtnSocket::Middle);
++            EnableButton(BtnSocket::Right);
++            SetButtonIconAndLabel(BtnSocket::Middle, BtnRes::Pause, LabelRes::Pause);
++
++            break;
++        case printing_state_t::MBL_FAILED:
++            EnableButton(BtnSocket::Middle);
++            SetButtonIconAndLabel(BtnSocket::Middle, BtnRes::Pause, LabelRes::Pause);
++            break;
++        case printing_state_t::ABSORBING_HEAT:
++            EnableButton(BtnSocket::Middle);
++            SetButtonIconAndLabel(BtnSocket::Middle, BtnRes::Resume, LabelRes::Skip);
++            break;
++        case printing_state_t::PAUSING:
+             DisableButton(BtnSocket::Middle);
+-        }
+-        break;
+-    case printing_state_t::RESUMING:
+-        DisableButton(BtnSocket::Middle);
+-        SetButtonIconAndLabel(BtnSocket::Middle, BtnRes::Resume, LabelRes::Resuming);
+-        break;
+-    case printing_state_t::REHEATING:
+-    case printing_state_t::REHEATING_DONE:
+-        DisableButton(BtnSocket::Middle);
+-        SetButtonIconAndLabel(BtnSocket::Middle, BtnRes::Resume, LabelRes::Reheating);
+-        break;
+-    case printing_state_t::STOPPED:
+-    case printing_state_t::PRINTED:
+-        EnableButton(BtnSocket::Middle);
+-        SetButtonIconAndLabel(BtnSocket::Middle, BtnRes::Reprint, LabelRes::Reprint);
+-        break;
+-    case printing_state_t::ABORTING:
+-        DisableButton(BtnSocket::Middle);
+-        break;
++            SetButtonIconAndLabel(BtnSocket::Middle, BtnRes::Pause, LabelRes::Pausing);
++            break;
++        case printing_state_t::PAUSED:
++            EnableButton(BtnSocket::Middle);
++            SetButtonIconAndLabel(BtnSocket::Middle, BtnRes::Resume, LabelRes::Resume);
++            if (!marlin_vars().media_inserted) {
++                DisableButton(BtnSocket::Middle);
++            }
++            break;
++        case printing_state_t::RESUMING:
++            DisableButton(BtnSocket::Middle);
++            SetButtonIconAndLabel(BtnSocket::Middle, BtnRes::Resume, LabelRes::Resuming);
++            break;
++        case printing_state_t::REHEATING:
++        case printing_state_t::REHEATING_DONE:
++            DisableButton(BtnSocket::Middle);
++            SetButtonIconAndLabel(BtnSocket::Middle, BtnRes::Resume, LabelRes::Reheating);
++            break;
++        case printing_state_t::STOPPED:
++        case printing_state_t::PRINTED:
++            EnableButton(BtnSocket::Middle);
++            SetButtonIconAndLabel(BtnSocket::Middle, BtnRes::Reprint, LabelRes::Reprint);
++            break;
++        case printing_state_t::ABORTING:
++            DisableButton(BtnSocket::Middle);
++            break;
+     }
+ 
+     switch (GetState()) {
+-    case printing_state_t::PAUSING:
+-        header.SetText(_("PAUSING ..."));
+-        break;
+-    case printing_state_t::MBL_FAILED:
+-    case printing_state_t::PAUSED:
+-        header.SetText(_("PAUSED"));
+-        break;
+-    case printing_state_t::ABORTING:
+-        header.SetText(_("ABORTING ..."));
+-        break;
+-    case printing_state_t::STOPPED:
+-        header.SetText(_("STOPPED"));
+-        break;
+-    case printing_state_t::PRINTED:
+-        header.SetText(_("FINISHED"));
+-        break;
+-    default: // else printing
+-        header.SetText(_(caption));
+-        break;
++        case printing_state_t::PAUSING:
++            header.SetText(_("PAUSING ..."));
++            break;
++        case printing_state_t::MBL_FAILED:
++        case printing_state_t::PAUSED:
++            header.SetText(_("PAUSED"));
++            break;
++        case printing_state_t::ABORTING:
++            header.SetText(_("ABORTING ..."));
++            break;
++        case printing_state_t::STOPPED:
++            header.SetText(_("STOPPED"));
++            break;
++        case printing_state_t::PRINTED:
++            header.SetText(_("FINISHED"));
++            break;
++        default: // else printing
++            header.SetText(_(caption));
++            break;
+     }
+ }
+ 
+@@ -642,51 +885,51 @@ void screen_printing_data_t::set_tune_icon_and_label() {
+     SetButtonIconAndLabel(BtnSocket::Left, BtnRes::Settings, LabelRes::Settings);
+ 
+     switch (GetState()) {
+-    case printing_state_t::PRINTING:
+-    case printing_state_t::ABSORBING_HEAT:
+-    case printing_state_t::PAUSED:
+-        EnableButton(BtnSocket::Left);
+-        break;
+-    case printing_state_t::ABORTING:
+-        DisableButton(BtnSocket::Left);
+-        break;
+-    case printing_state_t::PRINTED:
+-        if (is_waiting_for_connect_set_ready()) {
++        case printing_state_t::PRINTING:
++        case printing_state_t::ABSORBING_HEAT:
++        case printing_state_t::PAUSED:
+             EnableButton(BtnSocket::Left);
+-            SetButtonIconAndLabel(BtnSocket::Left, BtnRes::SetReady, LabelRes::SetReady);
+-        } else {
++            break;
++        case printing_state_t::ABORTING:
+             DisableButton(BtnSocket::Left);
+-        }
+-        break;
+-    default:
+-        DisableButton(BtnSocket::Left);
+-        break;
++            break;
++        case printing_state_t::PRINTED:
++            if (is_waiting_for_connect_set_ready()) {
++                EnableButton(BtnSocket::Left);
++                SetButtonIconAndLabel(BtnSocket::Left, BtnRes::SetReady, LabelRes::SetReady);
++            } else {
++                DisableButton(BtnSocket::Left);
++            }
++            break;
++        default:
++            DisableButton(BtnSocket::Left);
++            break;
+     }
+ }
+ 
+ void screen_printing_data_t::set_stop_icon_and_label() {
+     switch (GetState()) {
+-    case printing_state_t::STOPPED:
+-    case printing_state_t::PRINTED:
+-        EnableButton(BtnSocket::Right);
+-        SetButtonIconAndLabel(BtnSocket::Right, BtnRes::Home, LabelRes::Home);
+-        break;
+-    case printing_state_t::PAUSING:
+-    case printing_state_t::RESUMING:
+-        DisableButton(BtnSocket::Right);
+-        SetButtonIconAndLabel(BtnSocket::Right, BtnRes::Stop, LabelRes::Stop);
+-        break;
+-    case printing_state_t::REHEATING:
+-        EnableButton(BtnSocket::Right);
+-        SetButtonIconAndLabel(BtnSocket::Right, BtnRes::Stop, LabelRes::Stop);
+-        break;
+-    case printing_state_t::ABORTING:
+-        DisableButton(BtnSocket::Right);
+-        break;
+-    default:
+-        EnableButton(BtnSocket::Right);
+-        SetButtonIconAndLabel(BtnSocket::Right, BtnRes::Stop, LabelRes::Stop);
+-        break;
++        case printing_state_t::STOPPED:
++        case printing_state_t::PRINTED:
++            EnableButton(BtnSocket::Right);
++            SetButtonIconAndLabel(BtnSocket::Right, BtnRes::Home, LabelRes::Home);
++            break;
++        case printing_state_t::PAUSING:
++        case printing_state_t::RESUMING:
++            DisableButton(BtnSocket::Right);
++            SetButtonIconAndLabel(BtnSocket::Right, BtnRes::Stop, LabelRes::Stop);
++            break;
++        case printing_state_t::REHEATING:
++            EnableButton(BtnSocket::Right);
++            SetButtonIconAndLabel(BtnSocket::Right, BtnRes::Stop, LabelRes::Stop);
++            break;
++        case printing_state_t::ABORTING:
++            DisableButton(BtnSocket::Right);
++            break;
++        default:
++            EnableButton(BtnSocket::Right);
++            SetButtonIconAndLabel(BtnSocket::Right, BtnRes::Stop, LabelRes::Stop);
++            break;
+     }
+ }
+ 
+@@ -694,93 +937,98 @@ void screen_printing_data_t::change_print_state() {
+     printing_state_t st = printing_state_t::COUNT;
+ 
+     switch (marlin_vars().print_state) {
+-    case State::Idle:
+-    case State::WaitGui:
+-    case State::PrintPreviewInit:
+-    case State::PrintPreviewImage:
+-    case State::PrintPreviewConfirmed:
+-    case State::PrintPreviewQuestions:
++        case State::Idle:
++        case State::WaitGui:
++        case State::PrintPreviewInit:
++        case State::PrintPreviewImage:
++        case State::PrintPreviewConfirmed:
++        case State::PrintPreviewQuestions:
+ #if HAS_TOOLCHANGER() || HAS_MMU2()
+-    case State::PrintPreviewToolsMapping:
++            case State::PrintPreviewToolsMapping:
+ #endif
+-    case State::PrintInit:
+-        st = printing_state_t::INITIAL;
+-        break;
+-    case State::Printing:
+-        if (bed_preheat.is_waiting()) {
+-            st = printing_state_t::ABSORBING_HEAT;
+-        } else {
+-            st = printing_state_t::PRINTING;
+-        }
+-        break;
+-    case State::PowerPanic_AwaitingResume:
+-    case State::Paused:
+-        // stop_pressed = false;
+-        st = printing_state_t::PAUSED;
+-        break;
+-    case State::Pausing_Begin:
+-    case State::Pausing_Failed_Code:
+-    case State::Pausing_WaitIdle:
+-    case State::Pausing_ParkHead:
+-        st = printing_state_t::PAUSING;
++        case State::PrintInit:
++            st = printing_state_t::INITIAL;
++            break;
++        case State::Printing:
++            if (bed_preheat.is_waiting()) {
++                st = printing_state_t::ABSORBING_HEAT;
++            } else {
++                st = printing_state_t::PRINTING;
++            }
++            break;
++        case State::PowerPanic_AwaitingResume:
++        case State::Paused:
++            // stop_pressed = false;
++            st = printing_state_t::PAUSED;
++            break;
++        case State::Pausing_Begin:
++        case State::Pausing_Failed_Code:
++        case State::Pausing_WaitIdle:
++        case State::Pausing_ParkHead:
++            st = printing_state_t::PAUSING;
+ // When print is paused, progress screen needs to reinit it's thumbnail file handler
+ // because USB removal error crashes file handler access. Progress screen should not be enabled during pause -> reinit on EVERY pause
+ #if HAS_LARGE_DISPLAY()
+-        print_progress.Pause();
++            print_progress.Pause();
+ #endif
+-        break;
+-    case State::Resuming_Reheating:
+-        stop_pressed = false;
+-        st = printing_state_t::REHEATING;
+-        break;
+-    case State::Resuming_Begin:
+-    case State::Resuming_UnparkHead_XY:
+-    case State::Resuming_UnparkHead_ZE:
+-    case State::CrashRecovery_Begin:
+-    case State::CrashRecovery_Retracting:
+-    case State::CrashRecovery_Lifting:
+-    case State::CrashRecovery_ToolchangePowerPanic:
+-    case State::CrashRecovery_XY_Measure:
++            break;
++        case State::Resuming_Reheating:
++            stop_pressed = false;
++            st = printing_state_t::REHEATING;
++            break;
++        case State::Resuming_Begin:
++        case State::Resuming_UnparkHead_XY:
++        case State::Resuming_UnparkHead_ZE:
++        case State::CrashRecovery_Begin:
++        case State::CrashRecovery_Retracting:
++        case State::CrashRecovery_Lifting:
++        case State::CrashRecovery_ToolchangePowerPanic:
++        case State::CrashRecovery_XY_Measure:
+ #if HAS_TOOLCHANGER()
+-    case State::CrashRecovery_Tool_Pickup:
++            case State::CrashRecovery_Tool_Pickup:
+ #endif
+-    case State::CrashRecovery_XY_HOME:
+-    case State::CrashRecovery_HOMEFAIL:
+-    case State::CrashRecovery_Axis_NOK:
+-    case State::CrashRecovery_Repeated_Crash:
+-    case State::PowerPanic_Resume:
+-        stop_pressed = false;
+-        st = printing_state_t::RESUMING;
++        case State::CrashRecovery_XY_HOME:
++        case State::CrashRecovery_HOMEFAIL:
++        case State::CrashRecovery_Axis_NOK:
++        case State::CrashRecovery_Repeated_Crash:
++        case State::PowerPanic_Resume:
++            stop_pressed = false;
++            st = printing_state_t::RESUMING;
+ #if HAS_LARGE_DISPLAY()
+-        print_progress.Resume();
++            print_progress.Resume();
+ #endif
+-        break;
+-    case State::Aborting_Begin:
+-    case State::Aborting_WaitIdle:
+-    case State::Aborting_UnloadFilament:
+-    case State::Aborting_ParkHead:
+-    case State::Aborting_Preview:
+-        stop_pressed = false;
+-        st = printing_state_t::ABORTING;
+-        break;
+-    case State::Finishing_WaitIdle:
+-    case State::Finishing_UnloadFilament:
+-    case State::Finishing_ParkHead:
+-        st = printing_state_t::PRINTING;
+-        break;
+-    case State::Aborted:
+-        stop_pressed = false;
+-        st = printing_state_t::STOPPED;
+-        break;
+-    case State::Finished:
+-    case State::Exit:
+-        st = printing_state_t::PRINTED;
+-        break;
+-    case State::PowerPanic_acFault:
+-    case State::SerialPrintInit:
+-        // this state is never reached
+-        __builtin_unreachable();
+-        return;
++            break;
++        case State::Aborting_Begin:
++        case State::Aborting_WaitIdle:
++        case State::Aborting_UnloadFilament:
++        case State::Aborting_ParkHead:
++        case State::Aborting_Preview:
++            stop_pressed = false;
++            st = printing_state_t::ABORTING;
++            break;
++        case State::Finishing_WaitIdle:
++        case State::Finishing_UnloadFilament:
++        case State::Finishing_ParkHead:
++            st = printing_state_t::PRINTING;
++            break;
++        case State::Aborted:
++            stop_pressed = false;
++            st = printing_state_t::STOPPED;
++
++            if (connect_client::is_print_network) {
++                connect_client::is_print_network = false;
++                was_network_print = true;
++            }
++            break;
++        case State::Finished:
++        case State::Exit:
++            st = printing_state_t::PRINTED;
++            break;
++        case State::PowerPanic_acFault:
++        case State::SerialPrintInit:
++            // this state is never reached
++            __builtin_unreachable();
++            return;
+     }
+     if (stop_pressed) {
+         st = printing_state_t::ABORTING;

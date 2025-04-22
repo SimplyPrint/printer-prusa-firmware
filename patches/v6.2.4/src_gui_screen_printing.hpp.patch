@@ -1,0 +1,36 @@
+diff --git a/src/gui/screen_printing.hpp b/src/gui/screen_printing.hpp
+index 0714477bf4858eddd62ce262edda514e40190481..677b3abceba8f58f3f3da07d9ddef9d144867abb 100644
+--- a/src/gui/screen_printing.hpp
++++ b/src/gui/screen_printing.hpp
+@@ -97,6 +97,7 @@ class screen_printing_data_t : public ScreenPrintingModel {
+ 
+     float last_e_axis_position;
+     const Rect16 popup_rect;
++    bool was_network_print;
+ 
+ #if HAS_MINI_DISPLAY()
+     PrintTime print_time;
+@@ -105,6 +106,15 @@ class screen_printing_data_t : public ScreenPrintingModel {
+     EndResultBody::DateBufferT w_etime_value_buffer;
+     EndResultBody end_result_body;
+ 
++    window_icon_t sp_print_finished_icon;
++    bool second_click_left;
++
++    enum class EndScreenState{
++        end_screen,
++        print_result_screen,
++    };
++    EndScreenState end_screen_state;
++
+     enum class CurrentlyShowing {
+         remaining_time, // time until end of print
+         end_time, // 'date' of end of print
+@@ -137,7 +147,6 @@ private:
+     void set_tune_icon_and_label();
+     void set_stop_icon_and_label();
+     void change_print_state();
+-
+     virtual void stopAction() override;
+     virtual void pauseAction() override;
+     virtual void tuneAction() override;
