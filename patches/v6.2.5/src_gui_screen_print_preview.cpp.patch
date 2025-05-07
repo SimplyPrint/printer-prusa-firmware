@@ -1,0 +1,74 @@
+diff --git a/src/gui/screen_print_preview.cpp b/src/gui/screen_print_preview.cpp
+index 451fc1675eff81d50ebf48a1dd09474c7dc735fa..12513172635f34b290c527c119063fac13ffe4e0 100644
+--- a/src/gui/screen_print_preview.cpp
++++ b/src/gui/screen_print_preview.cpp
+@@ -19,6 +19,8 @@
+ #include <option/has_toolchanger.h>
+ #include <option/has_mmu2.h>
+ #include <device/board.h>
++#include <connect/connect.hpp>
++#include "connect/marlin_printer.hpp"
+ #if HAS_MMU2()
+     #include <feature/prusa/MMU2/mmu2_mk4.h>
+ #endif
+@@ -51,7 +53,7 @@ void ScreenPrintPreview::Change(fsm::BaseData data) {
+         hide_main_dialog();
+     }
+ #if HAS_TOOLCHANGER() || HAS_MMU2()
+-    if (phase != PhasesPrintPreview::tools_mapping) {
++    if (phase != PhasesPrintPreview::tools_mapping && !connect_client::is_print_network) {
+         tools_mapping.reset();
+         header.set_show_bed_info(false);
+     }
+@@ -71,20 +73,31 @@ void ScreenPrintPreview::Change(fsm::BaseData data) {
+         break;
+ 
+     case PhasesPrintPreview::download_wait:
++        connect_client::is_print_network = true;
++        connect_client::MarlinPrinter::set_printer_ready(true);
+         pMsgbox = makeMsgBoxWait(_("Downloading..."));
+         break;
+ 
+     case PhasesPrintPreview::main_dialog:
+         gcode_description.update(gcode);
+         assert(gcode.is_loaded() && "GCodeInfo must be initialized before ScreenPrintPreview is created");
++        if (connect_client::is_print_network){
++            return;
++        }
+         show_main_dialog();
+         break;
+ 
+     case PhasesPrintPreview::unfinished_selftest:
++        if (connect_client::is_print_network){
++            return;
++        }
+         pMsgbox = makeMsgBox(_(label_unfinished_selftest), _(txt_unfinished_selftest));
+         break;
+ 
+     case PhasesPrintPreview::new_firmware_available: {
++        if (connect_client::is_print_network){
++            return;
++        }
+         const auto version = GCodeInfo::getInstance().get_valid_printer_settings().latest_fw_version;
+         pMsgbox = makeMsgBox(_(txt_new_fw_available), string_view_utf8::MakeRAM(reinterpret_cast<const uint8_t *>(version)));
+         break;
+@@ -114,6 +127,9 @@ void ScreenPrintPreview::Change(fsm::BaseData data) {
+ 
+ #if HAS_TOOLCHANGER() || HAS_MMU2()
+     case PhasesPrintPreview::tools_mapping:
++        if (connect_client::is_print_network){
++            return;
++        }
+         show_tools_mapping();
+         break;
+ #endif
+@@ -152,6 +168,9 @@ void ScreenPrintPreview::show_main_dialog() {
+ 
+ void ScreenPrintPreview::show_tools_mapping() {
+ #if HAS_TOOLCHANGER() || HAS_MMU2()
++    if (connect_client::is_print_network){
++            return;
++        }
+     #if HAS_MMU2()
+     if (!MMU2::mmu2.Enabled()) {
+         return;

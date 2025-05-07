@@ -1,0 +1,13 @@
+diff --git a/src/gui/screen_stack_overflow.cpp b/src/gui/screen_stack_overflow.cpp
+index 8d2084290032c3d81ef52da75d5b7d2051d3711e..b589177111b1cfd49b642a1e51efc99d04ead454 100644
+--- a/src/gui/screen_stack_overflow.cpp
++++ b/src/gui/screen_stack_overflow.cpp
+@@ -13,7 +13,7 @@ ScreenStackOverflow::ScreenStackOverflow()
+     : ScreenBlueError() {
+     ///@note No translations on blue screens.
+ 
+-    static const char txt_header[] = "STACK OVERFLOW";
++    static const char txt_header[] = "STACK OVERFLOW :(";
+     header.SetText(string_view_utf8::MakeCPUFLASH((const uint8_t *)txt_header));
+ 
+     char *buffer;

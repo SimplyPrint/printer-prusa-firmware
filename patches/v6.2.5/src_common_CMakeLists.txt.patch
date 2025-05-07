@@ -1,0 +1,12 @@
+diff --git a/src/common/CMakeLists.txt b/src/common/CMakeLists.txt
+index 68f02701404ac6793e5b4689b73c673c7ff2f49b..1fcbe04cd345277c572d38f57b6fff671e5699a2 100644
+--- a/src/common/CMakeLists.txt
++++ b/src/common/CMakeLists.txt
+@@ -78,6 +78,7 @@ if(BOARD MATCHES ".*BUDDY")
+             w25x_communication.cpp
+             wdt.cpp
+             z_calibration_fsm.cpp
++            screen_lock.cpp
+     )
+   add_subdirectory(async_job)
+ 

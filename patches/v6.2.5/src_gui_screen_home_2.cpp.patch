@@ -1,0 +1,251 @@
+diff --git a/src/gui/screen_home_2.cpp b/src/gui/screen_home_2.cpp
+new file mode 100644
+index 0000000000000000000000000000000000000000..13d95d20547df4925323824a740466c8a531b8ab
+--- /dev/null
++++ b/src/gui/screen_home_2.cpp
+@@ -0,0 +1,245 @@
++// screen_home.cpp
++#include "screen_home_2.hpp"
++#include "screen_home.hpp"
++#include "stdio.h"
++#include "file_raii.hpp"
++
++#include "config.h"
++
++#include "marlin_client.hpp"
++#include "screen_filebrowser.hpp"
++#include "print_utils.hpp"
++#include "filename_type.hpp"
++#include "settings_ini.hpp"
++#include <str_utils.hpp>
++#include <wui_api.h>
++
++#if ENABLED(POWER_PANIC)
++#include "power_panic.hpp"
++#endif
++
++#include "ScreenHandler.hpp"
++#include "ScreenFactory.hpp"
++#include "gui_media_events.hpp"
++#include "DialogMoveZ.hpp"
++#include "DialogHandler.hpp"
++#include "img_resources.hpp"
++#include "tasks.hpp"
++
++#include "screen_printing.hpp"
++#include "filament_sensors_handler.hpp"
++
++#include "RAII.hpp"
++#include "lazyfilelist.hpp"
++#include "i18n.h"
++#include "i2c.hpp"
++#include "netdev.h"
++#include "ini.h"
++
++#include <option/has_loadcell.h>
++#include <option/developer_mode.h>
++#include <option/development_items.h>
++#include <device/peripherals.h>
++#include <option/has_mmu2.h>
++#include <option/has_human_interactions.h>
++
++#include "screen_menu_settings.hpp"
++#include "screen_menu_filament.hpp"
++#include "screen_menu_control.hpp"
++#include <screen_menu_info.hpp>
++
++#if HAS_MMU2()
++#include "screen_menu_filament_mmu.hpp"
++#endif
++
++#include <crash_dump/crash_dump_handlers.hpp>
++#include "box_unfinished_selftest.hpp"
++#include <transfers/transfer_file_check.hpp>
++#include <guiconfig/guiconfig.h>
++
++#include "usb_host.h"
++
++#include <connect/connect.hpp>
++#include <connect/marlin_printer.hpp>
++#include "marlin_client.hpp"
++
++
++
++// TODO remove netdev_is_enabled after it is defined
++
++bool screen_home_2_data_t::ever_been_opened = false;
++
++#if HAS_MINI_DISPLAY()
++#define GEN_ICON_NAMES(ICON) \
++        { img::ICON##_64x64, img::ICON##_64x64_focused, img::ICON##_64x64_disabled }
++#endif
++#if HAS_LARGE_DISPLAY()
++#define GEN_ICON_NAMES(ICON) \
++        { img::ICON##_80x80, img::ICON##_80x80_focused, img::ICON##_80x80_disabled }
++#endif
++
++static constexpr const WindowMultiIconButton::Pngs
++icons[] = {
++#if HAS_LARGE_DISPLAY()
++        GEN_ICON_NAMES(back),
++#endif
++        GEN_ICON_NAMES(calibrate),
++        GEN_ICON_NAMES(settings),
++
++};
++
++constexpr size_t labelPrintId = 0;
++constexpr size_t labelNoUSBId = 6;
++constexpr size_t iconNonMMUId = 2;
++constexpr size_t iconMMUId = 6;
++constexpr size_t buttonFilamentIndex = 2;
++
++#if HAS_MINI_DISPLAY()
++constexpr size_t buttonsXSpacing = 15;
++constexpr size_t buttonTextWidth = 80;
++constexpr size_t buttonTextHeight = 13; // font_regular_7x13
++
++constexpr size_t buttonTopOffset = 88;
++constexpr size_t buttonTextTopOffset = 155;
++
++constexpr Rect16 logoRect = Rect16(41, 31, 158, 40);
++#endif
++
++#if HAS_LARGE_DISPLAY()
++constexpr size_t buttonsXSpacing = 40;
++constexpr size_t buttonTextWidth = 99;
++constexpr size_t buttonTextHeight = 23;
++
++constexpr size_t buttonTopOffset = 53;
++constexpr size_t buttonTextTopOffset = buttonTopOffset + GuiDefaults::ButtonIconSize + 5;
++#endif
++
++constexpr size_t buttonTextSpacing = GuiDefaults::ButtonIconSize + buttonsXSpacing - buttonTextWidth;
++constexpr size_t buttonsLeftOffset = (GuiDefaults::ScreenWidth - 3 * GuiDefaults::ButtonIconSize - 2 * buttonsXSpacing) / 2;
++constexpr size_t buttonsTextsLeftOffset = (GuiDefaults::ScreenWidth - 3 * buttonTextWidth - 2 * buttonTextSpacing) / 2;
++
++static constexpr Rect16
++buttonRect(size_t col, size_t row ) {
++    return Rect16(buttonsLeftOffset + (buttonsXSpacing + GuiDefaults::ButtonIconSize) * col, buttonTopOffset + (GuiDefaults::ButtonIconVerticalSpacing + GuiDefaults::ButtonIconSize) * row, GuiDefaults::ButtonIconSize, GuiDefaults::ButtonIconSize);
++}
++
++static constexpr Rect16
++buttonTextRect(size_t col, size_t row ) {
++    return Rect16(buttonsTextsLeftOffset + (buttonsXSpacing + GuiDefaults::ButtonIconSize) * col, buttonTextTopOffset + (GuiDefaults::ButtonIconVerticalSpacing + GuiDefaults::ButtonIconSize) * row, buttonTextWidth, buttonTextHeight);
++}
++
++const char *labels_screen_2[] = {
++        N_("Back"),
++        N_("Calibrate"),
++        N_("Settings"),
++};
++
++// clang-format off
++screen_home_2_data_t::screen_home_2_data_t()
++        : screen_t(), header(this), footer(this)
++#if HAS_MINI_DISPLAY()
++        , logo(this, logoRect, &img::prusa_mini_logo_153x40)
++#endif
++        , w_buttons{
++                {this, Rect16(), nullptr, [](window_t &) {
++                    Screens::Access()->Open(ScreenFactory::Screen<screen_home_data_t>);
++                }},
++                {this, Rect16(), nullptr, [](window_t &) {
++                    Screens::Access()->Open(ScreenFactory::Screen<ScreenMenuControl>);
++                }},
++                {this, Rect16(), nullptr, [](window_t &) {
++                    Screens::Access()->Open(ScreenFactory::Screen<ScreenMenuSettings>);
++                }},
++        },
++          w_labels{
++                  {this, Rect16(), is_multiline::no},
++                  {this, Rect16(), is_multiline::no},
++                  {this, Rect16(), is_multiline::no},
++          } {
++
++    EnableLongHoldScreenAction();
++    window_frame_t::ClrMenuTimeoutClose();
++    window_frame_t::ClrOnSerialClose(); // don't close on Serial print
++
++#if !HAS_MINI_DISPLAY()
++    header.SetIcon(&img::home_shape_16x16);
++#endif
++#if !defined(_DEBUG) && !DEVELOPER_MODE()
++    // regular home screen
++header.SetText(_("HOME"));
++
++#else
++    static const uint8_t msgHome[] = "HOME" TERN(DEVELOPER_MODE(), " - DEV", "") TERN(defined(_DEBUG), " - DEBUG", "");
++    header.SetText(string_view_utf8::MakeCPUFLASH(msgHome)); // intentionally not translated
++#endif
++
++    for (uint8_t row = 0; row < 1; row++) {
++        for (uint8_t col = 0; col < 3; col++) {
++            const size_t i = row * 3 + col;
++            w_buttons[i].SetRect(buttonRect(col, row));
++            w_buttons[i].SetRes(&icons[i]);
++            w_labels[i].SetRect(buttonTextRect(col, row));
++            w_labels[i].set_font(Font::small);
++            w_labels[i].SetAlignment(Align_t::Center());
++            w_labels[i].SetPadding({0, 0, 0, 0});
++            w_labels[i].SetText(_(labels_screen_2[i]));
++        }
++    }
++    ever_been_opened = true;
++}
++
++screen_home_2_data_t::~screen_home_2_data_t() {
++    GuiMediaEventsHandler::ConsumeOneClickPrinting();
++}
++
++void screen_home_2_data_t::on_enter() {
++    if (!first_event) {
++        return;
++    }
++    first_event = false;
++
++    static bool first_time_check_st{true};
++    if (first_time_check_st) {
++        first_time_check_st = false;
++    }
++}
++
++void screen_home_2_data_t::windowEvent(window_t *sender, GUI_event_t event, void *param) {
++    // TODO: This easily freezes home screen when flash action fails to start.
++    // There are several places in the code where executing a flash gcode can
++    // result in no-op and home screen stays active with events disabled.
++
++    if (event_in_progress) {
++        return;
++    }
++
++    AutoRestore avoid_recursion(event_in_progress, true);
++
++    on_enter();
++
++    screen_t::windowEvent(sender, event, param);
++}
++
++void screen_home_2_data_t::InitState(screen_init_variant var) {
++    if (!var.GetPosition()) {
++        return;
++    }
++
++    size_t pos = *(var.GetPosition());
++    if (pos >= button_count) {
++        return;
++    }
++
++    w_buttons[pos].SetFocus();
++}
++
++screen_init_variant screen_home_2_data_t::GetCurrentState() const {
++    screen_init_variant ret;
++    for (size_t i = 0; i < button_count; ++i) {
++        if (w_buttons[i].IsFocused()) {
++            ret.SetPosition(i);
++            return ret;
++        }
++    }
++    return ret;
++}
