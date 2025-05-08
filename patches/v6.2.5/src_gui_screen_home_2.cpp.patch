@@ -1,9 +1,9 @@
 diff --git a/src/gui/screen_home_2.cpp b/src/gui/screen_home_2.cpp
 new file mode 100644
-index 0000000000000000000000000000000000000000..13d95d20547df4925323824a740466c8a531b8ab
+index 0000000000000000000000000000000000000000..83941deb1be45446411c45733da161a7a90890fc
 --- /dev/null
 +++ b/src/gui/screen_home_2.cpp
-@@ -0,0 +1,245 @@
+@@ -0,0 +1,242 @@
 +// screen_home.cpp
 +#include "screen_home_2.hpp"
 +#include "screen_home.hpp"
@@ -69,9 +69,6 @@ index 0000000000000000000000000000000000000000..13d95d20547df4925323824a740466c8
 +#include <connect/marlin_printer.hpp>
 +#include "marlin_client.hpp"
 +
-+
-+
-+// TODO remove netdev_is_enabled after it is defined
 +
 +bool screen_home_2_data_t::ever_been_opened = false;
 +
