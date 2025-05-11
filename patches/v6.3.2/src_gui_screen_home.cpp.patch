@@ -1,0 +1,76 @@
+diff --git a/src/gui/screen_home.cpp b/src/gui/screen_home.cpp
+index 835c4d79df328505fdb58b2948c7c5c38be83ab5..607ae40d5089e820bcba863eb844473891dae59e 100644
+--- a/src/gui/screen_home.cpp
++++ b/src/gui/screen_home.cpp
+@@ -58,6 +58,12 @@
+ 
+ #include "usb_host.h"
+ 
++#include <connect/connect.hpp>
++#include <connect/marlin_printer.hpp>
++#include "marlin_client.hpp"
++#include "screen_home_2.hpp"  // adjust to actual file name
++
++
+ // TODO remove netdev_is_enabled after it is defined
+ bool __attribute__((weak)) netdev_is_enabled([[maybe_unused]] const uint32_t netdev_id) { return true; }
+ 
+@@ -76,8 +82,14 @@ static constexpr const WindowMultiIconButton::Pngs icons[] = {
+     GEN_ICON_NAMES(print),
+     GEN_ICON_NAMES(preheat),
+     GEN_ICON_NAMES(spool),
++#if HAS_LARGE_DISPLAY()
++    GEN_ICON_NAMES(set_ready),
++    GEN_ICON_NAMES(reprint),
++#else
+     GEN_ICON_NAMES(calibrate),
+     GEN_ICON_NAMES(settings),
++
++#endif
+     GEN_ICON_NAMES(info),
+     GEN_ICON_NAMES(spools)
+ };
+@@ -132,8 +144,17 @@ const char *labels[] = {
+     N_("Print"),
+     N_("Preheat"),
+     N_("Filament"),
+-    N_("Control"),
++#if HAS_LARGE_DISPLAY()
++    #if BUDDY_ENABLE_CONNECT()
++        N_("Set Ready"),
++    #else
++        N_("Calibrate"),
++    #endif
++    N_("More options"),
++#else
++    N_("Calibrate"),
+     N_("Settings"),
++#endif
+     N_("Info"),
+     N_("No USB") // label variant for first button
+ };
+@@ -166,8 +187,23 @@ screen_home_data_t::screen_home_data_t()
+         { this, Rect16(), nullptr, [](window_t&) { Screens::Access()->Open(ScreenFactory::Screen<screen_filebrowser_data_t>); } },
+         { this, Rect16(), nullptr, [](window_t&) { marlin_client::gcode_printf("M1700 T-1"); } },
+         { this, Rect16(), nullptr, FilamentBtn_cb },
+-        { this, Rect16(), nullptr, [](window_t&) { Screens::Access()->Open(ScreenFactory::Screen<ScreenMenuControl>); } },
++        { this, Rect16(), nullptr, [](window_t&) {
++#if HAS_LARGE_DISPLAY()
++    #if BUDDY_ENABLE_CONNECT()
++                connect_client::MarlinPrinter::set_printer_ready(true);
++    #else
++                                Screens::Access()->Open(ScreenFactory::Screen<ScreenMenuControl>);
++    #endif
++#else
++            Screens::Access()->Open(ScreenFactory::Screen<ScreenMenuControl>);
++#endif
++        } },
++#if HAS_LARGE_DISPLAY()
++
++    { this, Rect16(), nullptr, [](window_t&) { Screens::Access()->Open(ScreenFactory::Screen<screen_home_2_data_t>); } },
++#else
+         { this, Rect16(), nullptr, [](window_t&) { Screens::Access()->Open(ScreenFactory::Screen<ScreenMenuSettings>); } },
++#endif
+         { this, Rect16(), nullptr, [](window_t&) { Screens::Access()->Open(ScreenFactory::Screen<ScreenMenuInfo>); }}
+     },
+     w_labels {
