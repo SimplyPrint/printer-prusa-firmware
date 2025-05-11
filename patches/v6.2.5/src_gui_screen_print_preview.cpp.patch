@@ -1,5 +1,5 @@
 diff --git a/src/gui/screen_print_preview.cpp b/src/gui/screen_print_preview.cpp
-index 451fc1675eff81d50ebf48a1dd09474c7dc735fa..12513172635f34b290c527c119063fac13ffe4e0 100644
+index 451fc1675eff81d50ebf48a1dd09474c7dc735fa..d78858821e5eb11f6b03b116ffc3d7256144b2bc 100644
 --- a/src/gui/screen_print_preview.cpp
 +++ b/src/gui/screen_print_preview.cpp
 @@ -19,6 +19,8 @@
@@ -20,7 +20,13 @@ index 451fc1675eff81d50ebf48a1dd09474c7dc735fa..12513172635f34b290c527c119063fac
          tools_mapping.reset();
          header.set_show_bed_info(false);
      }
-@@ -71,20 +73,31 @@ void ScreenPrintPreview::Change(fsm::BaseData data) {
+@@ -68,23 +70,38 @@ void ScreenPrintPreview::Change(fsm::BaseData data) {
+ 
+     case PhasesPrintPreview::loading:
+         pMsgbox = makeMsgBoxWait(_("Loading..."));
++            if (connect_client::is_print_network){
++                osDelay(1000);
++            }
          break;
  
      case PhasesPrintPreview::download_wait:
@@ -33,6 +39,7 @@ index 451fc1675eff81d50ebf48a1dd09474c7dc735fa..12513172635f34b290c527c119063fac
          gcode_description.update(gcode);
          assert(gcode.is_loaded() && "GCodeInfo must be initialized before ScreenPrintPreview is created");
 +        if (connect_client::is_print_network){
++            osDelay(500);
 +            return;
 +        }
          show_main_dialog();
@@ -52,7 +59,7 @@ index 451fc1675eff81d50ebf48a1dd09474c7dc735fa..12513172635f34b290c527c119063fac
          const auto version = GCodeInfo::getInstance().get_valid_printer_settings().latest_fw_version;
          pMsgbox = makeMsgBox(_(txt_new_fw_available), string_view_utf8::MakeRAM(reinterpret_cast<const uint8_t *>(version)));
          break;
-@@ -114,6 +127,9 @@ void ScreenPrintPreview::Change(fsm::BaseData data) {
+@@ -114,6 +131,9 @@ void ScreenPrintPreview::Change(fsm::BaseData data) {
  
  #if HAS_TOOLCHANGER() || HAS_MMU2()
      case PhasesPrintPreview::tools_mapping:
@@ -62,7 +69,7 @@ index 451fc1675eff81d50ebf48a1dd09474c7dc735fa..12513172635f34b290c527c119063fac
          show_tools_mapping();
          break;
  #endif
-@@ -152,6 +168,9 @@ void ScreenPrintPreview::show_main_dialog() {
+@@ -152,6 +172,9 @@ void ScreenPrintPreview::show_main_dialog() {
  
  void ScreenPrintPreview::show_tools_mapping() {
  #if HAS_TOOLCHANGER() || HAS_MMU2()
