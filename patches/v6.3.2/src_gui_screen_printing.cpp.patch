@@ -1,5 +1,5 @@
 diff --git a/src/gui/screen_printing.cpp b/src/gui/screen_printing.cpp
-index accd1a7de903a02c7ab1022e3ca9ff8c6ddc9c2b..3e52bdfcf726acb41a8de6d7bcfea4785a22977d 100644
+index accd1a7de903a02c7ab1022e3ca9ff8c6ddc9c2b..8142351f102fef35e01800074f86863db686ef86 100644
 --- a/src/gui/screen_printing.cpp
 +++ b/src/gui/screen_printing.cpp
 @@ -19,6 +19,7 @@
@@ -235,7 +235,14 @@ index accd1a7de903a02c7ab1022e3ca9ff8c6ddc9c2b..3e52bdfcf726acb41a8de6d7bcfea478
      w_filename.SetText(string_view_utf8::MakeRAM(text_filename.data()));
  
      w_etime_label.set_font(Font::small);
-@@ -285,6 +396,15 @@ void screen_printing_data_t::windowEvent(window_t *sender, GUI_event_t event, vo
+@@ -279,12 +390,22 @@ void screen_printing_data_t::windowEvent(window_t *sender, GUI_event_t event, vo
+     }
+ 
+     change_print_state();
++    p_state = GetState();
+ 
+     /// -- Print time update loop
+     updateTimes();
  
      /// -- close screen when print is done / stopped and USB media is removed
      if (!marlin_vars().media_inserted && (p_state == printing_state_t::PRINTED || p_state == printing_state_t::STOPPED)) {
@@ -251,17 +258,18 @@ index accd1a7de903a02c7ab1022e3ca9ff8c6ddc9c2b..3e52bdfcf726acb41a8de6d7bcfea478
          marlin_client::print_exit();
          return;
      }
-@@ -340,9 +460,21 @@ void screen_printing_data_t::windowEvent(window_t *sender, GUI_event_t event, vo
+@@ -340,9 +461,21 @@ void screen_printing_data_t::windowEvent(window_t *sender, GUI_event_t event, vo
      }
  
  #if HAS_LARGE_DISPLAY()
+-    if (shown_end_result && event == GUI_event_t::ENC_DN
 +    if (end_screen_state != EndScreenState::end_screen || !showing_end_result) {
 +        ScreenPrintingModel::windowEvent(sender, event, param);
 +    }
-+    if (shown_end_result && event == GUI_event_t::ENC_UP){
++    if (p_state == printing_state_t::PRINTED && shown_end_result && event == GUI_event_t::ENC_UP){
 +        second_click_left = false;
 +    }
-     if (shown_end_result && event == GUI_event_t::ENC_DN
++    if (p_state == printing_state_t::PRINTED && shown_end_result && event == GUI_event_t::ENC_DN
          && ((buttons[0].IsEnabled() && buttons[0].IsFocused()) || (!buttons[0].IsEnabled() && buttons[1].IsFocused()))) {
 -        start_showing_end_result();
 +        if (second_click_left){
@@ -274,7 +282,25 @@ index accd1a7de903a02c7ab1022e3ca9ff8c6ddc9c2b..3e52bdfcf726acb41a8de6d7bcfea478
          return;
      }
  
-@@ -372,41 +504,141 @@ void screen_printing_data_t::windowEvent(window_t *sender, GUI_event_t event, vo
+@@ -352,7 +485,7 @@ void screen_printing_data_t::windowEvent(window_t *sender, GUI_event_t event, vo
+     }
+ 
+     // Touch swipe left/right toggles showing end result
+-    if (event == GUI_event_t::TOUCH_SWIPE_LEFT || event == GUI_event_t::TOUCH_SWIPE_RIGHT) {
++    if (p_state == printing_state_t::PRINTED && (event == GUI_event_t::TOUCH_SWIPE_LEFT || event == GUI_event_t::TOUCH_SWIPE_RIGHT)) {
+         if (showing_end_result) {
+             stop_showing_end_result();
+         } else {
+@@ -362,7 +495,7 @@ void screen_printing_data_t::windowEvent(window_t *sender, GUI_event_t event, vo
+     }
+ 
+     // Clicking on the left arrow also shows end result
+-    if (!showing_end_result && event == GUI_event_t::TOUCH_CLICK && arrow_left_touch_rect.Contain(event_conversion_union { .pvoid = param }.point)) {
++    if (p_state == printing_state_t::PRINTED && !showing_end_result && event == GUI_event_t::TOUCH_CLICK && arrow_left_touch_rect.Contain(event_conversion_union { .pvoid = param }.point)) {
+         start_showing_end_result();
+         return;
+     }
+@@ -372,41 +505,147 @@ void screen_printing_data_t::windowEvent(window_t *sender, GUI_event_t event, vo
          return;
      }
  
@@ -291,7 +317,7 @@ index accd1a7de903a02c7ab1022e3ca9ff8c6ddc9c2b..3e52bdfcf726acb41a8de6d7bcfea478
 -
  #if HAS_LARGE_DISPLAY()
  void screen_printing_data_t::start_showing_end_result() {
- 
+-
 -    // hide previous
 -    for (auto &button : buttons) {
 -        button.Hide();
@@ -301,6 +327,10 @@ index accd1a7de903a02c7ab1022e3ca9ff8c6ddc9c2b..3e52bdfcf726acb41a8de6d7bcfea478
 -        label.Hide();
 -    }
 -
++    printing_state_t p_state = GetState();
++    if (p_state != printing_state_t::PRINTED){
++        return;
++     }
      arrow_left.Hide();
      w_progress_txt.Hide();
  
@@ -384,7 +414,10 @@ index accd1a7de903a02c7ab1022e3ca9ff8c6ddc9c2b..3e52bdfcf726acb41a8de6d7bcfea478
  }
  
  void screen_printing_data_t::stop_showing_end_result() {
-+
++    printing_state_t p_state = GetState();
++    if (p_state != printing_state_t::PRINTED){
++        return;
++     }
 +    switch (end_screen_state) {
 +        case EndScreenState::end_screen:
 +            header.SetText(_("Finished"));
@@ -431,7 +464,7 @@ index accd1a7de903a02c7ab1022e3ca9ff8c6ddc9c2b..3e52bdfcf726acb41a8de6d7bcfea478
      // show previous
      for (auto &button : buttons) {
          button.Show();
-@@ -563,6 +795,12 @@ void screen_printing_data_t::set_pause_icon_and_label() {
+@@ -563,6 +802,12 @@ void screen_printing_data_t::set_pause_icon_and_label() {
      case printing_state_t::COUNT:
      case printing_state_t::INITIAL:
      case printing_state_t::PRINTING:
@@ -444,7 +477,7 @@ index accd1a7de903a02c7ab1022e3ca9ff8c6ddc9c2b..3e52bdfcf726acb41a8de6d7bcfea478
      case printing_state_t::MBL_FAILED:
          EnableButton(BtnSocket::Middle);
          SetButtonIconAndLabel(BtnSocket::Middle, BtnRes::Pause, LabelRes::Pause);
-@@ -753,6 +991,11 @@ void screen_printing_data_t::change_print_state() {
+@@ -753,6 +998,11 @@ void screen_printing_data_t::change_print_state() {
      case State::Aborted:
          stop_pressed = false;
          st = printing_state_t::STOPPED;
