@@ -1,0 +1,36 @@
+diff --git a/src/connect/planner.cpp b/src/connect/planner.cpp
+index 9ae7fc734a880a622745c9c01b22e6e8e21a2bb5..0d094c4aa5ff2d8d81eb7dddde3c1a1cfd07dc9b 100644
+--- a/src/connect/planner.cpp
++++ b/src/connect/planner.cpp
+@@ -28,6 +28,7 @@
+ #include <sys/stat.h>
+ #include "stat_retry.hpp"
+ #include <unistd.h>
++#include "connect.hpp"
+ 
+ #include <option/has_side_leds.h>
+ #if HAS_SIDE_LEDS() || defined(UNITTESTS)
+@@ -57,7 +58,6 @@ using Incident = ChangedPath::Incident;
+ LOG_COMPONENT_REF(connect);
+ 
+ namespace connect_client {
+-
+ namespace {
+ 
+     // A note about time comparisons. We usually subtract now() and some past
+@@ -687,6 +687,7 @@ JC(Resume, "No paused print to resume")
+ JC(Stop, "No print to stop")
+ 
+ void Planner::command(const Command &command, const StartPrint &params) {
++//    connect_client::is_print_network = true;
+     const char *path = params.path.path();
+ 
+     const char *reason = nullptr;
+@@ -722,6 +723,7 @@ void Planner::command(const Command &command, const SendJobInfo &params) {
+         command.id,
+         params.job_id,
+     };
++//    connect_client::is_print_network = true;
+     planned_event->start_cmd_id = print_start_cmd;
+ }
+ 
