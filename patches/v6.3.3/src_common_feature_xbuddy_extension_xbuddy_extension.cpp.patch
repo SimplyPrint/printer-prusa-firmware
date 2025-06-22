@@ -1,15 +1,23 @@
 diff --git a/src/common/feature/xbuddy_extension/xbuddy_extension.cpp b/src/common/feature/xbuddy_extension/xbuddy_extension.cpp
-index dc4188fd37761955098dd2a54b60b7683eb86b09..1202758415ba4ebb8e1755b8ecbbe9c19f1a3ef7 100644
+index dc4188fd37761955098dd2a54b60b7683eb86b09..ffd3b6db0dcbac003c24012bb8d0e9ca059fe540 100644
 --- a/src/common/feature/xbuddy_extension/xbuddy_extension.cpp
 +++ b/src/common/feature/xbuddy_extension/xbuddy_extension.cpp
-@@ -76,9 +76,9 @@ void XBuddyExtension::step() {
+@@ -71,14 +71,15 @@ void XBuddyExtension::step() {
+         last_fan_update_ms = now_ms;
+ 
+         const auto max_auto_pwm = max_cooling_pwm();
+-
++        constexpr float filtration_p_constant = 2.0f * 1.5f; // or just a fixed value like 1.0f
+         switch (filtration_backend) {
  
          case ChamberFiltrationBackend::xbe_official_filter:
              // The filtration fan does both filtration and cooling
 -            cooling_fans_actual_pwm_ = cooling_fans_target_pwm_.value_or(FanPWM { 0 });
-+            cooling_fans_actual_pwm_ = std::max(chamber_cooling.compute_pwm_step(*temp, target_temp, cooling_fans_target_pwm_, max_auto_pwm), filtration_pwm);
-             filtration_fan_actual_pwm_ = std::max(chamber_cooling.compute_pwm_step(*temp, target_temp, filtration_fan_target_pwm_, max_auto_pwm), filtration_pwm);
+-            filtration_fan_actual_pwm_ = std::max(chamber_cooling.compute_pwm_step(*temp, target_temp, filtration_fan_target_pwm_, max_auto_pwm), filtration_pwm);
 -            can_auto_cool_ = (filtration_fan_target_pwm_ == pwm_auto);
++
++            cooling_fans_actual_pwm_ = chamber_cooling.compute_pwm_step(*temp, target_temp, cooling_fans_target_pwm_, max_auto_pwm);
++            filtration_fan_actual_pwm_ = std::max(chamber_cooling.compute_pwm_step(*temp, target_temp, filtration_fan_target_pwm_, max_auto_pwm, filtration_p_constant), filtration_pwm);
 +            can_auto_cool_ = (cooling_fans_target_pwm_ == pwm_auto || filtration_fan_target_pwm_ == pwm_auto);
              break;
  
