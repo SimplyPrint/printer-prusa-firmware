@@ -1,20 +1,11 @@
 diff --git a/src/marlin_stubs/pause/M600.cpp b/src/marlin_stubs/pause/M600.cpp
-index 8bc7360833a5211c7f688510f4b6e666787f01d9..3522fdb44eeb195dfee792ec955e761e41e314c6 100644
+index 8bc7360833a5211c7f688510f4b6e666787f01d9..6facb36b5b451b83cfe64b7062338a3debe3eb67 100644
 --- a/src/marlin_stubs/pause/M600.cpp
 +++ b/src/marlin_stubs/pause/M600.cpp
-@@ -133,6 +133,7 @@ void GcodeSuite::M600() {
+@@ -332,3 +332,5 @@ void PrusaGcodeSuite::M1601() {
+ }
+ 
  #endif
- 
-     if (do_manual_m600) {
-+        SERIAL_ECHO_MSG("M118 A1 action:pause");
-         M600_manual(p);
-     }
- 
-@@ -315,6 +316,7 @@ void M600_execute(xyz_pos_t park_point, uint8_t target_extruder, xyze_float_t re
-  */
- #if HAS_LOADCELL()
- void PrusaGcodeSuite::M1601() {
-+    SERIAL_ECHO_MSG("M118 A1 action:pause");
-     M600_execute(
-         XYZ_NOZZLE_PARK_POINT_M600,
-         active_extruder,
++
++//find a way to send a serial message when pausing
+\ No newline at end of file
