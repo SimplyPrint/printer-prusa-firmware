@@ -1,5 +1,5 @@
 diff --git a/src/gui/screen_print_preview.cpp b/src/gui/screen_print_preview.cpp
-index 451fc1675eff81d50ebf48a1dd09474c7dc735fa..ecdb7333a29a7676a01e5673b4ef2b80a2d70d15 100644
+index 451fc1675eff81d50ebf48a1dd09474c7dc735fa..edbe3e75b8594e403fcb218e7a7e30cfbaba03d1 100644
 --- a/src/gui/screen_print_preview.cpp
 +++ b/src/gui/screen_print_preview.cpp
 @@ -19,6 +19,9 @@
@@ -21,7 +21,7 @@ index 451fc1675eff81d50ebf48a1dd09474c7dc735fa..ecdb7333a29a7676a01e5673b4ef2b80
          tools_mapping.reset();
          header.set_show_bed_info(false);
      }
-@@ -63,28 +66,56 @@ void ScreenPrintPreview::Change(fsm::BaseData data) {
+@@ -63,28 +66,57 @@ void ScreenPrintPreview::Change(fsm::BaseData data) {
      const auto makeMsgBoxWait = [this](const string_view_utf8 &text) {
          return make_msgbox<MsgBoxIconnedWait>(GuiDefaults::RectScreenNoHeader, Responses_NONE, 0, nullptr, text, is_multiline::yes);
      };
@@ -72,13 +72,14 @@ index 451fc1675eff81d50ebf48a1dd09474c7dc735fa..ecdb7333a29a7676a01e5673b4ef2b80
          break;
  
      case PhasesPrintPreview::new_firmware_available: {
-+        if (connect_client::is_print_network){
-+            return;
-+        }
++        return;
++//        if (connect_client::is_print_network){
++//            return;
++//        }
          const auto version = GCodeInfo::getInstance().get_valid_printer_settings().latest_fw_version;
          pMsgbox = makeMsgBox(_(txt_new_fw_available), string_view_utf8::MakeRAM(reinterpret_cast<const uint8_t *>(version)));
          break;
-@@ -114,6 +145,9 @@ void ScreenPrintPreview::Change(fsm::BaseData data) {
+@@ -114,6 +146,9 @@ void ScreenPrintPreview::Change(fsm::BaseData data) {
  
  #if HAS_TOOLCHANGER() || HAS_MMU2()
      case PhasesPrintPreview::tools_mapping:
@@ -88,7 +89,7 @@ index 451fc1675eff81d50ebf48a1dd09474c7dc735fa..ecdb7333a29a7676a01e5673b4ef2b80
          show_tools_mapping();
          break;
  #endif
-@@ -152,6 +186,9 @@ void ScreenPrintPreview::show_main_dialog() {
+@@ -152,6 +187,9 @@ void ScreenPrintPreview::show_main_dialog() {
  
  void ScreenPrintPreview::show_tools_mapping() {
  #if HAS_TOOLCHANGER() || HAS_MMU2()
