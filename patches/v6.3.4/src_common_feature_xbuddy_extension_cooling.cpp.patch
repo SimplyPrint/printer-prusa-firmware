@@ -1,0 +1,37 @@
+diff --git a/src/common/feature/xbuddy_extension/cooling.cpp b/src/common/feature/xbuddy_extension/cooling.cpp
+index 6fedeb1ffa141accb4d8f9fb6ba0ff113e68f181..ca5db1eb9a74d3eb3b75156ef66d0ebc605b2117 100644
+--- a/src/common/feature/xbuddy_extension/cooling.cpp
++++ b/src/common/feature/xbuddy_extension/cooling.cpp
+@@ -4,13 +4,13 @@
+ 
+ namespace buddy {
+ 
+-FanCooling::FanPWM FanCooling::compute_auto_regulation_step(Temperature current_temperature, Temperature target_temperature, FanPWM max_auto_pwm) {
++FanCooling::FanPWM FanCooling::compute_auto_regulation_step(Temperature current_temperature, Temperature target_temperature, FanPWM max_auto_pwm, float p_constant_override) {
+     FanPWM::Value desired = 0;
+ 
+     const float error = current_temperature - target_temperature;
+ 
+     // Simple P-regulation calculation
+-    float regulation_output = last_regulation_output + (proportional_constant * error);
++    float regulation_output = last_regulation_output + (p_constant_override * error);
+ 
+     regulation_output = std::clamp<float>(regulation_output, 0.0f, static_cast<float>(max_auto_pwm.value));
+ 
+@@ -45,14 +45,14 @@ FanCooling::FanPWM FanCooling::apply_pwm_overrides(bool already_spinning, FanPWM
+     return std::max(pwm, min_pwm);
+ }
+ 
+-FanCooling::FanPWM FanCooling::compute_pwm_step(Temperature current_temperature, std::optional<Temperature> target_temperature, FanPWMOrAuto target_pwm, FanPWM max_auto_pwm) {
++FanCooling::FanPWM FanCooling::compute_pwm_step(Temperature current_temperature, std::optional<Temperature> target_temperature, FanPWMOrAuto target_pwm, FanPWM max_auto_pwm, float p_constant_override) {
+     // Prevent cropping off 1 during the restaling
+     FanPWM result = target_pwm.value_or(FanPWM { 0 });
+ 
+     // Make sure the target_pwm contains the value we would _like_ to
+     // run at.
+     if (target_pwm == pwm_auto && target_temperature.has_value()) {
+-        result = compute_auto_regulation_step(current_temperature, *target_temperature, max_auto_pwm);
++        result = compute_auto_regulation_step(current_temperature, *target_temperature, max_auto_pwm, p_constant_override);
+ 
+     } else {
+         // Reset regulator if we lose the control

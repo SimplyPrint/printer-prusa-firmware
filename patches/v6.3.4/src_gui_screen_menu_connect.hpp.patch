@@ -1,0 +1,44 @@
+diff --git a/src/gui/screen_menu_connect.hpp b/src/gui/screen_menu_connect.hpp
+index 4f2fc27dbd9f0f7cd32a4e043252b07103677bf1..5338e14b1b51829919392d674d82eac496f5366b 100644
+--- a/src/gui/screen_menu_connect.hpp
++++ b/src/gui/screen_menu_connect.hpp
+@@ -1,7 +1,3 @@
+-/**
+- * @file screen_menu_connect.hpp
+- */
+-
+ #pragma once
+ 
+ #include "screen_menu.hpp"
+@@ -58,7 +54,7 @@ protected:
+ };
+ 
+ class MI_CONNECT_REGISTER : public IWindowMenuItem {
+-    static constexpr const char *const label = N_("Add Printer to Connect");
++    static constexpr const char *const label = N_("Add Printer to Simplyprint");
+ 
+ public:
+     MI_CONNECT_REGISTER();
+@@ -67,11 +63,20 @@ protected:
+     virtual void click(IWindowMenu &window_menu) override;
+ };
+ 
+-using ScreenMenuConnect__ = ScreenMenu<EFooter::Off, MI_RETURN, MI_CONNECT_ENABLED, MI_CONNECT_STATUS, MI_CONNECT_ERROR, MI_CONNECT_HOST, MI_CONNECT_REGISTER, MI_CONNECT_LOAD_SETTINGS>;
++class MI_SEND_SIMPLYPRINT : public IWindowMenuItem {
++            static constexpr const char *const label = N_("Send test message to Simplyprint");
++        public:
++            MI_SEND_SIMPLYPRINT();
++
++        protected:
++            virtual void click(IWindowMenu &window_menu) override;
++        };
++
++using ScreenMenuConnect__ = ScreenMenu<EFooter::Off, MI_RETURN, MI_CONNECT_ENABLED, MI_CONNECT_STATUS, MI_CONNECT_ERROR, MI_CONNECT_HOST, MI_CONNECT_REGISTER, MI_CONNECT_LOAD_SETTINGS, MI_SEND_SIMPLYPRINT>;
+ 
+ class ScreenMenuConnect : public ScreenMenuConnect__ {
+ 
+ public:
+-    constexpr static const char *label = N_("PRUSA CONNECT");
++    constexpr static const char *label = N_("Simplyprint");
+     ScreenMenuConnect();
+ };

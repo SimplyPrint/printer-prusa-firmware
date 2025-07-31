@@ -1,0 +1,22 @@
+diff --git a/src/gui/MItem_menus.hpp b/src/gui/MItem_menus.hpp
+index 6c4c0bf0273ca1247c529241fa703c765b10ee0e..43986c9586ce7184cfb5b410e210b7fd771ffe44 100644
+--- a/src/gui/MItem_menus.hpp
++++ b/src/gui/MItem_menus.hpp
+@@ -94,7 +94,7 @@ using MI_MESSAGES
+     = MI_SCREEN<N_("Message History"), class screen_messages_data_t>;
+ 
+ using MI_PRUSA_CONNECT
+-    = MI_SCREEN<N_("Prusa Connect"), class ScreenMenuConnect>;
++    = MI_SCREEN<N_("Simplyprint"), class ScreenMenuConnect>;
+ 
+ using MI_PRUSALINK
+     = MI_SCREEN<N_("PrusaLink"), class ScreenMenuPrusaLink>;
+@@ -198,6 +198,8 @@ using MI_LEDS_SETTINGS
+     = MI_SCREEN<N_("Lights Settings"), class ScreenMenuLeds>;
+ #endif
+ 
++//TODO add code to handle setting the lock screen password
++
+ class MI_SERIAL_PRINTING_SCREEN_ENABLE : public WI_ICON_SWITCH_OFF_ON_t {
+     static constexpr const char *const label = N_("Serial Printing Screen");
+ 

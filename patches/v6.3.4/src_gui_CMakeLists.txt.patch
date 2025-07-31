@@ -1,0 +1,20 @@
+diff --git a/src/gui/CMakeLists.txt b/src/gui/CMakeLists.txt
+index ac4fd01d8db9afc8c25b80468287e3e4b1fd82dd..77b82511fb99799fae1fe75ab8c2d82c8b6047bf 100644
+--- a/src/gui/CMakeLists.txt
++++ b/src/gui/CMakeLists.txt
+@@ -85,6 +85,7 @@ target_sources(
+           screen_network_setup.cpp
+           screen_print_preview.cpp
+           screen_printer_setup.cpp
++          screen_menu_screen_lock.cpp
+           screen_printing.cpp
+           screen_printing_end_result.cpp
+           screen_prusa_link.cpp
+@@ -105,6 +106,7 @@ target_sources(
+           window_msgbox_wrong_printer.cpp
+           window_print_progress.cpp
+           window_thumbnail.cpp
++        screen_home_2.cpp
+   )
+ 
+ if(HAS_CRASH_DETECTION)

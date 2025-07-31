@@ -1,0 +1,29 @@
+diff --git a/src/gui/screen_printing.hpp b/src/gui/screen_printing.hpp
+index 9e46bc6c38458e518b223a337f9ea2409be92f50..5e54fdeddf9f80c31d4e2ced46d892f6c3c25cd7 100644
+--- a/src/gui/screen_printing.hpp
++++ b/src/gui/screen_printing.hpp
+@@ -63,7 +63,15 @@ class screen_printing_data_t : public ScreenPrintingModel {
+ 
+     WindowProgressCircles rotating_circles;
+ #endif
++    window_icon_t sp_print_finished_icon;
++    bool was_network_print;
++    bool second_click_left;
+ 
++    enum class EndScreenState{
++        end_screen,
++        print_result_screen,
++    };
++    EndScreenState end_screen_state;
+     window_roll_text_t w_filename;
+     WindowPrintProgress w_progress;
+     WindowNumbPrintProgress w_progress_txt;
+@@ -102,6 +110,8 @@ class screen_printing_data_t : public ScreenPrintingModel {
+     EndResultBody::DateBufferT w_etime_value_buffer;
+     EndResultBody end_result_body;
+ 
++
++
+     enum class CurrentlyShowing {
+         remaining_time, // time until end of print
+         end_time, // 'date' of end of print
