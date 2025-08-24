@@ -1,12 +1,12 @@
 diff --git a/src/connect/planner.cpp b/src/connect/planner.cpp
-index fd10eb86b3b465641304fde27fc2826687bfec04..6dc2961fae9eb4031cb89884dfced157acfd0db7 100644
+index fd10eb86b3b465641304fde27fc2826687bfec04..969d917e0d3051fc6600dbc734626d3c9ff9c587 100644
 --- a/src/connect/planner.cpp
 +++ b/src/connect/planner.cpp
 @@ -28,6 +28,7 @@
  #include <sys/stat.h>
  #include "stat_retry.hpp"
  #include <unistd.h>
-+#include "connect.hpp"
++//#include "connect.hpp"
  
  #include <option/has_side_leds.h>
  #if HAS_SIDE_LEDS() || defined(UNITTESTS)
