@@ -1,0 +1,33 @@
+diff --git a/src/persistent_stores/store_instances/config_store/store_definition.hpp b/src/persistent_stores/store_instances/config_store/store_definition.hpp
+index 3e4b6ca75d3866a97ea4a2691e8a1c61fc2e7f72..434b5371d040f8139d70b9483f838891092f763d 100644
+--- a/src/persistent_stores/store_instances/config_store/store_definition.hpp
++++ b/src/persistent_stores/store_instances/config_store/store_definition.hpp
+@@ -128,6 +128,11 @@ struct CurrentStore
+     StoreItem<bool, true, journal::hash("Menu Timeout")> menu_timeout; // on / off menu timeout flag
+     StoreItem<bool, true, journal::hash("Devhash in QR")> devhash_in_qr; // on / off sending UID in QR
+ 
++    //screen_password
++    StoreItem<uint32_t, 0000, journal::hash("Screen Password")> screen_password;
++    StoreItem<bool, false, journal::hash("Screen Lock Enabled")> screen_lock_enabled;
++    StoreItem<uint32_t, 120, journal::hash("Screen Lock Time")> screen_lock_time;
++
+     StoreItem<footer::Item, defaults::footer_setting_0, journal::hash("Footer Setting 0 v3")> footer_setting_0;
+ #if FOOTER_ITEMS_PER_LINE__ > 1
+     StoreItem<footer::Item, defaults::footer_setting_1, journal::hash("Footer Setting 1 v3")> footer_setting_1;
+@@ -246,6 +251,16 @@ struct CurrentStore
+ 
+     StoreItem<side_fsensor_remap::Mapping, defaults::side_fs_remap, journal::hash("Side FS Remap")> side_fs_remap; ///< Side filament sensor remapping
+ 
++    //screen lock
++    void set_screen_password(uint32_t password);
++    uint32_t get_screen_password();
++    void set_screen_lock_enabled(bool enabled);
++    bool get_screen_lock_enabled();
++    void set_screen_lock_time(uint32_t time);
++    uint32_t get_screen_lock_time();
++
++
++
+     //// Helper array-like access functions for filament sensors
+     int32_t get_extruder_fs_ref_nins_value(uint8_t index);
+     int32_t get_extruder_fs_ref_ins_value(uint8_t index);
