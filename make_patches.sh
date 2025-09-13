@@ -10,6 +10,7 @@ version=$1
 repo_path=Prusa-Firmware-Buddy-DEV ./generate_patches.sh
 
 
+
 # Check if smartcopy exists
 if ! command -v smartcopy &> /dev/null
 then

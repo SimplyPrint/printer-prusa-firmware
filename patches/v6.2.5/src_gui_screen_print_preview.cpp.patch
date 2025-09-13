@@ -1,5 +1,5 @@
 diff --git a/src/gui/screen_print_preview.cpp b/src/gui/screen_print_preview.cpp
-index 451fc1675eff81d50ebf48a1dd09474c7dc735fa..edbe3e75b8594e403fcb218e7a7e30cfbaba03d1 100644
+index 451fc1675eff81d50ebf48a1dd09474c7dc735fa..e1025340d638cd30998fc0ccc6d4fe0216df081d 100644
 --- a/src/gui/screen_print_preview.cpp
 +++ b/src/gui/screen_print_preview.cpp
 @@ -19,6 +19,9 @@
@@ -12,8 +12,14 @@ index 451fc1675eff81d50ebf48a1dd09474c7dc735fa..edbe3e75b8594e403fcb218e7a7e30cf
  #if HAS_MMU2()
      #include <feature/prusa/MMU2/mmu2_mk4.h>
  #endif
-@@ -51,7 +54,7 @@ void ScreenPrintPreview::Change(fsm::BaseData data) {
-         hide_main_dialog();
+@@ -48,10 +51,12 @@ void ScreenPrintPreview::Change(fsm::BaseData data) {
+     pMsgbox.reset();
+ 
+     if (phase != PhasesPrintPreview::main_dialog) {
+-        hide_main_dialog();
++        if (!connect_client::is_print_network) {
++            hide_main_dialog();
++        }
      }
  #if HAS_TOOLCHANGER() || HAS_MMU2()
 -    if (phase != PhasesPrintPreview::tools_mapping) {
@@ -21,31 +27,7 @@ index 451fc1675eff81d50ebf48a1dd09474c7dc735fa..edbe3e75b8594e403fcb218e7a7e30cf
          tools_mapping.reset();
          header.set_show_bed_info(false);
      }
-@@ -63,28 +66,57 @@ void ScreenPrintPreview::Change(fsm::BaseData data) {
-     const auto makeMsgBoxWait = [this](const string_view_utf8 &text) {
-         return make_msgbox<MsgBoxIconnedWait>(GuiDefaults::RectScreenNoHeader, Responses_NONE, 0, nullptr, text, is_multiline::yes);
-     };
-+    const char* filename = gcode.GetGcodeFilename();
- 
-     switch (phase) {
- 
-     case PhasesPrintPreview::loading:
-         pMsgbox = makeMsgBoxWait(_("Loading..."));
-+            if (connect_client::is_print_network){
-+                std::string fname(filename);
-+                size_t dot_pos = fname.find_last_of('.');
-+                if (dot_pos != std::string::npos) {
-+                    std::string ext = fname.substr(dot_pos + 1);
-+                    std::transform(ext.begin(), ext.end(), ext.begin(), ::tolower);
-+                    if (ext == "bgcode" || ext == "bgc") {
-+                        osDelay(1000);
-+                    } else {
-+                        // Invalid extension
-+                    }
-+                } else {
-+                    // No extension at all
-+                }
-+            }
+@@ -71,20 +77,33 @@ void ScreenPrintPreview::Change(fsm::BaseData data) {
          break;
  
      case PhasesPrintPreview::download_wait:
@@ -79,7 +61,7 @@ index 451fc1675eff81d50ebf48a1dd09474c7dc735fa..edbe3e75b8594e403fcb218e7a7e30cf
          const auto version = GCodeInfo::getInstance().get_valid_printer_settings().latest_fw_version;
          pMsgbox = makeMsgBox(_(txt_new_fw_available), string_view_utf8::MakeRAM(reinterpret_cast<const uint8_t *>(version)));
          break;
-@@ -114,6 +146,9 @@ void ScreenPrintPreview::Change(fsm::BaseData data) {
+@@ -114,6 +133,9 @@ void ScreenPrintPreview::Change(fsm::BaseData data) {
  
  #if HAS_TOOLCHANGER() || HAS_MMU2()
      case PhasesPrintPreview::tools_mapping:
@@ -89,7 +71,7 @@ index 451fc1675eff81d50ebf48a1dd09474c7dc735fa..edbe3e75b8594e403fcb218e7a7e30cf
          show_tools_mapping();
          break;
  #endif
-@@ -152,6 +187,9 @@ void ScreenPrintPreview::show_main_dialog() {
+@@ -152,6 +174,9 @@ void ScreenPrintPreview::show_main_dialog() {
  
  void ScreenPrintPreview::show_tools_mapping() {
  #if HAS_TOOLCHANGER() || HAS_MMU2()

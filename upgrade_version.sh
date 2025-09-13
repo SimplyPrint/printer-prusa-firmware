@@ -17,7 +17,7 @@ CONFLICT_FILES=()
 
 rm -rf $REPO_PATH
 
-git clone https://github.com/prusa3d/Prusa-Firmware-Buddy.git $REPO_PATH
+git clone git@github.com:prusa3d/Prusa-Firmware-Buddy.git $REPO_PATH # https://github.com/prusa3d/Prusa-Firmware-Buddy.git $REPO_PATH
 
 # Navigate to repo
 cd "$REPO_PATH" || { echo "Error: Repository '$REPO_PATH' not found"; exit 1; }

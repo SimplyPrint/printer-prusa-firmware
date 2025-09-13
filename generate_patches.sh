@@ -66,6 +66,8 @@ for FILE in $MODIFIED_FILES; do
     fi
     echo "Patch file created: $PATCH_FILE"
 done
+rm -rf "$PATCH_DIR/cmake-build-debug_"*
+rm -rf "$PATCH_DIR/cmake-build-debug_."*
 
 PNG_PATCH_DIR="$PATCH_DIR/png_patches"
 mkdir -p "$PNG_PATCH_DIR"

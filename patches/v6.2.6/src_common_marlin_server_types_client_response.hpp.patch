@@ -1,0 +1,13 @@
+diff --git a/src/common/marlin_server_types/client_response.hpp b/src/common/marlin_server_types/client_response.hpp
+index c40543927edcfb67a4809e5e5733b8a7f9fe8cb7..d9b732eafc5dc99f6dbd31d515a906c741aefeff 100644
+--- a/src/common/marlin_server_types/client_response.hpp
++++ b/src/common/marlin_server_types/client_response.hpp
+@@ -356,7 +356,7 @@ enum class PhaseNetworkSetup : PhaseUnderlyingType {
+     connecting_finishable, ///< The user is connecting to a Wi-Fi. The screen offers a "Finish" button that keeps connecting on the background and "Cancel" to go back.
+     connecting_nonfinishable, ///< The user is connecting to a Wi-Fi. The screen only offers a "Cancel" button to go back.
+     connected,
+-    ask_setup_prusa_connect, ///< Prompts the user if he wants to set up Prusa Connect
++    ask_setup_prusa_connect, ///< Prompts the user if he wants to set up Simplyprint
+     prusa_conect_setup, ///< Setup connect is running, waiting for it to finish
+ 
+     no_interface_error,

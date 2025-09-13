@@ -1,0 +1,36 @@
+diff --git a/src/connect/planner.cpp b/src/connect/planner.cpp
+index e368b020ee5b930455e1271bace6cacefe847990..a96e16326f5cddec7308070ec3a4cbc0b3e7a60c 100644
+--- a/src/connect/planner.cpp
++++ b/src/connect/planner.cpp
+@@ -23,6 +23,7 @@
+ #include <sys/stat.h>
+ #include "stat_retry.hpp"
+ #include <unistd.h>
++#include "connect.hpp"
+ 
+ using http::HeaderOut;
+ using std::holds_alternative;
+@@ -47,7 +48,6 @@ using Incident = ChangedPath::Incident;
+ LOG_COMPONENT_REF(connect);
+ 
+ namespace connect_client {
+-
+ namespace {
+ 
+     // A note about time comparisons. We usually subtract now() and some past
+@@ -663,6 +663,7 @@ JC(Resume, "No paused print to resume")
+ JC(Stop, "No print to stop")
+ 
+ void Planner::command(const Command &command, const StartPrint &params) {
++//    connect_client::is_print_network = true;
+     const char *path = params.path.path();
+ 
+     const char *reason = nullptr;
+@@ -698,6 +699,7 @@ void Planner::command(const Command &command, const SendJobInfo &params) {
+         command.id,
+         params.job_id,
+     };
++//    connect_client::is_print_network = true;
+     planned_event->start_cmd_id = print_start_cmd;
+ }
+ 

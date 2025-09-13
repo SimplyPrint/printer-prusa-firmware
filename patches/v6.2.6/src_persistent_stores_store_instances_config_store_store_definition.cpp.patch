@@ -1,0 +1,36 @@
+diff --git a/src/persistent_stores/store_instances/config_store/store_definition.cpp b/src/persistent_stores/store_instances/config_store/store_definition.cpp
+index 09ea904b7a1f62d8387b33110f8405a58a472c4c..449c95381abb2cf3cfb66826462c1c873a446bd1 100644
+--- a/src/persistent_stores/store_instances/config_store/store_definition.cpp
++++ b/src/persistent_stores/store_instances/config_store/store_definition.cpp
+@@ -129,6 +129,31 @@ footer::Item CurrentStore::get_footer_setting([[maybe_unused]] uint8_t index) {
+     }
+ }
+ 
++
++
++void CurrentStore::set_screen_password(uint32_t password) {
++    screen_password.set(password);
++}
++
++uint32_t CurrentStore::get_screen_password() {
++    return screen_password.get();
++}
++
++void CurrentStore::set_screen_lock_enabled(bool enabled) {
++    screen_lock_enabled.set(enabled);
++}
++
++bool CurrentStore::get_screen_lock_enabled() {
++    return screen_lock_enabled.get();
++}
++
++void CurrentStore::set_screen_lock_time(uint32_t timeout) {
++    screen_lock_time.set(timeout);
++}
++uint32_t CurrentStore::get_screen_lock_time() {
++    return screen_lock_time.get();
++}
++
+ void CurrentStore::set_footer_setting(uint8_t index, footer::Item value) {
+     switch (index) {
+     case 0:
