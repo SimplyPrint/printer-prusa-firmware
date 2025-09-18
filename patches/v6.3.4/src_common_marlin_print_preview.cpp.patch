@@ -1,0 +1,37 @@
+From 14ad4713a84afc051b78686b1e35013e9b0c0128 Mon Sep 17 00:00:00 2001
+From: Neutronic <jonbruskin@gmail.com>
+Date: Thu, 18 Sep 2025 19:57:49 +0200
+Subject: [PATCH] .
+
+---
+ src/common/marlin_print_preview.cpp | 7 +++++++
+ 1 file changed, 7 insertions(+)
+
+diff --git a/src/common/marlin_print_preview.cpp b/src/common/marlin_print_preview.cpp
+index f3f6cd4b2..703b6446b 100644
+--- a/src/common/marlin_print_preview.cpp
++++ b/src/common/marlin_print_preview.cpp
+@@ -35,6 +35,8 @@
+ #include <mmu2_toolchanger_common.hpp>
+ #include <common/gcode/gcode_info_scan.hpp>
+ 
++#include <connect/connect.hpp>
++
+ // would be nice to have option leave phase as it was
+ // something like std::pair<enum {delete, leave, has_value },PhasesPrintPreview>
+ // but not currently needed
+@@ -528,6 +530,11 @@ PrintPreview::Result PrintPreview::Loop() {
+         break;
+ 
+     case State::unfinished_selftest_wait_user:
++        if (connect_client::is_print_network) {
++            ChangeState(stateFromUpdateCheck());
++            break;
++        }
++
+         switch (response) {
+ 
+         case Response::Ignore:
+-- 
+2.34.1
+
