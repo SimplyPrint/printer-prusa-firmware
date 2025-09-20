@@ -1,14 +1,15 @@
-From 14ad4713a84afc051b78686b1e35013e9b0c0128 Mon Sep 17 00:00:00 2001
-From: Neutronic <jonbruskin@gmail.com>
-Date: Thu, 18 Sep 2025 19:57:49 +0200
-Subject: [PATCH] .
+From 8400e5d942a67c2625441a18e22647ce1c8cca74 Mon Sep 17 00:00:00 2001
+From: AtomJon <jonbruskin@gmail.com>
+Date: Sat, 20 Sep 2025 13:26:51 +0200
+Subject: [PATCH] Update State::preview_wait_user to actually handle a valid
+ response and skip calibration screen if print was requested from server
 
 ---
- src/common/marlin_print_preview.cpp | 7 +++++++
- 1 file changed, 7 insertions(+)
+ src/common/marlin_print_preview.cpp | 15 ++++++++++++---
+ 1 file changed, 12 insertions(+), 3 deletions(-)
 
 diff --git a/src/common/marlin_print_preview.cpp b/src/common/marlin_print_preview.cpp
-index f3f6cd4b2..703b6446b 100644
+index f3f6cd4b2..4fdc24f4c 100644
 --- a/src/common/marlin_print_preview.cpp
 +++ b/src/common/marlin_print_preview.cpp
 @@ -35,6 +35,8 @@
@@ -20,7 +21,23 @@ index f3f6cd4b2..703b6446b 100644
  // would be nice to have option leave phase as it was
  // something like std::pair<enum {delete, leave, has_value },PhasesPrintPreview>
  // but not currently needed
-@@ -528,6 +530,11 @@ PrintPreview::Result PrintPreview::Loop() {
+@@ -512,10 +514,12 @@ PrintPreview::Result PrintPreview::Loop() {
+ 
+         // Periodically kindly ask the prefetch thread to check if the file is still valid and update GCodeInfo::has_error
+         if (ticks_diff(curr_ms, last_still_valid_check_ms) > 1000 && !still_valid_check_job.is_active()) {
+-            last_still_valid_check_ms = curr_ms;
++            if (still_valid_check_job.result()) {
++                ChangeState(stateFromSelftestCheck());
++            }
+ 
+-            still_valid_check_job.issue([](AsyncJobExecutionControl &) {
+-                GCodeInfo::getInstance().check_still_valid();
++            still_valid_check_job.issue([](AsyncJobExecutionControl &, bool & result) {
++                result = GCodeInfo::getInstance().check_still_valid();               
+             });
+         }
+ 
+@@ -528,6 +532,11 @@ PrintPreview::Result PrintPreview::Loop() {
          break;
  
      case State::unfinished_selftest_wait_user:
