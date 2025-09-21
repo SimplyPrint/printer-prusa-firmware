@@ -1,15 +1,15 @@
-From 61b69ce9920126439eb2d76346b803e5d0f5d423 Mon Sep 17 00:00:00 2001
-From: AtomJon <jonbruskin@gmail.com>
-Date: Sat, 20 Sep 2025 13:12:24 +0200
-Subject: [PATCH] Update State::preview_wait_user to actually handle a valid
- response and skip calibration screen if print was requested from server
+From 64b2d3dacbbe4ff4b86c85cff397ac7a9b3bf61a Mon Sep 17 00:00:00 2001
+From: Neutronic <jonbruskin@gmail.com>
+Date: Thu, 18 Sep 2025 18:50:38 +0200
+Subject: [PATCH] Now skips the "unfinished_selftest" dialog if connected to
+ simply print
 
 ---
- src/common/marlin_print_preview.cpp | 15 +++++++++++++--
- 1 file changed, 13 insertions(+), 2 deletions(-)
+ src/common/marlin_print_preview.cpp | 7 +++++++
+ 1 file changed, 7 insertions(+)
 
 diff --git a/src/common/marlin_print_preview.cpp b/src/common/marlin_print_preview.cpp
-index 7daaf5ff8..d8eead00b 100644
+index 7daaf5ff8..2beadb9f6 100644
 --- a/src/common/marlin_print_preview.cpp
 +++ b/src/common/marlin_print_preview.cpp
 @@ -34,6 +34,8 @@
@@ -21,22 +21,7 @@ index 7daaf5ff8..d8eead00b 100644
  // would be nice to have option leave phase as it was
  // something like std::pair<enum {delete, leave, has_value },PhasesPrintPreview>
  // but not currently needed
-@@ -519,8 +521,12 @@ PrintPreview::Result PrintPreview::Loop() {
-         if (ticks_diff(curr_ms, last_still_valid_check_ms) > 1000 && !still_valid_check_job.is_active()) {
-             last_still_valid_check_ms = curr_ms;
- 
--            still_valid_check_job.issue([](AsyncJobExecutionControl &) {
--                GCodeInfo::getInstance().check_still_valid();
-+            if (still_valid_check_job.result()) {
-+                ChangeState(stateFromSelftestCheck());
-+            }
-+
-+            still_valid_check_job.issue([](AsyncJobExecutionControl &, bool & result) {
-+                result = GCodeInfo::getInstance().check_still_valid();               
-             });
-         }
- 
-@@ -533,6 +539,11 @@ PrintPreview::Result PrintPreview::Loop() {
+@@ -533,6 +535,11 @@ PrintPreview::Result PrintPreview::Loop() {
          break;
  
      case State::unfinished_selftest_wait_user:
