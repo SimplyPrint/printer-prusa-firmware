@@ -1,0 +1,13 @@
+diff --git a/src/transfers/transfer.cpp b/src/transfers/transfer.cpp
+index 89936796f..8a43e6cb6 100644
+--- a/src/transfers/transfer.cpp
++++ b/src/transfers/transfer.cpp
+@@ -424,7 +424,7 @@ void Transfer::notify_created() {
+         // print preview / one click print, doesn't really start the print.
+         char sfn_path[FILE_PATH_BUFFER_LEN];
+         get_SFN_path_copy(slot.destination(), sfn_path, sizeof(sfn_path));
+-        print_begin(sfn_path);
++        print_begin(sfn_path, marlin_server::PreviewSkipIfAble::all);
+     }
+ 
+     already_notified = true;
