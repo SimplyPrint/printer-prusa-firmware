@@ -1,0 +1,17 @@
+diff --git a/src/common/gcode/gcode_info.cpp b/src/common/gcode/gcode_info.cpp
+index 2ecfc718026e34b5158fd6db001e549701d43fb8..1fd5d1eb726c778eb42588c9269a0dc8ee7c247d 100644
+--- a/src/common/gcode/gcode_info.cpp
++++ b/src/common/gcode/gcode_info.cpp
+@@ -389,9 +389,9 @@ void GCodeInfo::parse_m862(GcodeBuffer::String cmd) {
+ 
+             case '4':
+                 // Parse M862.4 for minimal required firmware version
+-                if (!is_up_to_date(cmd.c_str())) {
+-                    valid_printer_settings.wrong_firmware.fail();
+-                }
++                // if (!is_up_to_date(cmd.c_str())) {
++                //     valid_printer_settings.wrong_firmware.fail();
++                // }
+                 break;
+ 
+             case '2':
