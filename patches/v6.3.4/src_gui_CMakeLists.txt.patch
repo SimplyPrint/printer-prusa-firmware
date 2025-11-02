@@ -14,7 +14,6 @@ index ac4fd01d8db9afc8c25b80468287e3e4b1fd82dd..77b82511fb99799fae1fe75ab8c2d82c
            window_msgbox_wrong_printer.cpp
            window_print_progress.cpp
            window_thumbnail.cpp
-+        screen_home_2.cpp
    )
  
  if(HAS_CRASH_DETECTION)
