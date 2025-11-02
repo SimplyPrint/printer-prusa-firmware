@@ -14,7 +14,6 @@ index 1975298077a885435ea09566e5a1cb221f021096..5405138029be82e5e7713ec4e1d96565
            window_msgbox_wrong_printer.cpp
            window_print_progress.cpp
            window_thumbnail.cpp
-+          screen_home_2.cpp
    )
  
  if(PRINTER IN_LIST PRINTERS_WITH_CRASH_DETECTION)
