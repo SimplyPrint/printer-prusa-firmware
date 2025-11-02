@@ -16,6 +16,7 @@
 #scripts/build.sh v6.1.0 mk4
 #./make_patches.sh v6.1.4 mk4 && ./local_build.sh v6.1.4 mk4
 
-./make_patches.sh v6.3.0 && ./local_build.sh v6.3.0 coreone,mk4
+#./make_patches.sh v6.3.4 && ./local_build.sh v6.3.4 coreone,mk4
 
-
+./local_build.sh v6.2.6 mk4
+./local_build.sh v6.3.4 coreone
