@@ -1,0 +1,64 @@
+diff --git a/src/gui/ScreenPrintingModel.cpp b/src/gui/ScreenPrintingModel.cpp
+index 38e34604728f4572c441e206650485798082ba31..7d0841ac8a45bd8a56fc3791896fb60460381ef5 100644
+--- a/src/gui/ScreenPrintingModel.cpp
++++ b/src/gui/ScreenPrintingModel.cpp
+@@ -25,6 +25,11 @@ constexpr const char *label_resources[] = {
+     N_("Skip"),
+     N_("Disconnect"),
+     N_("Set Ready"),
++    N_("Print OK"),
++    N_("Print Failed"),
++    N_(" "),
++    N_("Next Q Item"),
++    N_("Disabled"),
+ };
+ } // namespace
+ 
+@@ -55,7 +60,8 @@ Rect16 ScreenPrintingModel::GetButtonRect(uint8_t idx) {
+ }
+ 
+ Rect16 ScreenPrintingModel::GetButtonLabelRect(uint8_t idx) {
+-    return Rect16(btn_padding - btn_spacing / 2 + (btn_size + btn_spacing) * idx, btn_y_offset + btn_size + btn_text_spacing, btn_size + btn_spacing, text_height);
++    return Rect16(btn_padding - btn_spacing / 2 + (btn_size + btn_spacing) * idx,
++                  btn_y_offset + btn_size + btn_text_spacing, btn_size + btn_spacing, text_height);
+ }
+ 
+ void ScreenPrintingModel::SetButtonIconAndLabel(BtnSocket idx, BtnRes ico_res, LabelRes txt_res) {
+@@ -108,3 +114,36 @@ void ScreenPrintingModel::EnableButton(BtnSocket idx) {
+     buttons[btn_idx].Enable();
+     buttons[btn_idx].Invalidate();
+ }
++
++
++void ScreenPrintingModel::SetButtonVisible(BtnSocket idx, bool visible) {
++    const size_t btn_idx = std::to_underlying(idx);
++    if (visible) {
++        EnableButton(idx);
++        buttons[btn_idx].Show();
++        labels[btn_idx].Show();
++    } else {
++        DisableButton(idx);
++        buttons[btn_idx].Hide();
++        labels[btn_idx].Hide();
++    }
++}
++
++void ScreenPrintingModel::SetLabelVisible(BtnSocket idx, bool visible){
++    const size_t btn_idx = std::to_underlying(idx);
++    if (visible) {
++        labels[btn_idx].Show();
++    } else {
++        labels[btn_idx].Hide();
++    }
++}
++
++
++void ScreenPrintingModel::ResetButtonRect(BtnSocket idx) {
++    SetButtonRect(idx, GetButtonRect(std::to_underlying(idx)));
++}
++
++void ScreenPrintingModel::SetButtonRect(BtnSocket idx, Rect16 rect) {
++    const size_t btn_idx = std::to_underlying(idx);
++    buttons[btn_idx].SetRect(rect);
++}
+\ No newline at end of file

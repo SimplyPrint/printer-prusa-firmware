@@ -1,0 +1,20 @@
+diff --git a/src/gui/ScreenHandler.hpp b/src/gui/ScreenHandler.hpp
+index 96e322d40b43bb674c58a1742186c520fe763bc0..de9e73a2ff6540756ad611379ded0292ac940917 100644
+--- a/src/gui/ScreenHandler.hpp
++++ b/src/gui/ScreenHandler.hpp
+@@ -45,6 +45,7 @@ class Screens {
+     bool close_printing = false;
+ 
+     uint32_t timeout_tick;
++    uint32_t screen_timeout_tick;
+ 
+     Screens(screen_node screen_creator);
+     Screens(const Screens &) = delete;
+@@ -86,6 +87,7 @@ public:
+ 
+     void Draw();
+     void ResetTimeout();
++    void reset_lock_timeout();
+ 
+     void ScreenEvent(window_t *sender, GUI_event_t event, void *param);
+     void WindowEvent(GUI_event_t event, void *param);

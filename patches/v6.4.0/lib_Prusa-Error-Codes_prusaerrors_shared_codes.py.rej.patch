@@ -1,0 +1,16 @@
+diff --git a/lib/Prusa-Error-Codes/prusaerrors/shared/codes.py.rej b/lib/Prusa-Error-Codes/prusaerrors/shared/codes.py.rej
+new file mode 100644
+index 0000000000000000000000000000000000000000..a1c5d5c8ece31a36db5034573c5ff74225f0caf7
+--- /dev/null
++++ b/lib/Prusa-Error-Codes/prusaerrors/shared/codes.py.rej
+@@ -0,0 +1,10 @@
++diff a/lib/Prusa-Error-Codes/prusaerrors/shared/codes.py b/lib/Prusa-Error-Codes/prusaerrors/shared/codes.py	(rejected hunks)
++@@ -51,7 +51,7 @@ class Category(IntEnum):
++     MECHANICAL = 1  # Mechanical failures, engines XYZ, tower
++     TEMPERATURE = 2  # Temperature measurement, thermistors, heating
++     ELECTRICAL = 3  # Electrical, MINDA, FINDA, Motion Controller, …
++-    CONNECTIVITY = 4  # Connectivity - Wi - Fi, LAN, Prusa Connect Cloud
+++    CONNECTIVITY = 4  # Connectivity - Wi - Fi, LAN, Simplyprint Cloud
++     SYSTEM = 5  # System - BSOD, ...
++     BOOTLOADER = 6  #
++     WARNINGS = 7  # Category-less warnings

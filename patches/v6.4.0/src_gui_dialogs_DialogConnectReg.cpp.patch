@@ -1,0 +1,66 @@
+diff --git a/src/gui/dialogs/DialogConnectReg.cpp b/src/gui/dialogs/DialogConnectReg.cpp
+index e22195e6b75c7a763fb92bd97384b72af0ae26b3..1c77b6626718f8add6ca7d604e9b2bf1c560bcf2 100644
+--- a/src/gui/dialogs/DialogConnectReg.cpp
++++ b/src/gui/dialogs/DialogConnectReg.cpp
+@@ -37,11 +37,11 @@ DialogConnectRegister::DialogConnectRegister()
+     text_detail.SetAlignment(Align_t::Center());
+     line.SetBackColor(COLOR_ORANGE);
+ 
+-    title.SetText(_("Prusa Connect - printer setup"));
++    title.SetText(_("Simplyprint - printer setup"));
+ 
+     last_seen_status = std::make_tuple(connect_client::ConnectionStatus::Unknown, connect_client::OnlineError::NoError, std::nullopt);
+ 
+-    text_state.SetText(_("Registering the printer to Prusa Connect..."));
++    text_state.SetText(_("Registering the printer to Simplyprint..."));
+     text_attempt.Hide();
+ 
+     // Show these only after we get the code.
+@@ -81,7 +81,7 @@ void DialogConnectRegister::windowEvent(window_t *sender, GUI_event_t event, voi
+         switch (get<0>(last_seen_status)) {
+         case ConnectionStatus::RegistrationRequesting:
+         case ConnectionStatus::RegistrationCode:
+-            close = MsgBoxWarning(_("Prusa Connect setup is not finished. Do you want to exit and abort the process?"), Responses_YesNo)
++            close = MsgBoxWarning(_("Simplyprint setup is not finished. Do you want to exit and abort the process?"), Responses_YesNo)
+                 == Response::Yes;
+             break;
+         default:
+@@ -110,7 +110,7 @@ void DialogConnectRegister::windowEvent(window_t *sender, GUI_event_t event, voi
+                 // therefore the wizard is of little use to them.
+ 
+                 qr_registration_code.get_string_builder()
+-                    .append_string("https://connect.prusa3d.com/add/")
++                    .append_string("https://simplyprint.io/add/")
+                     .append_string(code);
+                 showQR(qr_registration_code);
+ 
+@@ -123,9 +123,9 @@ void DialogConnectRegister::windowEvent(window_t *sender, GUI_event_t event, voi
+ #endif
+ 
+ #if HAS_MINI_DISPLAY()
+-                text_state.SetText(_("Scan the QR code using the Prusa app or camera, or visit prusa.io/add"));
++                text_state.SetText(_("Scan the QR code using the SimplyPrint app or camera, or visit simplyprint.io/add"));
+ #else
+-                text_state.SetText(_("1. Scan the QR code using the Prusa app or camera, or visit prusa.io/add\n\n2. Log in"));
++                text_state.SetText(_("1. Scan the QR code using the SimplyPrint app or camera, or visit simplyprint.io/add\n\n2. Log in"));
+ #endif
+                 break;
+                 ;
+@@ -133,7 +133,7 @@ void DialogConnectRegister::windowEvent(window_t *sender, GUI_event_t event, voi
+             case ConnectionStatus::RegistrationDone: {
+                 hideDetails();
+                 text_state.SetRect(Positioner::textRectState());
+-                text_state.SetText(_("Registration successful, continue at connect.prusa3d.com"));
++                text_state.SetText(_("Registration successful, continue at simplyprint.io"));
+                 connect_client::leave_registration();
+                 left_registration = true;
+                 break;
+@@ -181,7 +181,7 @@ void DialogConnectRegister::windowEvent(window_t *sender, GUI_event_t event, voi
+                 showQR(qr_error);
+ 
+                 _(moreDetailTxt).copyToRAM(error_detail_buffer, sizeof(error_detail_buffer)); // Translation
+-                snprintf(detail_buffer, sizeof(detail_buffer), "%s:\nprusa.io/%d", error_detail_buffer, static_cast<int>(error.err_code));
++                snprintf(detail_buffer, sizeof(detail_buffer), "%s:\nsimplyprint.io/%d", error_detail_buffer, static_cast<int>(error.err_code));
+                 text_detail.SetText(string_view_utf8::MakeRAM(detail_buffer));
+                 text_detail.Invalidate();
+                 break;
