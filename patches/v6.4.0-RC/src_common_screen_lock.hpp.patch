@@ -1,0 +1,61 @@
+diff --git a/src/common/screen_lock.hpp b/src/common/screen_lock.hpp
+new file mode 100644
+index 0000000000000000000000000000000000000000..45a60bb4b858c14fb190f2d752bd14477477d8f0
+--- /dev/null
++++ b/src/common/screen_lock.hpp
+@@ -0,0 +1,55 @@
++//
++// Created by rylan on 12/26/24.
++//
++
++#ifndef PRUSA_FIRMWARE_BUDDY_DEV_SCREEN_LOCK_H
++#define PRUSA_FIRMWARE_BUDDY_DEV_SCREEN_LOCK_H
++
++
++class screen_lock {
++public:
++
++    void set_passcode(int passcode);
++
++    int get_passcode();
++
++    bool check_passcode(int passcode);
++
++    void set_locking_status(bool status);
++
++    bool get_locking_status();
++
++    void set_lock_time(int lock_time);
++
++    int get_lock_time();
++
++    void set_screen_locked(bool status);
++
++    bool get_screen_locked();
++
++
++
++private:
++    void get_passcode_from_eeprom();
++    void get_locking_status_from_eeprom();
++    void get_lock_time_from_eeprom();
++    std::atomic<int> passcode;
++    std::atomic<bool> lock_enabled;
++    std::atomic<int> lock_time;
++    std::atomic<bool> screen_locked;
++    screen_lock();
++
++public:
++    static screen_lock &instance() {
++        static screen_lock s;
++        return s;
++    }
++    screen_lock(const screen_lock &) = delete;
++    screen_lock &operator=(const screen_lock &) = delete;
++
++private:
++    ~screen_lock() {}
++};
++
++
++#endif //PRUSA_FIRMWARE_BUDDY_DEV_SCREEN_LOCK_H

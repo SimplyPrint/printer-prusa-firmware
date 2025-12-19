@@ -1,0 +1,24 @@
+diff --git a/src/persistent_stores/store_instances/config_store/store_definition.hpp b/src/persistent_stores/store_instances/config_store/store_definition.hpp
+index e481d68c2e27897f6e590e6a3e76f8ffd862cbda..ea3a08f1f62644198648fe86a077408f222e2417 100644
+--- a/src/persistent_stores/store_instances/config_store/store_definition.hpp
++++ b/src/persistent_stores/store_instances/config_store/store_definition.hpp
+@@ -693,6 +693,19 @@ struct CurrentStore
+     StoreItem<bool, false, ItemFlag::calibrations, journal::hash("Manual Belt Tuning Completed")> manual_belt_tuning_completed;
+ #endif
+ 
++    //screen_password
++    StoreItem<uint32_t, 0000, ItemFlag::features, journal::hash("Screen Password")> screen_password;
++    StoreItem<bool, false, ItemFlag::features, journal::hash("Screen Lock Enabled")> screen_lock_enabled;
++    StoreItem<uint32_t, 120, ItemFlag::features, journal::hash("Screen Lock Time")> screen_lock_time;
++
++    //screen lock
++    void set_screen_password(uint32_t password);
++    uint32_t get_screen_password();
++    void set_screen_lock_enabled(bool enabled);
++    bool get_screen_lock_enabled();
++    void set_screen_lock_time(uint32_t time);
++    uint32_t get_screen_lock_time();
++
+ private:
+     void perform_config_migrations();
+ };
