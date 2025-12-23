@@ -19,6 +19,11 @@ jobs:
       - name: Checkout repository
         uses: actions/checkout@v3
 
+      - name: Download Firmware Signing Key
+        env:
+          FIRMWARE_SIGNING_KEY: ${{ secrets.FIRMWARE_SIGNING_KEY }} 
+        run: echo "$FIRMWARE_SIGNING_KEY" > firmware_signing_key.pem
+
       - name: Set up Python 3.12
         uses: actions/setup-python@v4
         with:
