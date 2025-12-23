@@ -18,5 +18,7 @@
 
 #./make_patches.sh v6.3.4 && ./local_build.sh v6.3.4 coreone,mk4
 
-./local_build.sh v6.2.6 mk4
-./local_build.sh v6.3.4 coreone
+# ./local_build.sh v6.2.6 mk4
+# ./local_build.sh v6.3.4 coreone
+
+./local_build.sh v6.4.0 mk4,coreone,xl

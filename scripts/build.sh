@@ -45,9 +45,11 @@ done
 
 # Create new pipenv environment with pip 22.0
 pipenv --python 3.12 install pip==22.0
+pipenv --python 3.12 install requests
+
 export BUDDY_NO_VIRTUALENV=1
 # Source shell into current shell
-pipenv run python3.12 utils/build.py --preset $presets --build-type release --final --signing-key "${ROOTDIR}/firmware_signing_key.pem" --build-dir "${ROOTDIR}/build"  --bootloader yes
+pipenv run python3.12 utils/build.py --preset $presets --build-type release --final --signing-key "${ROOTDIR}/firmware_signing_key.pem" --build-dir "${ROOTDIR}/build" --bootloader yes -D WEBSOCKET:BOOL=OFF
 
 if [ $? -eq 0 ]; then
   cd "${ROOTDIR}"

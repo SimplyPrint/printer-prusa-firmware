@@ -43,9 +43,11 @@ for patch in "${ROOTDIR}/patches/$version/png_patches/"*.patch; do
     git apply -p1 < "${patch}"
 done
 
+pipenv --python 3.12 install requests
+
 # Use the existing Pipenv environment
 export BUDDY_NO_VIRTUALENV=1
-pipenv run python utils/build.py --preset $presets --build-type release --signing-key "${ROOTDIR}/firmware_signing_key.pem" --final --build-dir "${ROOTDIR}/build" --bootloader yes
+pipenv run python utils/build.py --preset $presets --build-type release --signing-key "${ROOTDIR}/firmware_signing_key.pem" --final --build-dir "${ROOTDIR}/build" --bootloader yes -D WEBSOCKET:BOOL=OFF
 
 if [ $? -eq 0 ]; then
   cd "${ROOTDIR}"
