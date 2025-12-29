@@ -22,8 +22,14 @@ jobs:
           fetch-tags: true
         
       - name: Get latest release tag
-        run: |
-          echo "TAG=$(git describe --tags --abbrev=0 HEAD~)" >> $GITHUB_OUTPUT
+        uses: actions-ecosystem/action-get-latest-tag@v1.6
+        id: latest_tag
+        with: 
+          with_initial_version: false
+
+      - name: Check on failures
+        if: steps.latest_tag.tag == ''
+        run: exit 1
 
       - name: Download Firmware Signing Key
         env:
@@ -45,6 +51,8 @@ jobs:
 
       - name: Generate firmware of latest build
         run: ./local_build.sh "$TAG" coreone,mk4,xl
+        env:
+          TAG: $ {{ steps.latest_tag.tag }}
 
       - name: Upload firmware to GitHub Packages
         run: |
@@ -59,3 +67,4 @@ jobs:
               done
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          TAG: $ {{ steps.latest_tag.tag }}
