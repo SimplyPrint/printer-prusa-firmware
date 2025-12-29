@@ -38,7 +38,7 @@ jobs:
           pipenv install requests
           
       - name: Get latest release tag
-        run: echo "TAG=$(git for-each-ref --sort=-creatordate --count 1 --format="%(refname:short)" "refs/tags/") >> $GITHUB_OUTPUT
+        run: echo "TAG=$(git for-each-ref --sort=-creatordate --count 1 --format="%(refname:short)" "refs/tags/")" >> $GITHUB_OUTPUT
         id: previoustag
 
       - name: Generate firmware of latest build
