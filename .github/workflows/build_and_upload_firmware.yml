@@ -18,11 +18,12 @@ jobs:
         
       - name: Checkout repository
         uses: actions/checkout@v6
+        with:
+          fetch-tags: true
         
       - name: Get latest release tag
         run: |
           echo "TAG=$(git describe --tags --abbrev=0 HEAD~)" >> $GITHUB_OUTPUT
-          echo "TAG=$(git describe --tags --abbrev=0 HEAD~)"
 
       - name: Download Firmware Signing Key
         env:
