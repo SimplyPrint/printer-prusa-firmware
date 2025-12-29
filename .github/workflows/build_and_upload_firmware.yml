@@ -10,9 +10,14 @@ on:
 
 jobs:
   build-and-upload:
-    runs-on: ubicloud-standard-16
+    runs-on: ubuntu-standard
 
-    steps:
+    steps:  
+      - name: Get latest release tag
+        run: |
+          echo "TAG=$(git describe --tags --abbrev=0 HEAD~)" >> $GITHUB_OUTPUT
+          echo "TAG=$(git describe --tags --abbrev=0 HEAD~)"
+        
       - name: Increase disk space
         uses: jlumbroso/free-disk-space@v1.3.1
         
@@ -36,9 +41,6 @@ jobs:
           python3.12 -m pip install --upgrade pip
           python3.12 -m pip install pipenv
           pipenv install requests
-          
-      - name: Get latest release tag
-        run: echo "TAG=$(git describe --tags --abbrev=0 HEAD~)" >> $GITHUB_OUTPUT
 
       - name: Generate firmware of latest build
         run: ./local_build.sh "$TAG" coreone,mk4,xl
