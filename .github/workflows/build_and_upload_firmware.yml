@@ -12,17 +12,17 @@ jobs:
   build-and-upload:
     runs-on: ubuntu-latest
 
-    steps:  
-      - name: Get latest release tag
-        run: |
-          echo "TAG=$(git describe --tags --abbrev=0 HEAD~)" >> $GITHUB_OUTPUT
-          echo "TAG=$(git describe --tags --abbrev=0 HEAD~)"
-        
+    steps: 
       - name: Increase disk space
         uses: jlumbroso/free-disk-space@v1.3.1
         
       - name: Checkout repository
         uses: actions/checkout@v6
+        
+      - name: Get latest release tag
+        run: |
+          echo "TAG=$(git describe --tags --abbrev=0 HEAD~)" >> $GITHUB_OUTPUT
+          echo "TAG=$(git describe --tags --abbrev=0 HEAD~)"
 
       - name: Download Firmware Signing Key
         env:
