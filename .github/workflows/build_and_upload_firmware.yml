@@ -10,7 +10,7 @@ on:
 
 jobs:
   build-and-upload:
-    runs-on: ubuntu-standard
+    runs-on: ubuntu-latest
 
     steps:  
       - name: Get latest release tag
