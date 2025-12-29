@@ -22,7 +22,7 @@ jobs:
           fetch-tags: true
         
       - name: Get latest release tag
-        uses: actions-ecosystem/action-get-latest-tag@v1.6
+        uses: actions-ecosystem/action-get-latest-tag@v1
         id: latest_tag
         with: 
           with_initial_version: false
