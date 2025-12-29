@@ -38,13 +38,10 @@ jobs:
           pipenv install requests
           
       - name: Get latest release tag
-        run: echo "TAG=$(git for-each-ref --sort=-creatordate --count 1 --format="%(refname:short)" "refs/tags/")" >> $GITHUB_OUTPUT
-        id: previoustag
+        run: echo "TAG=$(git for-each-ref --sort=-creatordate --count 1 --format='%(refname:short)' 'refs/tags/')" >> $GITHUB_OUTPUT
 
       - name: Generate firmware of latest build
         run: ./local_build.sh "$TAG" coreone,mk4,xl
-        env:
-          TAG: "${{ steps.previoustag.outputs.TAG }}"
 
       - name: Upload firmware to GitHub Packages
         run: |
@@ -59,4 +56,3 @@ jobs:
               done
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-          TAG: "${{ steps.previoustag.outputs.TAG }}"
