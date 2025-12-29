@@ -36,10 +36,15 @@ jobs:
           python3.12 -m pip install --upgrade pip
           python3.12 -m pip install pipenv
           pipenv install requests
+          
+      - name: Get latest release tag
+        uses: WyriHaximus/github-action-get-previous-tag@v1
+        id: previoustag
 
-
-      - name: Run release script
-        run: ./release.sh
+      - name: Generate firmware of latest build
+        run: ./local_build "$TAG" coreone,mk4,xl
+        env:
+          TAG: "${{ steps.previoustag.outputs.tag }}"
 
       - name: Upload firmware to GitHub Packages
         run: |
@@ -50,7 +55,8 @@ jobs:
                 fi
                 new_name="${parent_dir%%_*}.bbf"
                 mv "$firmware" "/tmp/$new_name"
-                gh release upload "latest" "/tmp/$new_name" --clobber
+                gh release upload "$TAG" "/tmp/$new_name" --clobber
               done
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          TAG: "${{ steps.previoustag.outputs.tag }}"
