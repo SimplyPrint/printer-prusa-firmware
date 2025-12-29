@@ -13,13 +13,6 @@ jobs:
     runs-on: ubuntu-latest
 
     steps: 
-      - name: Increase disk space
-        uses: jlumbroso/free-disk-space@v1.3.1
-        
-      - name: Checkout repository
-        uses: actions/checkout@v6
-        with:
-          fetch-tags: true
         
       - name: Get latest release tag
         uses: actions-ecosystem/action-get-latest-tag@v1
@@ -30,6 +23,14 @@ jobs:
       - name: Check on failures
         if: steps.latest_tag.tag == ''
         run: exit 1
+          
+      - name: Increase disk space
+        uses: jlumbroso/free-disk-space@v1.3.1
+        
+      - name: Checkout repository
+        uses: actions/checkout@v6
+        with:
+          fetch-tags: true
 
       - name: Download Firmware Signing Key
         env:
