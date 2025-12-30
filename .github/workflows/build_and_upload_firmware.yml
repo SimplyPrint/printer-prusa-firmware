@@ -26,8 +26,13 @@ jobs:
           with_initial_version: false
 
       - name: Check on failures
-        if: steps.latest_tag.outputs.tag == null
+        if: steps.latest_tag.outputs.tag == ''
         run: exit 1
+
+      - name: Print Latest Tag
+        run: echo "Latest tag: $TAG"
+        env:
+          TAG: $ {{ steps.latest_tag.outputs.tag }}
           
       - name: Increase disk space
         uses: jlumbroso/free-disk-space@v1.3.1
