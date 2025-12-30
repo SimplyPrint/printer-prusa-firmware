@@ -32,7 +32,7 @@ jobs:
       - name: Print Latest Tag
         run: 'echo "Latest tag: $TAG"'
         env:
-          TAG: $ {{ steps.latest_tag.outputs.tag }}
+          TAG: ${{ steps.latest_tag.outputs.tag }}
           
       - name: Increase disk space
         uses: jlumbroso/free-disk-space@v1.3.1
@@ -58,7 +58,7 @@ jobs:
       - name: Generate firmware of latest build
         run: './local_build.sh "$TAG" coreone,mk4,xl'
         env:
-          TAG: $ {{ steps.latest_tag.outputs.tag }}
+          TAG: ${{ steps.latest_tag.outputs.tag }}
 
       - name: Upload firmware to GitHub Packages
         run: |
@@ -73,4 +73,4 @@ jobs:
               done
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-          TAG: $ {{ steps.latest_tag.outputs.tag }}
+          TAG: ${{ steps.latest_tag.outputs.tag }}
