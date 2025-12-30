@@ -26,7 +26,7 @@ jobs:
           with_initial_version: false
 
       - name: Check on failures
-        if: steps.latest_tag.tag == ''
+        if: steps.latest_tag.outputs.tag == null
         run: exit 1
           
       - name: Increase disk space
@@ -53,7 +53,7 @@ jobs:
       - name: Generate firmware of latest build
         run: ./local_build.sh "$TAG" coreone,mk4,xl
         env:
-          TAG: $ {{ steps.latest_tag.tag }}
+          TAG: $ {{ steps.latest_tag.outputs.tag }}
 
       - name: Upload firmware to GitHub Packages
         run: |
@@ -68,4 +68,4 @@ jobs:
               done
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-          TAG: $ {{ steps.latest_tag.tag }}
+          TAG: $ {{ steps.latest_tag.outputs.tag }}
