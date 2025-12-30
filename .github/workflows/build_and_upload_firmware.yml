@@ -30,7 +30,7 @@ jobs:
         run: exit 1
 
       - name: Print Latest Tag
-        run: echo "Latest tag: $TAG"
+        run: 'echo "Latest tag: $TAG"'
         env:
           TAG: $ {{ steps.latest_tag.outputs.tag }}
           
@@ -56,7 +56,7 @@ jobs:
           pipenv install requests
 
       - name: Generate firmware of latest build
-        run: ./local_build.sh "$TAG" coreone,mk4,xl
+        run: './local_build.sh "$TAG" coreone,mk4,xl'
         env:
           TAG: $ {{ steps.latest_tag.outputs.tag }}
 
