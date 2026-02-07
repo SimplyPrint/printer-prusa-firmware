@@ -1,8 +1,16 @@
 diff --git a/src/gui/CMakeLists.txt b/src/gui/CMakeLists.txt
-index d5d7324c2cb71987a64192a36387174e1f0092cb..ec591189274f37c3b29f5b86f96ee7f8da5034b6 100644
+index d5d7324c2cb71987a64192a36387174e1f0092cb..f3b142a269117054f8719819467d1050bf83086f 100644
 --- a/src/gui/CMakeLists.txt
 +++ b/src/gui/CMakeLists.txt
-@@ -72,6 +72,7 @@ target_sources(
+@@ -46,6 +46,7 @@ target_sources(
+           screen_hardfault.cpp
+           screen_help_fw_update.cpp
+           screen_home.cpp
++          screen_home_2.cpp
+           screen_menu.cpp
+           screen_menu_control.cpp
+           screen_menu_enclosure.cpp
+@@ -72,6 +73,7 @@ target_sources(
            screen_menu_temperature.cpp
            screen_menu_tune.cpp
            screen_menu_user_interface.cpp
