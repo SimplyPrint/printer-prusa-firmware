@@ -1,19 +1,13 @@
 name: Build and Upload Firmware
 
-on:
-  push:
-    branches:
-      - main
-  pull_request:
-    branches:
-      - main
+on: workflow_dispatch
+  
 
 jobs:
   build-and-upload:
     runs-on: ubuntu-latest
 
     steps: 
-        
       - name: Checkout repository
         uses: actions/checkout@v6
         with:
@@ -67,7 +61,7 @@ jobs:
                 if [ "$parent_dir" = "products" ]; then
                   continue
                 fi
-                new_name="sp_buddy_$TAG+$COMMIT@${date +"%d-%m-%Y"}_${parent_dir%%_*}.bbf"
+                new_name='sp_buddy_$TAG+$COMMIT@${date +"%d-%m-%Y"}_${parent_dir%%_*}.bbf'
                 mv "$firmware" "/tmp/$new_name"
                 gh release upload "$TAG" "/tmp/$new_name" --clobber
               done
