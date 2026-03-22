@@ -1,0 +1,13 @@
+diff --git a/src/gui/dialogs/DialogConnectReg.hpp b/src/gui/dialogs/DialogConnectReg.hpp
+index cbdaaff81e4e4cd75ec9a3d757929f7fe6c042af..070e1db98f54e2bae901fc9beea15a730d506eb9 100644
+--- a/src/gui/dialogs/DialogConnectReg.hpp
++++ b/src/gui/dialogs/DialogConnectReg.hpp
+@@ -19,7 +19,7 @@ private:
+     StringViewUtf8Parameters<connect_client::CODE_SIZE + 1> code_params;
+ 
+     // TODO: Doesn't fit
+-    constexpr static const char *const headerLabel = N_("PRUSA CONNECT");
++    constexpr static const char *const headerLabel = N_("Simplyprint");
+     constexpr static const char *const moreDetailTxt = N_("More detail at");
+ 
+     // TODO: Stolen from selftest_frame_esp_qr.hpp ‒ unify to a common place.

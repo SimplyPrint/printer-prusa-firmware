@@ -1,0 +1,20 @@
+diff --git a/lib/Marlin/Marlin/src/module/temperature.cpp.rej b/lib/Marlin/Marlin/src/module/temperature.cpp.rej
+new file mode 100644
+index 0000000000000000000000000000000000000000..85c22b85eafacd41f3f52fe7626eb1c1802ff348
+--- /dev/null
++++ b/lib/Marlin/Marlin/src/module/temperature.cpp.rej
+@@ -0,0 +1,14 @@
++diff a/lib/Marlin/Marlin/src/module/temperature.cpp b/lib/Marlin/Marlin/src/module/temperature.cpp	(rejected hunks)
++@@ -3025,7 +3025,11 @@ void Temperature::isr() {
++       SERIAL_ECHOPAIR(" C@:", getHeaterPower(H_CHAMBER));
++     #elif HAS_CHAMBER_API()
++       auto current_chamber_temperature = buddy::chamber().current_temperature();
++-      if (current_chamber_temperature.has_value()) SERIAL_ECHOPAIR(" C@:", current_chamber_temperature.value());
+++      auto target_chamber_temperature = buddy::chamber().target_temperature();
+++      if (current_chamber_temperature.has_value()){
+++          SERIAL_ECHOPAIR(" C:", current_chamber_temperature.value());
+++          SERIAL_ECHOPAIR("/", target_chamber_temperature.has_value() ? target_chamber_temperature.value() : 0.0f);
+++      }
++     #endif
++ 
++     #if HAS_TEMP_HEATBREAK

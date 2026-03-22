@@ -1,0 +1,34 @@
+diff --git a/src/persistent_stores/store_instances/config_store/store_definition.cpp b/src/persistent_stores/store_instances/config_store/store_definition.cpp
+index 11de6baebdfd700453da975380aeae76a9abab3b..3f97e01aee20cb7eeced0c676964499136840912 100644
+--- a/src/persistent_stores/store_instances/config_store/store_definition.cpp
++++ b/src/persistent_stores/store_instances/config_store/store_definition.cpp
+@@ -34,6 +34,29 @@ static_assert(
+     "All items must have a flag set (not counting dev_items/common_misconfigurations)");
+ #endif
+ 
++void CurrentStore::set_screen_password(uint32_t password) {
++    screen_password.set(password);
++}
++
++uint32_t CurrentStore::get_screen_password() {
++    return screen_password.get();
++}
++
++void CurrentStore::set_screen_lock_enabled(bool enabled) {
++    screen_lock_enabled.set(enabled);
++}
++
++bool CurrentStore::get_screen_lock_enabled() {
++    return screen_lock_enabled.get();
++}
++
++void CurrentStore::set_screen_lock_time(uint32_t timeout) {
++    screen_lock_time.set(timeout);
++}
++uint32_t CurrentStore::get_screen_lock_time() {
++    return screen_lock_time.get();
++}
++
+ void CurrentStore::perform_config_check() {
+     /// Whether this is the first run of the printer after assembly/factory reset
+     [[maybe_unused]] const bool is_first_run = (config_store_init_result() == InitResult::cold_start);

@@ -1,0 +1,17 @@
+diff --git a/src/guiapi/src/window_msgbox.cpp b/src/guiapi/src/window_msgbox.cpp
+index e788b6ce53b6cb30ecc1d369b0e2139f86cbf75f..ee85781c487d9e971f5314e5ccf7c5a1bf41dcab 100644
+--- a/src/guiapi/src/window_msgbox.cpp
++++ b/src/guiapi/src/window_msgbox.cpp
+@@ -258,9 +258,9 @@ MsgBoxIconnedError::MsgBoxIconnedError(Rect16 rect, const PhaseResponses &resp,
+     text.SetAlignment(Align_t::LeftCenter());
+     icon.SetRect(getIconRect());
+     AdjustLayout(text, icon);
+-    SetBackColor(COLOR_ORANGE);
+-    text.SetBackColor(COLOR_ORANGE);
+-    icon.SetBackColor(COLOR_ORANGE);
++    SetBackColor(COLOR_PRUSA_ORANGE);
++    text.SetBackColor(COLOR_PRUSA_ORANGE);
++    icon.SetBackColor(COLOR_PRUSA_ORANGE);
+ 
+     if (!pButtons) { // pButtons can never be null
+         assert("unassigned msgbox");
