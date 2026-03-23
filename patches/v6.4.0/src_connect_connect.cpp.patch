@@ -1,5 +1,5 @@
 diff --git a/src/connect/connect.cpp b/src/connect/connect.cpp
-index a8fe67292708ab77fc0fac5e18b2175dc13e9786..606285b3690b669b2a703396fc57868f4491ce24 100644
+index a8fe67292708ab77fc0fac5e18b2175dc13e9786..814a35522dd172f785642c13efed4537278e8d25 100644
 --- a/src/connect/connect.cpp
 +++ b/src/connect/connect.cpp
 @@ -20,6 +20,8 @@
@@ -11,7 +11,7 @@ index a8fe67292708ab77fc0fac5e18b2175dc13e9786..606285b3690b669b2a703396fc57868f
  
  using namespace http;
  using json::ChunkRenderer;
-@@ -44,7 +46,65 @@ LOG_COMPONENT_DEF(connect, logging::Severity::debug);
+@@ -44,7 +46,66 @@ LOG_COMPONENT_DEF(connect, logging::Severity::debug);
  
  namespace connect_client {
  
@@ -19,7 +19,8 @@ index a8fe67292708ab77fc0fac5e18b2175dc13e9786..606285b3690b669b2a703396fc57868f
 +std::string sp_send_string = "";
 +std::atomic<bool> sp_conn_ready{false};
 +std::atomic<bool> sp_data_to_send{false};
-+std::atomic<int> sp_conn_result{0};
++std::atomic<bool> sp_response_has_error;
++std::string sp_response_error;
 +
  namespace {
 +    class SimplyPrintRequest final : public http::Request {
@@ -77,7 +78,7 @@ index a8fe67292708ab77fc0fac5e18b2175dc13e9786..606285b3690b669b2a703396fc57868f
  
      // Send a ping if there's no activity from us during this time (15_000 ms = 15s)
      constexpr uint32_t ping_inactivity = 15000;
-@@ -244,13 +304,19 @@ Connect::ServerResp Connect::handle_server_resp(http::Response resp, CommandId c
+@@ -244,13 +305,19 @@ Connect::ServerResp Connect::handle_server_resp(http::Response resp, CommandId c
      // whole request-response pair a successful one. That's OK, because on the
      // lower-level it is - we consumed all the data and are allowed to reuse
      // the connection and all that.
@@ -98,7 +99,7 @@ index a8fe67292708ab77fc0fac5e18b2175dc13e9786..606285b3690b669b2a703396fc57868f
      default:;
          // If it's unknown content type, then it's unknown command because we
          // have no idea what to do about it / how to even parse it.
-@@ -320,6 +386,9 @@ namespace {
+@@ -320,6 +387,9 @@ namespace {
              planner->transfer_checkpoint();
  
              auto command = parser(id, buffer, size, move(this->buffer));
@@ -108,55 +109,46 @@ index a8fe67292708ab77fc0fac5e18b2175dc13e9786..606285b3690b669b2a703396fc57868f
              planner->command(command);
              return monostate {};
          }
-@@ -689,6 +758,76 @@ CommResult Connect::prepare_connection(CachedFactory &conn_factory, const Printe
+@@ -678,6 +748,35 @@ CommResult Connect::send_command(CachedFactory &conn_factory, const Printer::Con
+ 
+     return ConnectionStatus::Ok;
+ }
++
++void Connect::send_simplyprint_internal(CachedFactory &conn_factory) {
++    if (!sp_data_to_send){
++        sp_conn_ready = true;
++        return;
++    }
++
++    if (!websocket.has_value()) {
++        return;
++    }
++
++    sp_conn_ready = false;
++    sp_data_to_send = false;
++
++    uint8_t buffer[MAX_RESP_SIZE];
++
++    memcpy(buffer, sp_send_string.c_str(), sp_send_string.size());
++
++    // Create and send the request
++    auto error = websocket->send(WebSocket::Text, true, buffer, sp_send_string.size());
++
++    if (error.has_value()) {
++        sp_response_error = http::to_str(error.value());
++    }
++    else {
++        sp_response_error = "";
++    }
++}
++
+ #else
+ CommResult Connect::prepare_connection(CachedFactory &conn_factory, const Printer::Config &config) {
+     if (!conn_factory.is_valid()) {
+@@ -689,6 +788,35 @@ CommResult Connect::prepare_connection(CachedFactory &conn_factory, const Printe
      return monostate {};
  }
  
-+
-+int send_simplyprint_no_return(const std::string &data){
-+    bool timeout = true;
-+    for (int i = 0; i < 100; i++) {
-+        if (sp_conn_ready) { // Use .load() for atomic reads
-+            sp_send_string = data;
-+            sp_conn_ready = false; // Use .store() for atomic writes
-+            timeout = false;
-+            break;
-+        }
-+        vTaskDelay(pdMS_TO_TICKS(100)); // Delay for 1000 ms (1 second)
-+    }
-+    if (timeout){
-+        return -1;
-+    }
-+    return 0;
-+}
-+
-+int send_simplyprint(const std::string &data) {
-+    bool timeout = true;
-+    for (int i = 0; i < 100; i++) {
-+        if (sp_conn_ready) { // Use .load() for atomic reads
-+            sp_send_string = data;
-+            sp_conn_ready = false; // Use .store() for atomic writes
-+            timeout = false;
-+            break;
-+        }
-+        vTaskDelay(pdMS_TO_TICKS(100)); // Delay for 1000 ms (1 second)
-+    }
-+    if (timeout){
-+        return -1;
-+    }
-+    sp_data_to_send = true;
-+    for (int i = 0; i < 100; i++) {
-+        if (sp_conn_ready) {
-+            sp_conn_ready = false;
-+            return sp_conn_result;
-+        }
-+        vTaskDelay(pdMS_TO_TICKS(100)); // Delay for 1000 ms (1 second)
-+    }
-+    sp_conn_ready = false;
-+    return -1;
-+}
-+
-+
 +void Connect::send_simplyprint_internal(CachedFactory &conn_factory) {
 +    if (!sp_data_to_send){
 +        sp_conn_ready = true;
@@ -174,29 +166,86 @@ index a8fe67292708ab77fc0fac5e18b2175dc13e9786..606285b3690b669b2a703396fc57868f
 +    HttpClient http(conn_factory);
 +    auto result = http.send(request);
 +
++    sp_response_error = "";
++
 +    // Handle response without unnecessary copies
 +    if (auto *response = std::get_if<http::Response>(&result)) {
-+        sp_conn_result = response->status;
++        if (response->status / 200 != 2 && response->status != 0) {
++            sp_response_error = "HTTP Error while sending. Code: " + std::to_string(response->status);
++        }
 +    } else {
-+        sp_conn_result = -1;
++        sp_response_error = "HTTP Error, no response";
 +    }
 +}
 +
  CommResult Connect::send_command(CachedFactory &conn_factory, const Printer::Config &config, Action &&action, optional<CommandId> background_command_id) {
      log_debug(connect, "Sending to connect");
      BasicRequest request(printer, config, action, background_command_id);
-@@ -873,6 +1012,10 @@ void Connect::run() {
+@@ -784,6 +912,51 @@ CommResult Connect::send_command(CachedFactory &conn_factory, const Printer::Con
+ }
+ #endif
+ 
++int send_simplyprint_no_return(const std::string &data){
++    bool timeout = true;
++    for (int i = 0; i < 100; i++) {
++        if (sp_conn_ready) { // Use .load() for atomic reads
++            sp_send_string = data;
++            sp_conn_ready = false; // Use .store() for atomic writes
++            timeout = false;
++            break;
++        }
++        vTaskDelay(pdMS_TO_TICKS(100)); // Delay for 1000 ms (1 second)
++    }
++    if (timeout){
++        return -1;
++    }
++    return 0;
++}
++
++std::string send_simplyprint(const std::string &data) {
++    bool timeout = true;
++    for (int i = 0; i < 100; i++) {
++        if (sp_conn_ready) { // Use .load() for atomic reads
++            sp_send_string = data;
++            sp_conn_ready = false; // Use .store() for atomic writes
++            timeout = false;
++            break;
++        }
++        vTaskDelay(pdMS_TO_TICKS(100)); // Delay for 1000 ms (1 second)
++    }
++
++    if (timeout) {
++        return "Could not send simplyprint. Timed out waiting for send_simplyprint_internal";
++    }
++
++    sp_data_to_send = true;
++    for (int i = 0; i < 100; i++) {
++        if (sp_conn_ready) {
++            sp_conn_ready = false;
++            return sp_response_error;
++        }
++        vTaskDelay(pdMS_TO_TICKS(100)); // Delay for 1000 ms (1 second)
++    }
++    sp_conn_ready = false;
++    return "";
++}
++
+ CommResult Connect::communicate(CachedFactory &conn_factory) {
+     const auto [config, cfg_changed] = printer.config();
+ 
+@@ -873,6 +1046,11 @@ void Connect::run() {
      log_debug(connect, "%s", "Connect client starts\n");
  
      CachedFactory conn_factory;
 +    sp_send_string = "";
 +    sp_conn_ready = false;
 +    sp_data_to_send = false;
-+    sp_conn_result = 0;
++    sp_response_error = "";
++    sp_response_has_error = false;
  
      while (true) {
          auto reg_wanted = registration.load();
-@@ -898,6 +1041,7 @@ void Connect::run() {
+@@ -898,6 +1076,7 @@ void Connect::run() {
              const auto new_status = communicate(conn_factory);
              process_status(new_status, ConnectionStatus::Error);
          }

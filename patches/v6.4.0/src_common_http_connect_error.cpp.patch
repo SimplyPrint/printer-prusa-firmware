@@ -1,0 +1,13 @@
+diff --git a/src/common/http/connect_error.cpp b/src/common/http/connect_error.cpp
+index 68d9b7ce4eafaa4eb9bcdf3d36f295591e5efa52..80c68f73607bf56137ad9ab6492fc059c94a5dab 100644
+--- a/src/common/http/connect_error.cpp
++++ b/src/common/http/connect_error.cpp
+@@ -5,7 +5,7 @@ namespace http {
+ const char *to_str(Error error) {
+     switch (error) {
+     case Error::Timeout:
+-        return "Timetout";
++        return "Timeout";
+     case Error::Parse:
+         return "Parse";
+     case Error::SetSockOpt:
