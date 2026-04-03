@@ -1,5 +1,5 @@
 diff --git a/src/connect/connect.hpp b/src/connect/connect.hpp
-index 06dcd410c5789d566731cf6d655522525a256cc4..6605ceb76a2ea0015dca7d9371130e2eb42cd16f 100644
+index 06dcd410c5789d566731cf6d655522525a256cc4..a7204f9aafccf7bc4f907e15da024224616c5723 100644
 --- a/src/connect/connect.hpp
 +++ b/src/connect/connect.hpp
 @@ -14,6 +14,8 @@
@@ -15,14 +15,14 @@ index 06dcd410c5789d566731cf6d655522525a256cc4..6605ceb76a2ea0015dca7d9371130e2e
      SendInfo,
  };
  
-+
 +extern std::atomic<bool> sp_conn_ready;
 +extern std::atomic<bool> sp_data_to_send;
-+extern std::atomic<int> sp_conn_result;
++extern std::atomic<bool> sp_response_has_error;
 +
 +// Non-atomic variables that aren't modified concurrently
 +extern std::string sp_send_string;
-+int send_simplyprint(const std::string &data);
++extern std::string sp_response_error;
++std::string send_simplyprint(const std::string &data);
 +int send_simplyprint_no_return(const std::string &data);
 +
  class Connect {
