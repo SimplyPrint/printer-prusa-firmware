@@ -11,15 +11,17 @@ git remote set-url --push origin DISABLED
 # Ensure tags are fetched
 git fetch --tags
 
-if [ $# -ne 2 ] ; then
-    echo "Usage: $0 <version> <presets>"
+if [ $# -ne 3 ] ; then
+    echo "Usage: $0 <version> <presets> <WebSocket:ON/OFF>"
     echo "Version: v5.0.0"
-    echo "Presets: mk4,xl,mini"
+    echo "Presets: mk4,xl,mini,coreone,coreonel"
+    echo "WebSocket: ON,OFF"
     exit 1
 fi
 
 version=$1
 presets=$2
+websocket=$3
 
 git reset --hard HEAD
 git clean -fd
@@ -47,7 +49,7 @@ pipenv --python 3.12 install requests
 
 # Use the existing Pipenv environment
 export BUDDY_NO_VIRTUALENV=1
-pipenv run python utils/build.py --preset $presets --build-type release --signing-key "${ROOTDIR}/firmware_signing_key.pem" --final --build-dir "${ROOTDIR}/build" --bootloader yes -D WEBSOCKET:BOOL=OFF
+pipenv run python utils/build.py --preset $presets --build-type release --signing-key "${ROOTDIR}/firmware_signing_key.pem" --final --build-dir "${ROOTDIR}/build" --bootloader yes -D WEBSOCKET:BOOL=$websocket
 
 if [ $? -eq 0 ]; then
   cd "${ROOTDIR}"
