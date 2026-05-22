@@ -27,7 +27,7 @@ jobs:
           TAG: ${{ steps.latest_tag.outputs.tag }}
 
       - name: Test Substitution
-        run: 'echo "sp_WEBSOCKET_$TAG+$COMMIT@${date +\"%d-%m-%Y\"}.bbf"'
+        run: 'echo "sp_WEBSOCKET_$TAG+$COMMIT@$(date +%d-%m-%Y).bbf"'
         env:
           TAG: ${{ steps.latest_tag.outputs.tag }}
           COMMIT: ${{ github.sha }}
