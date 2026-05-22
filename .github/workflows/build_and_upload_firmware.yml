@@ -24,17 +24,7 @@ jobs:
       - name: Print Latest Tag
         run: 'echo "Latest tag: $TAG"'
         env:
-          TAG: ${{ steps.latest_tag.outputs.tag }}
-
-      - name: Test Substitution
-        run: 'echo "sp_WEBSOCKET_$TAG+$COMMIT@$(date +%d-%m-%Y).bbf"'
-        env:
-          TAG: ${{ steps.latest_tag.outputs.tag }}
-          COMMIT: ${{ github.sha }}
-
-      - name: Quit
-        run: exit 1
-        
+          TAG: ${{ steps.latest_tag.outputs.tag }}        
           
       #- name: Increase disk space
       #  uses: jlumbroso/free-disk-space@v1.3.1
@@ -69,7 +59,7 @@ jobs:
                 if [ "$parent_dir" = "products" ]; then
                   continue
                 fi
-                new_name="sp_${parent_dir%%_*}_WEBSOCKET_$TAG+$COMMIT@${date +\"%d-%m-%Y\"}.bbf"
+                new_name="sp_$parent_dir_WEBSOCKET_$TAG+$COMMIT@$(date +%d-%m-%Y).bbf"
                 mv "$firmware" "/tmp/$new_name"
                 gh release upload "$TAG" "/tmp/$new_name" --clobber
               done
