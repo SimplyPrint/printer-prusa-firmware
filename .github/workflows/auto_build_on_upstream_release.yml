@@ -127,8 +127,10 @@ jobs:
           TAG: ${{ needs.check-upstream.outputs.tag }}
         run: |
           gh release delete "$TAG" --yes 2>/dev/null || true
-          gh release create "$TAG" --draft --prerelease --title "$TAG" \
-            --notes "Automated SimplyPrint firmware build mirroring upstream prusa3d/Prusa-Firmware-Buddy $TAG"
+          NOTES="Automated SimplyPrint firmware build mirroring upstream prusa3d/Prusa-Firmware-Buddy $TAG
+
+          Based on https://github.com/prusa3d/Prusa-Firmware-Buddy/releases/tag/$TAG"
+          gh release create "$TAG" --draft --prerelease --title "$TAG" --notes "$NOTES"
           gh release upload "$TAG" /tmp/firmware-out/*.bbf --clobber
 
       - name: Publish release
