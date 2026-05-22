@@ -48,7 +48,7 @@ jobs:
           pipenv install requests
 
       - name: Generate firmware of latest build
-        run: './local_build.sh "$TAG" coreone,mk4,xl'
+        run: './local_build.sh "$TAG" coreone,mk4,xl WebSocket:ON'
         env:
           TAG: ${{ steps.latest_tag.outputs.tag }}
 
@@ -59,7 +59,7 @@ jobs:
                 if [ "$parent_dir" = "products" ]; then
                   continue
                 fi
-                new_name="sp_buddy_$TAG+$COMMIT@${date +\"%d-%m-%Y\"}_${parent_dir%%_*}.bbf"
+                new_name="sp_${parent_dir%%_*}_WEBSOCKET_$TAG+$COMMIT@${date +\"%d-%m-%Y\"}.bbf"
                 mv "$firmware" "/tmp/$new_name"
                 gh release upload "$TAG" "/tmp/$new_name" --clobber
               done
