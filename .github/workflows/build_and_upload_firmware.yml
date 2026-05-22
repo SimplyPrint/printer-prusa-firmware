@@ -25,6 +25,16 @@ jobs:
         run: 'echo "Latest tag: $TAG"'
         env:
           TAG: ${{ steps.latest_tag.outputs.tag }}
+
+      - name: Test Substitution
+        run: 'echo "sp_WEBSOCKET_$TAG+$COMMIT@${date +\"%d-%m-%Y\"}.bbf"'
+        env:
+          TAG: ${{ steps.latest_tag.outputs.tag }}
+          COMMIT: ${{ github.sha }}
+
+      - name: Quit
+        run: exit 1
+        
           
       #- name: Increase disk space
       #  uses: jlumbroso/free-disk-space@v1.3.1
