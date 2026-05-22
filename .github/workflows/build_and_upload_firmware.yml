@@ -59,7 +59,7 @@ jobs:
                 if [ "$parent_dir" = "products" ]; then
                   continue
                 fi
-                new_name="sp_$parent_dir_WEBSOCKET_$TAG+$COMMIT@$(date +%d-%m-%Y).bbf"
+                new_name="sp_${parent_dir}_WEBSOCKET_${TAG}+${COMMIT}@$(date +%d-%m-%Y).bbf"
                 mv "$firmware" "/tmp/$new_name"
                 gh release upload "$TAG" "/tmp/$new_name" --clobber
               done
