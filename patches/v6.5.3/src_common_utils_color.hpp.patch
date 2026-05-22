@@ -1,0 +1,30 @@
+diff --git a/src/common/utils/color.hpp b/src/common/utils/color.hpp
+index 26a9ed485992ea266f56513f0ba4573f7e88bbac..85412cfcec437eb61cec102c1d04f76ab7fb471e 100644
+--- a/src/common/utils/color.hpp
++++ b/src/common/utils/color.hpp
+@@ -85,14 +85,19 @@ constexpr Color COLOR_LIGHT_GREEN = Color::from_raw(0x40b040);
+ constexpr Color COLOR_PURPLE = Color::from_raw(0x800080);
+ constexpr Color COLOR_TEAL = Color::from_raw(0x008080);
+ constexpr Color COLOR_NAVY = Color::from_raw(0x000080);
+-constexpr Color COLOR_ORANGE = Color::from_raw(0xF8651B);
++// constexpr Color COLOR_ORANGE = Color::from_raw(0xF8651B);
+ constexpr Color COLOR_BRASS = Color::from_rgb(184, 134, 11); // Dark goldenrod for Signature Oak
++constexpr Color COLOR_PRUSA_ORANGE = Color::from_raw(0xF8651B);
++constexpr Color COLOR_SP_BLUE = Color::from_raw(0x38B6FF);
++constexpr Color COLOR_ORANGE = COLOR_SP_BLUE;
++
++constexpr Color COLOR_BRAND = COLOR_PRUSA_ORANGE;
+ 
+ // Brand color - switches based on build variant
+-#if SIGNATURE_OAK()
+-constexpr Color COLOR_BRAND = COLOR_BRASS;
+-#else
+-constexpr Color COLOR_BRAND = COLOR_ORANGE;
+-#endif
++// #if SIGNATURE_OAK()
++// constexpr Color COLOR_BRAND = COLOR_BRASS;
++// #else
++// constexpr Color COLOR_BRAND = COLOR_ORANGE;
++// #endif
+ 
+ constexpr Color COLOR_DARK_KHAKI = Color::from_raw(0xDBD76B);
