@@ -95,14 +95,11 @@ Patch filenames use `_` as a path separator (e.g. `src_common_screen_lock.cpp.pa
 | `local_build.sh` | Entry point | Picks fresh vs incremental |
 | `scripts/build.sh` | Fresh build | `rm -rf` and re-clone upstream |
 | `scripts/build_local.sh` | Incremental | Reuses existing clone, `git reset --hard` + `git clean -fd` |
-| `ci-build.sh` | GitLab CI wrapper | Calls `local_build.sh`, deletes old package version, uploads `.bbf` artifacts |
 
 All build paths shell out to `pipenv run python utils/build.py --preset <…> --build-type release --final --signing-key firmware_signing_key.pem --bootloader yes -D WEBSOCKET:BOOL=<…>`.
 
 ### CI
 
-Two pipelines coexist:
-- **[.gitlab-ci.yml](.gitlab-ci.yml)** — runs `ci-build.sh` on a custom Docker image, builds fixed presets per release.
 - **[.github/workflows/build_and_upload_firmware.yml](.github/workflows/build_and_upload_firmware.yml)** — `workflow_dispatch` only; picks the latest tag, runs `local_build.sh`, uploads `.bbf` files to the GitHub Release. The current branch `github_workflow` has active WIP refining this pipeline.
 
 ## Gotchas
