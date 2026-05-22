@@ -1,5 +1,5 @@
 diff --git a/src/connect/connect.cpp b/src/connect/connect.cpp
-index a8fe67292708ab77fc0fac5e18b2175dc13e9786..814a35522dd172f785642c13efed4537278e8d25 100644
+index a8fe67292708ab77fc0fac5e18b2175dc13e9786..74c55327b6cc7b55e80a0aa55007b148684a6e8d 100644
 --- a/src/connect/connect.cpp
 +++ b/src/connect/connect.cpp
 @@ -20,6 +20,8 @@
@@ -181,7 +181,7 @@ index a8fe67292708ab77fc0fac5e18b2175dc13e9786..814a35522dd172f785642c13efed4537
  CommResult Connect::send_command(CachedFactory &conn_factory, const Printer::Config &config, Action &&action, optional<CommandId> background_command_id) {
      log_debug(connect, "Sending to connect");
      BasicRequest request(printer, config, action, background_command_id);
-@@ -784,6 +912,51 @@ CommResult Connect::send_command(CachedFactory &conn_factory, const Printer::Con
+@@ -784,6 +912,52 @@ CommResult Connect::send_command(CachedFactory &conn_factory, const Printer::Con
  }
  #endif
  
@@ -199,6 +199,7 @@ index a8fe67292708ab77fc0fac5e18b2175dc13e9786..814a35522dd172f785642c13efed4537
 +    if (timeout){
 +        return -1;
 +    }
++    sp_data_to_send = true;
 +    return 0;
 +}
 +
@@ -233,7 +234,7 @@ index a8fe67292708ab77fc0fac5e18b2175dc13e9786..814a35522dd172f785642c13efed4537
  CommResult Connect::communicate(CachedFactory &conn_factory) {
      const auto [config, cfg_changed] = printer.config();
  
-@@ -873,6 +1046,11 @@ void Connect::run() {
+@@ -873,6 +1047,11 @@ void Connect::run() {
      log_debug(connect, "%s", "Connect client starts\n");
  
      CachedFactory conn_factory;
@@ -245,7 +246,7 @@ index a8fe67292708ab77fc0fac5e18b2175dc13e9786..814a35522dd172f785642c13efed4537
  
      while (true) {
          auto reg_wanted = registration.load();
-@@ -898,6 +1076,7 @@ void Connect::run() {
+@@ -898,6 +1077,7 @@ void Connect::run() {
              const auto new_status = communicate(conn_factory);
              process_status(new_status, ConnectionStatus::Error);
          }
