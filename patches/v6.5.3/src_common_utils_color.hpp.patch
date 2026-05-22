@@ -1,5 +1,5 @@
 diff --git a/src/common/utils/color.hpp b/src/common/utils/color.hpp
-index 26a9ed485992ea266f56513f0ba4573f7e88bbac..85412cfcec437eb61cec102c1d04f76ab7fb471e 100644
+index 26a9ed485992ea266f56513f0ba4573f7e88bbac..4f0edf68279ab2951af168bd8910f4a356daac24 100644
 --- a/src/common/utils/color.hpp
 +++ b/src/common/utils/color.hpp
 @@ -85,14 +85,19 @@ constexpr Color COLOR_LIGHT_GREEN = Color::from_raw(0x40b040);
@@ -13,7 +13,7 @@ index 26a9ed485992ea266f56513f0ba4573f7e88bbac..85412cfcec437eb61cec102c1d04f76a
 +constexpr Color COLOR_SP_BLUE = Color::from_raw(0x38B6FF);
 +constexpr Color COLOR_ORANGE = COLOR_SP_BLUE;
 +
-+constexpr Color COLOR_BRAND = COLOR_PRUSA_ORANGE;
++constexpr Color COLOR_BRAND = COLOR_SP_BLUE;
  
  // Brand color - switches based on build variant
 -#if SIGNATURE_OAK()
