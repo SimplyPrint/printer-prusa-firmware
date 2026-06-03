@@ -7,6 +7,11 @@ on:
         description: 'Tag to build (e.g. v6.5.3). A GitHub release for this tag must already exist in this repo.'
         required: true
         type: string
+      models:
+        description: 'Which printer models to support (e.g. mk4,xl). Seperate with commas and add no spaces'
+        type: string
+        default: 'mk4,coreone,xl'
+        required: true
 
 jobs:
   build-and-upload:
@@ -57,7 +62,7 @@ jobs:
                 [ "$ws" = "ON" ] && variant="WEBSOCKET"
 
                 rm -rf build/
-                ./local_build.sh "$TAG" coreone,mk4,xl "WebSocket:$ws"
+                ./local_build.sh "$TAG" "$MODELS" "WebSocket:$ws"
 
                 for firmware in build/*/firmware.bbf; do
                   parent_dir=$(basename $(dirname "$firmware"))
@@ -74,3 +79,4 @@ jobs:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
           TAG: ${{ inputs.tag }}
           COMMIT: ${{ github.sha }}
+          MODELS: ${{ inputs.models }}
