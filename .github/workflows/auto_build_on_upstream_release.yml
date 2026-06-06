@@ -108,7 +108,7 @@ jobs:
             [ "$ws" = "ON" ] && variant="WEBSOCKET"
 
             rm -rf build/
-            ./local_build.sh "$TAG" "$PRESETS" "WebSocket:$ws"
+            ./local_build.sh "$TAG" "$PRESETS" "$ws"
 
             for firmware in build/*/firmware.bbf; do
               parent_dir=$(basename $(dirname "$firmware"))
