@@ -47,6 +47,8 @@ jobs:
           PRESETS=""
           while IFS= read -r asset; do
             case "$asset" in
+              COREONE_L_*INDX*) PRESETS+="coreonel_indx,"  ;;
+              COREONE_*INDX*) PRESETS+="coreone_indx,"  ;;
               COREONE_L_*) PRESETS+="coreonel,"  ;;
               COREONE_*)   PRESETS+="coreone,"   ;;
               XL_*)        PRESETS+="xl,"        ;;
