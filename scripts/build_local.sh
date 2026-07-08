@@ -47,7 +47,6 @@ done
 
 unset VIRTUAL_ENV
 export PIPENV_IGNORE_VIRTUALENVS=1 PIPENV_VENV_IN_PROJECT=1
-rm -rf .venv
 pipenv --python 3.12 install requests
 
 # Use the existing Pipenv environment
