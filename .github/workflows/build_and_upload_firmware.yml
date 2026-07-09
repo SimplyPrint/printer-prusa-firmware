@@ -53,9 +53,9 @@ jobs:
           sudo apt-get install -y git
           python3.12 -m pip install --upgrade pip
           python3.12 -m pip install pipenv
-          pipenv install requests
+      #   pipenv install requests
 
-      - name: Build and upload firmware (WebSocket and Standard)
+      - name: Build and upload firmware
         run: |
               rm -rf build/
               ./local_build.sh "$TAG" "$MODELS" ON
