@@ -93,36 +93,66 @@ jobs:
       - name: Install system dependencies
         run: |
           sudo apt-get update
-          sudo apt-get install -y git
+          sudo apt-get install -y git gettext
           python3.12 -m pip install --upgrade pip
           python3.12 -m pip install pipenv
-          pipenv install requests
 
-      - name: Build firmware (WebSocket and Standard)
+      - name: Upgrade patches
+        id: upgrade_version
+        env:
+          TAG: ${{ needs.check-upstream.outputs.tag }}
+        run: |
+        LATEST_TAG=$(gh api /repos/simplyprint/printer-prusa-firmware/releases/latest | jq .tag_name)
+        if [ ! "$LATEST_TAG" ]; then
+          echo "::error::Latest tag not found, exiting"
+          exit 1
+        fi
+        
+        echo "Upgrading patches from $LATEST_TAG to $TAG"
+
+        ./upgrade_version.sh "$TAG" "$LATEST_TAG" 2>&1 | tee patches.log
+        echo "patches_log=$(cat patches.log)" >> "$GITHUB_OUTPUT"
+
+        ./make_patches.sh "$TAG"
+
+      - name: Create pull request for patches
+        uses: peter-evans/create-pull-request@v8
+        commit-message: |
+          Upgrade patches for upstream release ${{ needs.check-upstream.outputs.tag }}
+
+          upgrade_version log:
+          ${{ steps.upgrade_version.outputs.patches_log }}
+        with:
+          add-paths: |
+            patches/
+
+      - name: Build firmware
         env:
           TAG: ${{ needs.check-upstream.outputs.tag }}
           PRESETS: ${{ needs.check-upstream.outputs.presets }}
           COMMIT: ${{ github.sha }}
         run: |
-          mkdir -p /tmp/firmware-out
+        rm -rf build/
+        mkdir -p /tmp/firmware-out
+        
+        export PRUSA_FIRMWARE_BUDDY_DIR_NAME="Prusa-Firmware-Buddy-DEV"
+        ./scripts/build_local.sh "$TAG" "$PRESETS" ON
 
-          rm -rf build/
-          ./local_build.sh "$TAG" "$PRESETS" ON
-
-          for firmware in build/*/firmware.bbf; do
-            parent_dir=$(basename $(dirname "$firmware"))
-            if [ "$parent_dir" = "products" ]; then
-              continue
-            fi
-            preset="${parent_dir%_release_boot}"
-            new_name="sp_prusa_${preset}_${TAG}+${COMMIT}@$(date +%d-%m-%Y).bbf"
-            mv "$firmware" "/tmp/firmware-out/$new_name"
-          done
+        for firmware in build/*/firmware.bbf; do
+          parent_dir=$(basename $(dirname "$firmware"))
+          if [ "$parent_dir" = "products" ]; then
+            continue
+          fi
+          preset="${parent_dir%_release_boot}"
+          new_name="sp_prusa_${preset}_${TAG}+${COMMIT}@$(date +%d-%m-%Y).bbf"
+          mv "$firmware" "/tmp/firmware-out/$new_name"
+        done
 
       - name: Create draft release and upload binaries
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
           TAG: ${{ needs.check-upstream.outputs.tag }}
+        # TODO: keep draft text, if one already exists
         run: |
           gh release delete "$TAG" --yes 2>/dev/null || true
           NOTES="Automated SimplyPrint firmware build mirroring upstream prusa3d/Prusa-Firmware-Buddy $TAG
