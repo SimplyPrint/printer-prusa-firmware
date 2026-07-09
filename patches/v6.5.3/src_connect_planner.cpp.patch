@@ -1,27 +1,18 @@
 diff --git a/src/connect/planner.cpp b/src/connect/planner.cpp
-index f4c01b983ef232ea3b102ce07216237b2681e101..c6a2263425c1a2ac3e1e2b19f4b3e0907716f93f 100644
+index f4c01b983ef232ea3b102ce07216237b2681e101..d708795e0cdea50b4e68234d29ca165bf864b957 100644
 --- a/src/connect/planner.cpp
 +++ b/src/connect/planner.cpp
-@@ -1,6 +1,10 @@
- #include "planner.hpp"
+@@ -2,6 +2,9 @@
  #include "netdev.h"
  #include "printer.hpp"
-+#include "ota_paths.hpp"
-+
+ 
 +#include <common/data_exchange.hpp>
 +#include <common/sys.hpp>
- 
++
  #include <path_utils.h>
  #include <filename_type.hpp>
-@@ -36,6 +40,7 @@
- #include <sys/stat.h>
- #include "stat_retry.hpp"
- #include <unistd.h>
-+//#include "connect.hpp"
- 
- #include <option/has_side_leds.h>
- #if HAS_SIDE_LEDS() || defined(UNITTESTS)
-@@ -65,7 +70,6 @@ using Incident = ChangedPath::Incident;
+ #include <logging/log.hpp>
+@@ -65,7 +68,6 @@ using Incident = ChangedPath::Incident;
  LOG_COMPONENT_REF(connect);
  
  namespace connect_client {
@@ -29,7 +20,7 @@ index f4c01b983ef232ea3b102ce07216237b2681e101..c6a2263425c1a2ac3e1e2b19f4b3e090
  namespace {
  
      // A note about time comparisons. We usually subtract now() and some past
-@@ -717,6 +721,7 @@ JC(Resume, "No paused print to resume")
+@@ -717,6 +719,7 @@ JC(Resume, "No paused print to resume")
  JC(Stop, "No print to stop")
  
  void Planner::command(const Command &command, const StartPrint &params) {
@@ -37,7 +28,7 @@ index f4c01b983ef232ea3b102ce07216237b2681e101..c6a2263425c1a2ac3e1e2b19f4b3e090
      const char *path = params.path.path();
  
      const char *reason = nullptr;
-@@ -752,6 +757,7 @@ void Planner::command(const Command &command, const SendJobInfo &params) {
+@@ -752,6 +755,7 @@ void Planner::command(const Command &command, const SendJobInfo &params) {
          command.id,
          params.job_id,
      };
@@ -45,27 +36,3 @@ index f4c01b983ef232ea3b102ce07216237b2681e101..c6a2263425c1a2ac3e1e2b19f4b3e090
      planned_event->start_cmd_id = print_start_cmd;
  }
  
-@@ -970,6 +976,23 @@ void Planner::command(const Command &command, const ResetPrinter &) {
-     planned_event = { EventType::Rejected, command.id, nullopt, nullopt, nullopt, "Failed to reset" };
- }
- 
-+void Planner::command(const Command &command, const InitiateFirmwareUpdate &) {
-+    if (printer.is_printing()) {
-+        planned_event = Event { EventType::Rejected, command.id, nullopt, nullopt, nullopt, "Busy printing" };
-+        return;
-+    }
-+
-+    // Arm the bootloader (magic byte 0xBB + SFN in SRAM1) and reset. The
-+    // SRAM1 region survives the reset; the bootloader picks up the file
-+    // from /usb/ on the next boot.
-+    data_exchange::set_reflash_bbf_sfn(ota::SFN);
-+    HAL_Delay(10);
-+    sys_reset();
-+
-+    // Not reached on a successful reset.
-+    planned_event = Event { EventType::Rejected, command.id, nullopt, nullopt, nullopt, "Failed to reset" };
-+}
-+
- void Planner::command(const Command &command, const SendStateInfo &) {
-     planned_event = { EventType::StateChanged, command.id };
- }

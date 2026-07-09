@@ -1,6 +1,6 @@
 diff --git a/src/gui/screen_home_2.cpp b/src/gui/screen_home_2.cpp
 new file mode 100644
-index 0000000000000000000000000000000000000000..75def3885a30f1a6a0a31d6b56b2e10d9022b060
+index 0000000000000000000000000000000000000000..7792740c5b564b685df27e8dc384d7bd344172de
 --- /dev/null
 +++ b/src/gui/screen_home_2.cpp
 @@ -0,0 +1,254 @@
@@ -59,7 +59,6 @@ index 0000000000000000000000000000000000000000..75def3885a30f1a6a0a31d6b56b2e10d
 +
 +#include <connect/connect.hpp>
 +#include <connect/marlin_printer.hpp>
-+#include <connect/ota_paths.hpp>
 +#include "marlin_client.hpp"
 +#include "window_msgbox.hpp"
 +
@@ -163,6 +162,7 @@ index 0000000000000000000000000000000000000000..75def3885a30f1a6a0a31d6b56b2e10d
 +                        MsgBoxError(_("Failed to request firmware update. Please try again."), Responses_Ok);
 +                        return;
 +                    }
++                    
 +                    MsgBoxInfo(_("Firmware is downloading. The printer will reboot automatically when the update is ready, but manual signature bypass is needed."), Responses_Ok);
 +                }},
 +        },
