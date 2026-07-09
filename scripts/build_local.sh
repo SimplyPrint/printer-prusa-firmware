@@ -2,10 +2,15 @@
 
 SCRIPTDIR="$( cd "$( dirname "${BASH_SOURCE[0]}" )" && pwd )"
 ROOTDIR="$( cd "${SCRIPTDIR}/.." && pwd )"
-FIRMWAREDIR="${ROOTDIR}/${PRUSA_FIRMWARE_BUDDY_DIR_NAME:-Prusa-Firmware-Buddy}"
+
+if [ -z "${PRUSA_FIRMWARE_BUDDY_DIR_NAME}" ]; then
+    FIRMWAREDIR="${ROOTDIR}/Prusa-Firmware-Buddy"
+else
+    FIRMWAREDIR="${ROOTDIR}/${PRUSA_FIRMWARE_BUDDY_DIR_NAME}"
+fi
 
 # Go into submodule directory
-cd FIRMWAREDIR
+cd "${FIRMWAREDIR}"
 
 git remote set-url --push origin DISABLED
 
