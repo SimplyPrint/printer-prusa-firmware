@@ -117,12 +117,13 @@ jobs:
 
       - name: Create pull request for patches
         uses: peter-evans/create-pull-request@v8
-        commit-message: |
-          Upgrade patches for upstream release ${{ needs.check-upstream.outputs.tag }}
-
-          upgrade_version log:
-          ${{ steps.upgrade_version.outputs.patches_log }}
         with:
+          commit-message: |
+            Upgrade patches for upstream release ${{ needs.check-upstream.outputs.tag }}
+
+            upgrade_version log:
+            ${{ steps.upgrade_version.outputs.patches_log }}
+
           add-paths: |
             patches/
 
