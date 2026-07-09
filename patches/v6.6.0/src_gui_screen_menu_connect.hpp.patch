@@ -15,7 +15,7 @@ index dbf9fcec116d01c96c631cde55fc80be97508a50..9a3da57178bc73fbe7fdea26bc7a0309
  
  class MI_CONNECT_REGISTER : public IWindowMenuItem {
 -    static constexpr const char *const label = N_("Add Printer to Connect");
-+    static constexpr const char *const label = N_("Add Printer to Simplyprint");
++    static constexpr const char *const label = N_("Add Printer to SimplyPrint");
  
  public:
      MI_CONNECT_REGISTER();
@@ -25,7 +25,7 @@ index dbf9fcec116d01c96c631cde55fc80be97508a50..9a3da57178bc73fbe7fdea26bc7a0309
  
 -using ScreenMenuConnect__ = ScreenMenu<EFooter::Off, MI_RETURN, MI_CONNECT_ENABLED, MI_CONNECT_STATUS, MI_CONNECT_ERROR, MI_CONNECT_HOST, MI_CONNECT_REGISTER, MI_CONNECT_LOAD_SETTINGS>;
 +class MI_SEND_SIMPLYPRINT : public IWindowMenuItem {
-+        static constexpr const char *const label = N_("Send test message to Simplyprint");
++        static constexpr const char *const label = N_("Send test message to SimplyPrint");
 +    public:
 +        MI_SEND_SIMPLYPRINT();
 +
@@ -39,6 +39,6 @@ index dbf9fcec116d01c96c631cde55fc80be97508a50..9a3da57178bc73fbe7fdea26bc7a0309
  
  public:
 -    constexpr static const char *label = "PRUSA CONNECT";
-+    constexpr static const char *label = "Simplyprint";
++    constexpr static const char *label = "SimplyPrint";
      ScreenMenuConnect();
  };

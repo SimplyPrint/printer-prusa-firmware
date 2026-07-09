@@ -16,7 +16,7 @@ index 983648e9b130983344863f1595c3b68dede31ae7..b8f4727cd6a522222f20f51b98dbd31c
  public:
      FramePrusaConnectSetup(window_t *) {
 -        // Prusa Connect setup is a dialog for some reason, so just blockingly execute it
-+        // Simplyprint setup is a dialog for some reason, so just blockingly execute it
++        // SimplyPrint setup is a dialog for some reason, so just blockingly execute it
          DialogConnectRegister::Show();
  
          // And let the FSM now that we finished afterwards

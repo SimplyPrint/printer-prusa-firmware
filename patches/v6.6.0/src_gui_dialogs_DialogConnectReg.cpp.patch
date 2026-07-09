@@ -21,7 +21,7 @@ index c1c4e56616a9155f62c00f09a73dcfb5f494635f..9fb45b9d574e37cd95d45f8938fa0c7c
          case ConnectionStatus::RegistrationRequesting:
          case ConnectionStatus::RegistrationCode:
 -            close = MsgBoxWarning(_("Prusa Connect setup is not finished. Do you want to exit and abort the process?"), Responses_YesNo)
-+            close = MsgBoxWarning(_("Simplyprint setup is not finished. Do you want to exit and abort the process?"), Responses_YesNo)
++            close = MsgBoxWarning(_("SimplyPrint setup is not finished. Do you want to exit and abort the process?"), Responses_YesNo)
                  == Response::Yes;
              break;
          default:

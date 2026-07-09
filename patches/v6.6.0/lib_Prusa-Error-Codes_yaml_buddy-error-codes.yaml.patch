@@ -7,7 +7,7 @@ index 751efc3dacf9b20c851e505d060f65ab74b93d33..fdb4b348dfafdc546eca1b55d73bfcb9
  # TEMPERATURE    xx2xx   # Temperature measurement, thermistors, heating
  # ELECTRICAL     xx3xx   # Electrical, MINDA, FINDA, Motion Controller, …
 -# CONNECTIVITY   xx4xx   # Connectivity - Wi - Fi, LAN, Prusa Connect Cloud
-+# CONNECTIVITY   xx4xx   # Connectivity - Wi - Fi, LAN, Simplyprint Cloud
++# CONNECTIVITY   xx4xx   # Connectivity - Wi - Fi, LAN, SimplyPrint Cloud
  # SYSTEM         xx5xx   # System - BSOD, ...
  # BOOTLOADER     xx6xx   #
  # WARNINGS       xx7xx   # Category-less warnings
@@ -16,7 +16,7 @@ index 751efc3dacf9b20c851e505d060f65ab74b93d33..fdb4b348dfafdc546eca1b55d73bfcb9
    - code: "XX401"
      title: "CONNECT REGISTRATION FAILED"
 -    text: "Registration to Prusa Connect failed due to:"
-+    text: "Registration to Simplyprint failed due to:"
++    text: "Registration to SimplyPrint failed due to:"
      id: "CONNECT_REGISTRATION_FAILED"
      approved: true
  

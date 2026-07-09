@@ -7,7 +7,7 @@ index 890d1fbbaaebafbfcbc5d6b80d79084e2b4adbcc..5970881f4f0ec68020067ff5b1ebca5a
  2. Temperature - thermistors/heating
  3. Electronics - MINDA, FINDA, Motion Controller, …
 -4. Connection - Wi-Fi, Ethernet, Prusa Connect
-+4. Connection - Wi-Fi, Ethernet, Simplyprint
++4. Connection - Wi-Fi, Ethernet, SimplyPrint
  5. System - FW crash, …
  6. Bootloader - FW update, USB/SD card fail
  7. Warnings

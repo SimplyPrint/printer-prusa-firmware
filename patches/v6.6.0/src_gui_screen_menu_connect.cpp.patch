@@ -7,7 +7,7 @@ index 73dfa8370a43ce12879f29f0ba625b628bcf18b1..aea5f30b5b0ff022383fd90f4887f569
  using connect_client::OnlineError;
  
 +MI_SEND_SIMPLYPRINT::MI_SEND_SIMPLYPRINT()
-+        : IWindowMenuItem(_("Test messages connection to Simplyprint"), nullptr, is_enabled_t::yes, is_hidden_t::no, expands_t::no) {}
++        : IWindowMenuItem(_("Test messages connection to SimplyPrint"), nullptr, is_enabled_t::yes, is_hidden_t::no, expands_t::no) {}
 +
 +void MI_SEND_SIMPLYPRINT::click([[maybe_unused]] IWindowMenu &window_menu) {
 +    std::string error_string = connect_client::send_simplyprint("test message");
@@ -30,14 +30,14 @@ index 73dfa8370a43ce12879f29f0ba625b628bcf18b1..aea5f30b5b0ff022383fd90f4887f569
      if (connect_client::MarlinPrinter::load_cfg_from_ini()) {
          if (config_store().connect_enabled.get()) {
 -            MsgBoxInfo(_("Loaded successfully. Connect will activate shortly."), Responses_Ok);
-+            MsgBoxInfo(_("Loaded successfully. Simplyprint will activate shortly."), Responses_Ok);
++            MsgBoxInfo(_("Loaded successfully. SimplyPrint will activate shortly."), Responses_Ok);
          } else {
 -            MsgBoxInfo(_("Loaded successfully. Enable Connect to activate."), Responses_Ok);
-+            MsgBoxInfo(_("Loaded successfully. Enable Simplyprint to activate."), Responses_Ok);
++            MsgBoxInfo(_("Loaded successfully. Enable SimplyPrint to activate."), Responses_Ok);
          }
      } else {
 -        MsgBoxError(_("Failed to load config. Make sure the ini file downloaded from Connect is on the USB drive and try again."), Responses_Ok);
-+        MsgBoxError(_("Failed to load config. Make sure the ini file downloaded from Simplyprint is on the USB drive and try again."), Responses_Ok);
++        MsgBoxError(_("Failed to load config. Make sure the ini file downloaded from SimplyPrint is on the USB drive and try again."), Responses_Ok);
      }
  }
  

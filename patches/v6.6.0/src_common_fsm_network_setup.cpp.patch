@@ -7,7 +7,7 @@ index ad230a59b4de3b75fe695b135afcaa865d947aff..19b75cb7a9e945bcd08e7e21cc957eb2
  
          // We cannot allow continuing the connecting on background on the initial setup,
 -        // because we want to offer Prusa Connect if the user connects successfully.
-+        // because we want to offer Simplyprint if the user connects successfully.
++        // because we want to offer SimplyPrint if the user connects successfully.
          connecting_phase_ = Phase::connecting_nonfinishable;
      }
  

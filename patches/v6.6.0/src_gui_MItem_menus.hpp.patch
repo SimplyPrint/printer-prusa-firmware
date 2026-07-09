@@ -7,7 +7,7 @@ index 142a08019a9b5ff377dd971a828edaca9be1640f..68971de88299849fe5c8d6c9619713ca
  
  using MI_PRUSA_CONNECT
 -    = MI_SCREEN<N_("Prusa Connect"), class ScreenMenuConnect>;
-+    = MI_SCREEN<N_("Simplyprint"), class ScreenMenuConnect>;
++    = MI_SCREEN<N_("SimplyPrint"), class ScreenMenuConnect>;
  
  using MI_PRUSALINK
      = MI_SCREEN<N_("PrusaLink"), class ScreenMenuPrusaLink>;
