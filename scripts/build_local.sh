@@ -2,9 +2,10 @@
 
 SCRIPTDIR="$( cd "$( dirname "${BASH_SOURCE[0]}" )" && pwd )"
 ROOTDIR="$( cd "${SCRIPTDIR}/.." && pwd )"
+FIRMWAREDIR="${ROOTDIR}/${PRUSA_FIRMWARE_BUDDY_DIR_NAME:-Prusa-Firmware-Buddy}"
 
 # Go into submodule directory
-cd "${ROOTDIR}/Prusa-Firmware-Buddy"
+cd FIRMWAREDIR
 
 git remote set-url --push origin DISABLED
 
@@ -16,6 +17,7 @@ if [ $# -ne 3 ] ; then
     echo "Version: v5.0.0"
     echo "Presets: mk4,xl,mini,coreone,coreonel"
     echo "WebSocket: ON,OFF"
+    echo "Use enviroment variable PRUSA_FIRMWARE_BUDDY_DIR_NAME to specify the firmware directory name if it's not Prusa-Firmware-Buddy"
     exit 1
 fi
 
