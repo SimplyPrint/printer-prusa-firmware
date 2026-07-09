@@ -101,6 +101,7 @@ jobs:
         id: upgrade_version
         env:
           TAG: ${{ needs.check-upstream.outputs.tag }}
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         run: |
           LATEST_TAG=$(gh api /repos/simplyprint/printer-prusa-firmware/releases/latest | jq .tag_name)
           if [ -z "$LATEST_TAG" ] || [ "$LATEST_TAG" = "null" ]; then
