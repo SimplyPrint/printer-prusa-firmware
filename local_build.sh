@@ -12,8 +12,8 @@ fi
 git stash
 cd .. || exit
 
-echo "Presets:" $1
-echo "Version:" $2
+echo "Version:" $1
+echo "Presets:" $2
 echo "WebSocket:" $3
 
 # Check if ready to build

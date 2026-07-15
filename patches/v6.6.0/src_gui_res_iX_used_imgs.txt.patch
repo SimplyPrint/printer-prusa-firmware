@@ -1,0 +1,20 @@
+diff --git a/src/gui/res/iX_used_imgs.txt b/src/gui/res/iX_used_imgs.txt
+index a50c9922793dc0f9b67fcdf9db339798f09486e1..888cea2aae51e530e47cb3a8ec0d28b7a492e2e0 100644
+--- a/src/gui/res/iX_used_imgs.txt
++++ b/src/gui/res/iX_used_imgs.txt
+@@ -130,3 +130,14 @@ wizard_16x16.png
+ x_axis_16x16.png
+ y_axis_16x16.png
+ z_axis_16x16.png
++sp_print_finished.png
++sp_print_ok_disabled.png
++sp_print_ok_focused.png
++sp_print_ok.png
++sp_next_queue_item_disabled.png
++sp_next_queue_item_focused.png
++sp_next_queue_item.png
++sp_print_failed_disabled.png
++sp_print_failed_focused.png
++sp_print_failed.png
++back_80x80_disabled.png
+\ No newline at end of file

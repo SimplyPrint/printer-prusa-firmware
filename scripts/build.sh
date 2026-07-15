@@ -45,8 +45,9 @@ for patch in "${ROOTDIR}/patches/$version/png_patches/"*.patch; do
     git apply -p1 < "${patch}"
 done
 
-# Create new pipenv environment with pip 22.0
-pipenv --python 3.12 install pip==22.0
+# Create new pipenv environment
+unset VIRTUAL_ENV
+export PIPENV_IGNORE_VIRTUALENVS=1 PIPENV_VENV_IN_PROJECT=1
 pipenv --python 3.12 install requests
 
 export BUDDY_NO_VIRTUALENV=1

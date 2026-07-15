@@ -1,0 +1,13 @@
+diff --git a/lib/Prusa-Error-Codes/prusaerrors/shared/codes.py b/lib/Prusa-Error-Codes/prusaerrors/shared/codes.py
+index dde13d52e217ff843402954fe706b9c53a682b96..fd168b28353abafc8125183d847605b97a352740 100644
+--- a/lib/Prusa-Error-Codes/prusaerrors/shared/codes.py
++++ b/lib/Prusa-Error-Codes/prusaerrors/shared/codes.py
+@@ -54,7 +54,7 @@ class Category(IntEnum):
+     MECHANICAL = 1  # Mechanical failures, engines XYZ, tower
+     TEMPERATURE = 2  # Temperature measurement, thermistors, heating
+     ELECTRICAL = 3  # Electrical, MINDA, FINDA, Motion Controller, …
+-    CONNECTIVITY = 4  # Connectivity - Wi - Fi, LAN, Prusa Connect Cloud
++    CONNECTIVITY = 4  # Connectivity - Wi - Fi, LAN, Simplyprint Cloud
+     SYSTEM = 5  # System - BSOD, ...
+     BOOTLOADER = 6  #
+     WARNINGS = 7  # Category-less warnings

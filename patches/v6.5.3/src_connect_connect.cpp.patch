@@ -145,7 +145,7 @@ index a8fe67292708ab77fc0fac5e18b2175dc13e9786..74c55327b6cc7b55e80a0aa55007b148
  #else
  CommResult Connect::prepare_connection(CachedFactory &conn_factory, const Printer::Config &config) {
      if (!conn_factory.is_valid()) {
-@@ -689,6 +788,35 @@ CommResult Connect::prepare_connection(CachedFactory &conn_factory, const Printe
+@@ -689,6 +788,40 @@ CommResult Connect::prepare_connection(CachedFactory &conn_factory, const Printe
      return monostate {};
  }
  
@@ -166,15 +166,20 @@ index a8fe67292708ab77fc0fac5e18b2175dc13e9786..74c55327b6cc7b55e80a0aa55007b148
 +    HttpClient http(conn_factory);
 +    auto result = http.send(request);
 +
-+    sp_response_error = "";
++    auto *response = std::get_if<http::Response>(&result);
 +
-+    // Handle response without unnecessary copies
-+    if (auto *response = std::get_if<http::Response>(&result)) {
-+        if (response->status / 200 != 2 && response->status != 0) {
-+            sp_response_error = "HTTP Error while sending. Code: " + std::to_string(response->status);
-+        }
-+    } else {
++    // Handle response
++    if (!response) {
 +        sp_response_error = "HTTP Error, no response";
++        log_error(connect, sp_response_error.c_str());
++        return;
++    }
++
++    if (200 <= response->status && response->status < 300)
++        sp_response_error = "";
++    else {
++        sp_response_error = "HTTP Error while sending. Code: " + std::to_string(response->status);
++        log_error(connect, sp_response_error.c_str());
 +    }
 +}
 +

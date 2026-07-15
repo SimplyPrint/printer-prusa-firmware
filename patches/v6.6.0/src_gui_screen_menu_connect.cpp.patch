@@ -1,0 +1,43 @@
+diff --git a/src/gui/screen_menu_connect.cpp b/src/gui/screen_menu_connect.cpp
+index 73dfa8370a43ce12879f29f0ba625b628bcf18b1..aea5f30b5b0ff022383fd90f4887f569fa2b5a27 100644
+--- a/src/gui/screen_menu_connect.cpp
++++ b/src/gui/screen_menu_connect.cpp
+@@ -14,6 +14,22 @@
+ using connect_client::ConnectionStatus;
+ using connect_client::OnlineError;
+ 
++MI_SEND_SIMPLYPRINT::MI_SEND_SIMPLYPRINT()
++        : IWindowMenuItem(_("Test messages connection to SimplyPrint"), nullptr, is_enabled_t::yes, is_hidden_t::no, expands_t::no) {}
++
++void MI_SEND_SIMPLYPRINT::click([[maybe_unused]] IWindowMenu &window_menu) {
++    std::string error_string = connect_client::send_simplyprint("test message");
++
++    if (error_string != ""){
++        std::string errorMsg = "An error occurred: " + error_string;
++        MsgBoxError(_(errorMsg.c_str()), Responses_Ok);
++    }
++    else {
++        MsgBoxInfo(_("Success"), Responses_Ok);
++    }
++
++}
++
+ MI_CONNECT_ENABLED::MI_CONNECT_ENABLED()
+     : WI_ICON_SWITCH_OFF_ON_t(config_store().connect_enabled.get(), _(label), nullptr, is_enabled_t::yes, is_hidden_t::no) {}
+ 
+@@ -95,12 +111,12 @@ MI_CONNECT_LOAD_SETTINGS::MI_CONNECT_LOAD_SETTINGS()
+ void MI_CONNECT_LOAD_SETTINGS::click([[maybe_unused]] IWindowMenu &window_menu) {
+     if (connect_client::MarlinPrinter::load_cfg_from_ini()) {
+         if (config_store().connect_enabled.get()) {
+-            MsgBoxInfo(_("Loaded successfully. Connect will activate shortly."), Responses_Ok);
++            MsgBoxInfo(_("Loaded successfully. SimplyPrint will activate shortly."), Responses_Ok);
+         } else {
+-            MsgBoxInfo(_("Loaded successfully. Enable Connect to activate."), Responses_Ok);
++            MsgBoxInfo(_("Loaded successfully. Enable SimplyPrint to activate."), Responses_Ok);
+         }
+     } else {
+-        MsgBoxError(_("Failed to load config. Make sure the ini file downloaded from Connect is on the USB drive and try again."), Responses_Ok);
++        MsgBoxError(_("Failed to load config. Make sure the ini file downloaded from SimplyPrint is on the USB drive and try again."), Responses_Ok);
+     }
+ }
+ 

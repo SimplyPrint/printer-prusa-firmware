@@ -1,0 +1,28 @@
+diff --git a/src/common/marlin_print_preview.cpp b/src/common/marlin_print_preview.cpp
+index b8913120a6bdca6fe94dfe5619d2caa0702ebf04..7dd3c57c0ce30b7e9622ac4bfb25f8485bbe8683 100644
+--- a/src/common/marlin_print_preview.cpp
++++ b/src/common/marlin_print_preview.cpp
+@@ -555,6 +555,11 @@ PrintPreview::Result PrintPreview::Loop() {
+         break;
+ 
+     case State::unfinished_selftest_wait_user:
++        if (skip_if_able == marlin_server::PreviewSkipIfAble::all) {
++            // autoprint (SimplyPrint / one-click / AUTO.GCO): proceed as if Response::Ignore
++            ChangeState(stateFromUpdateCheck());
++            break;
++        }
+         switch (response) {
+ 
+         case Response::Ignore:
+@@ -578,6 +583,11 @@ PrintPreview::Result PrintPreview::Loop() {
+         break;
+ 
+     case State::new_firmware_available_wait_user:
++        if (skip_if_able == marlin_server::PreviewSkipIfAble::all) {
++            // autoprint: proceed as if Response::Continue (also removes the 30 s timeout stall)
++            ChangeState(stateFromPrinterCheck());
++            break;
++        }
+         switch (response) {
+ 
+         case Response::Continue:

@@ -1,0 +1,20 @@
+diff --git a/src/gui/res/COREONE_INDX_used_imgs.txt b/src/gui/res/COREONE_INDX_used_imgs.txt
+index b6c7c5f49220133c4033b734d5420ffd45300c6e..b747c3ecc434e9aa811e4177dca945b86f7ff42e 100644
+--- a/src/gui/res/COREONE_INDX_used_imgs.txt
++++ b/src/gui/res/COREONE_INDX_used_imgs.txt
+@@ -155,3 +155,14 @@ wizard_16x16.png
+ x_axis_16x16.png
+ y_axis_16x16.png
+ z_axis_16x16.png
++sp_print_finished.png
++sp_print_ok_disabled.png
++sp_print_ok_focused.png
++sp_print_ok.png
++sp_next_queue_item_disabled.png
++sp_next_queue_item_focused.png
++sp_next_queue_item.png
++sp_print_failed_disabled.png
++sp_print_failed_focused.png
++sp_print_failed.png
++back_80x80_disabled.png
+\ No newline at end of file

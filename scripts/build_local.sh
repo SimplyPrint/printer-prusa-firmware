@@ -3,8 +3,14 @@
 SCRIPTDIR="$( cd "$( dirname "${BASH_SOURCE[0]}" )" && pwd )"
 ROOTDIR="$( cd "${SCRIPTDIR}/.." && pwd )"
 
+if [ -z "${PRUSA_FIRMWARE_BUDDY_DIR_NAME}" ]; then
+    FIRMWAREDIR="${ROOTDIR}/Prusa-Firmware-Buddy"
+else
+    FIRMWAREDIR="${ROOTDIR}/${PRUSA_FIRMWARE_BUDDY_DIR_NAME}"
+fi
+
 # Go into submodule directory
-cd "${ROOTDIR}/Prusa-Firmware-Buddy"
+cd "${FIRMWAREDIR}"
 
 git remote set-url --push origin DISABLED
 
@@ -16,6 +22,7 @@ if [ $# -ne 3 ] ; then
     echo "Version: v5.0.0"
     echo "Presets: mk4,xl,mini,coreone,coreonel"
     echo "WebSocket: ON,OFF"
+    echo "Use enviroment variable PRUSA_FIRMWARE_BUDDY_DIR_NAME to specify the firmware directory name if it's not Prusa-Firmware-Buddy"
     exit 1
 fi
 
@@ -45,6 +52,8 @@ for patch in "${ROOTDIR}/patches/$version/png_patches/"*.patch; do
     git apply -p1 < "${patch}"
 done
 
+unset VIRTUAL_ENV
+export PIPENV_IGNORE_VIRTUALENVS=1 PIPENV_VENV_IN_PROJECT=1
 pipenv --python 3.12 install requests
 
 # Use the existing Pipenv environment

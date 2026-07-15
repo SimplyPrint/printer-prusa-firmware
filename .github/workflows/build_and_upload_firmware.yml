@@ -7,6 +7,11 @@ on:
         description: 'Tag to build (e.g. v6.5.3). A GitHub release for this tag must already exist in this repo.'
         required: true
         type: string
+      models:
+        description: 'Which printer models to support (e.g. mk4,xl). Seperate with commas and add no spaces'
+        type: string
+        default: 'mk4,coreone,xl'
+        required: true
 
 jobs:
   build-and-upload:
@@ -45,32 +50,27 @@ jobs:
       - name: Install system dependencies
         run: |
           sudo apt-get update
-          sudo apt-get install -y git
+          sudo apt-get install -y git gettext
           python3.12 -m pip install --upgrade pip
           python3.12 -m pip install pipenv
-          pipenv install requests
 
-      - name: Build and upload firmware (WebSocket and Standard)
+      - name: Build and upload firmware
         run: |
-              for ws in ON OFF; do
-                variant="STANDARD"
-                [ "$ws" = "ON" ] && variant="WEBSOCKET"
+              rm -rf build/
+              ./local_build.sh "$TAG" "$MODELS" ON
 
-                rm -rf build/
-                ./local_build.sh "$TAG" coreone,mk4,xl "WebSocket:$ws"
-
-                for firmware in build/*/firmware.bbf; do
-                  parent_dir=$(basename $(dirname "$firmware"))
-                  if [ "$parent_dir" = "products" ]; then
-                    continue
-                  fi
-                  preset="${parent_dir%_release_boot}"
-                  new_name="sp_prusa_${preset}_${variant}_${TAG}+${COMMIT}@$(date +%d-%m-%Y).bbf"
-                  mv "$firmware" "/tmp/$new_name"
-                  gh release upload "$TAG" "/tmp/$new_name" --clobber
-                done
+              for firmware in build/*/firmware.bbf; do
+                parent_dir=$(basename $(dirname "$firmware"))
+                if [ "$parent_dir" = "products" ]; then
+                  continue
+                fi
+                preset="${parent_dir%_release_boot}"
+                new_name="sp_prusa_${preset}_${TAG}+${COMMIT}@$(date +%d-%m-%Y).bbf"
+                mv "$firmware" "/tmp/$new_name"
+                gh release upload "$TAG" "/tmp/$new_name" --clobber
               done
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
           TAG: ${{ inputs.tag }}
           COMMIT: ${{ github.sha }}
+          MODELS: ${{ inputs.models }}
