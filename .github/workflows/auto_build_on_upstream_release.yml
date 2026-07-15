@@ -114,6 +114,7 @@ jobs:
           ./upgrade_version.sh "$TAG" "$LATEST_TAG" 2>&1 | tee patches.log
           # Use EOF delimiter for multi-line output
           {
+            echo "patches_log<<EOF"
             cat patches.log
             echo "EOF"
           } >> "$GITHUB_OUTPUT"
