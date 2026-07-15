@@ -1,0 +1,20 @@
+diff --git a/src/gui/res/MINI_used_imgs.txt b/src/gui/res/MINI_used_imgs.txt
+index 2da8cf91611d8a96d64b7ae6b038dcc484f196ac..58bd66df31973707b7743f1ab39bfed97923ecd9 100644
+--- a/src/gui/res/MINI_used_imgs.txt
++++ b/src/gui/res/MINI_used_imgs.txt
+@@ -126,3 +126,14 @@ wizard_16x16.png
+ x_axis_16x16.png
+ y_axis_16x16.png
+ z_axis_16x16.png
++sp_print_finished.png
++sp_print_ok_disabled.png
++sp_print_ok_focused.png
++sp_print_ok.png
++sp_next_queue_item_disabled.png
++sp_next_queue_item_focused.png
++sp_next_queue_item.png
++sp_print_failed_disabled.png
++sp_print_failed_focused.png
++sp_print_failed.png
++back_80x80_disabled.png
+\ No newline at end of file
