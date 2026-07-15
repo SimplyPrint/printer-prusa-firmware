@@ -1,0 +1,14 @@
+diff --git a/src/guiapi/include/Rect16.h b/src/guiapi/include/Rect16.h
+index f295c1b4226ffe696e2b7758a119432175943bb5..91850730b2897ad562996d2c2395dff956d899be 100644
+--- a/src/guiapi/include/Rect16.h
++++ b/src/guiapi/include/Rect16.h
+@@ -281,6 +281,9 @@ public:
+         return { static_cast<int16_t>(EndPoint().x - 1), static_cast<int16_t>(EndPoint().y - 1) };
+     };
+ 
++    constexpr point_i16_t TopCenter() const {
++        return { static_cast<int16_t>(EndPoint().x / 2), static_cast<int16_t>(Top().y)};
++    };
+     ////////////////////////////////////////////////////////////////////////////
+     /// @brief Object accessor to read the top-right of the current rectangle
+     ///
