@@ -112,7 +112,11 @@ jobs:
           echo "Upgrading patches from $LATEST_TAG to $TAG"
 
           ./upgrade_version.sh "$TAG" "$LATEST_TAG" 2>&1 | tee patches.log
-          echo "patches_log=$(cat patches.log)" >> "$GITHUB_OUTPUT"
+          # Use EOF delimiter for multi-line output
+          {
+            cat patches.log
+            echo "EOF"
+          } >> "$GITHUB_OUTPUT"
 
           ./make_patches.sh "$TAG"
 
