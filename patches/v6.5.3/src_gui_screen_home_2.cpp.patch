@@ -1,9 +1,9 @@
 diff --git a/src/gui/screen_home_2.cpp b/src/gui/screen_home_2.cpp
 new file mode 100644
-index 0000000000000000000000000000000000000000..39b640ff1ec8489bafb54c8d2b72ecba98eb4097
+index 0000000000000000000000000000000000000000..7792740c5b564b685df27e8dc384d7bd344172de
 --- /dev/null
 +++ b/src/gui/screen_home_2.cpp
-@@ -0,0 +1,234 @@
+@@ -0,0 +1,254 @@
 +// screen_home.cpp
 +#include "screen_home_2.hpp"
 +#include "screen_home.hpp"
@@ -60,6 +60,7 @@ index 0000000000000000000000000000000000000000..39b640ff1ec8489bafb54c8d2b72ecba
 +#include <connect/connect.hpp>
 +#include <connect/marlin_printer.hpp>
 +#include "marlin_client.hpp"
++#include "window_msgbox.hpp"
 +
 +
 +bool screen_home_2_data_t::ever_been_opened = false;
@@ -79,6 +80,7 @@ index 0000000000000000000000000000000000000000..39b640ff1ec8489bafb54c8d2b72ecba
 +        GEN_ICON_NAMES(back),
 +#endif
 +        GEN_ICON_NAMES(calibrate),
++        GEN_ICON_NAMES(settings),
 +        GEN_ICON_NAMES(settings),
 +
 +};
@@ -127,6 +129,7 @@ index 0000000000000000000000000000000000000000..39b640ff1ec8489bafb54c8d2b72ecba
 +        N_("Back"),
 +        N_("Calibrate"),
 +        N_("Settings"),
++        N_("Update FW"),
 +};
 +
 +// clang-format off
@@ -145,8 +148,26 @@ index 0000000000000000000000000000000000000000..39b640ff1ec8489bafb54c8d2b72ecba
 +                {this, Rect16(), nullptr, [](window_t &) {
 +                    Screens::Access()->Open(ScreenFactory::Screen<ScreenMenuSettings>);
 +                }},
++                {this, Rect16(), nullptr, [](window_t &) {
++                    if (std::get<0>(connect_client::last_status()) != connect_client::ConnectionStatus::Ok) {
++                        MsgBoxWarning(_("Not connected to SimplyPrint. Check your network and try again."), Responses_Ok);
++                        return;
++                    }
++                    if (MsgBoxQuestion(_("Perform Over-The-Air firmware update? This will download the latest compatible firmware and flash it to the printer."), Responses_YesNo) != Response::Yes) {
++                        return;
++                    }
++
++                    // Request firmware from SimplyPrint. This will initiate a download to ota_paths.hpp -> USB_PATH and then be handled trough a InitiateFirmwareUpdate command
++                    if (connect_client::send_simplyprint_no_return("rf") != 0) {
++                        MsgBoxError(_("Failed to request firmware update. Please try again."), Responses_Ok);
++                        return;
++                    }
++                    
++                    MsgBoxInfo(_("Firmware is downloading. The printer will reboot automatically when the update is ready, but manual signature bypass is needed."), Responses_Ok);
++                }},
 +        },
 +          w_labels{
++                  {this, Rect16(), is_multiline::no},
 +                  {this, Rect16(), is_multiline::no},
 +                  {this, Rect16(), is_multiline::no},
 +                  {this, Rect16(), is_multiline::no},
@@ -168,17 +189,16 @@ index 0000000000000000000000000000000000000000..39b640ff1ec8489bafb54c8d2b72ecba
 +    header.SetText(string_view_utf8::MakeCPUFLASH(msgHome)); // intentionally not translated
 +#endif
 +
-+    for (uint8_t row = 0; row < 1; row++) {
-+        for (uint8_t col = 0; col < 3; col++) {
-+            const size_t i = row * 3 + col;
-+            w_buttons[i].SetRect(buttonRect(col, row));
-+            w_buttons[i].SetRes(&icons[i]);
-+            w_labels[i].SetRect(buttonTextRect(col, row));
-+            w_labels[i].set_font(Font::small);
-+            w_labels[i].SetAlignment(Align_t::Center());
-+            w_labels[i].SetPadding({0, 0, 0, 0});
-+            w_labels[i].SetText(_(labels_screen_2[i]));
-+        }
++    for (size_t i = 0; i < button_count; i++) {
++        const uint8_t row = i / 3;
++        const uint8_t col = i % 3;
++        w_buttons[i].SetRect(buttonRect(col, row));
++        w_buttons[i].SetRes(&icons[i]);
++        w_labels[i].SetRect(buttonTextRect(col, row));
++        w_labels[i].set_font(Font::small);
++        w_labels[i].SetAlignment(Align_t::Center());
++        w_labels[i].SetPadding({0, 0, 0, 0});
++        w_labels[i].SetText(_(labels_screen_2[i]));
 +    }
 +    ever_been_opened = true;
 +}

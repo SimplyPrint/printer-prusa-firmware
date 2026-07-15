@@ -4,3 +4,4 @@ new_patches/
 firmware_signing_key.pem
 .idea/
 .vscode/
+patches/**Pipfile**.patch

@@ -1,5 +1,5 @@
 diff --git a/lib/Prusa-Error-Codes/yaml/buddy-error-codes.yaml b/lib/Prusa-Error-Codes/yaml/buddy-error-codes.yaml
-index 751efc3dacf9b20c851e505d060f65ab74b93d33..fdb4b348dfafdc546eca1b55d73bfcb9142e0fee 100644
+index 751efc3dacf9b20c851e505d060f65ab74b93d33..7bd0ccb213c8a8ce84c7c4ff9d741348bb9b207e 100644
 --- a/lib/Prusa-Error-Codes/yaml/buddy-error-codes.yaml
 +++ b/lib/Prusa-Error-Codes/yaml/buddy-error-codes.yaml
 @@ -7,7 +7,7 @@

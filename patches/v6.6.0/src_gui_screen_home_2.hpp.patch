@@ -1,6 +1,6 @@
 diff --git a/src/gui/screen_home_2.hpp b/src/gui/screen_home_2.hpp
 new file mode 100644
-index 0000000000000000000000000000000000000000..ac379d3f5fef2bee2516bd419fd7e38df192d70b
+index 0000000000000000000000000000000000000000..5960d159a7fe696fcd7c578a4730ee72b9e42192
 --- /dev/null
 +++ b/src/gui/screen_home_2.hpp
 @@ -0,0 +1,56 @@
@@ -27,7 +27,7 @@ index 0000000000000000000000000000000000000000..ac379d3f5fef2bee2516bd419fd7e38d
 +
 +class screen_home_2_data_t : public screen_t {
 +public:
-+    static constexpr size_t button_count = 3;
++    static constexpr size_t button_count = 4;
 +
 +private:
 +    static bool ever_been_opened; // set by ctor

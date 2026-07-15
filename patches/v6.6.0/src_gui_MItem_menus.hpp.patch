@@ -1,5 +1,5 @@
 diff --git a/src/gui/MItem_menus.hpp b/src/gui/MItem_menus.hpp
-index 142a08019a9b5ff377dd971a828edaca9be1640f..68971de88299849fe5c8d6c9619713caa18b92ba 100644
+index 142a08019a9b5ff377dd971a828edaca9be1640f..9cdaf8fffe6d8d17030f0707135703a7740996b7 100644
 --- a/src/gui/MItem_menus.hpp
 +++ b/src/gui/MItem_menus.hpp
 @@ -97,7 +97,7 @@ using MI_MESSAGES

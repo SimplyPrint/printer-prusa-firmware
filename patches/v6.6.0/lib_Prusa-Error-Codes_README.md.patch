@@ -1,5 +1,5 @@
 diff --git a/lib/Prusa-Error-Codes/README.md b/lib/Prusa-Error-Codes/README.md
-index 890d1fbbaaebafbfcbc5d6b80d79084e2b4adbcc..5970881f4f0ec68020067ff5b1ebca5af369a615 100644
+index 890d1fbbaaebafbfcbc5d6b80d79084e2b4adbcc..f8115e9e4d8f00f103cdb1a38e31b1cc20ddc0cf 100644
 --- a/lib/Prusa-Error-Codes/README.md
 +++ b/lib/Prusa-Error-Codes/README.md
 @@ -31,7 +31,7 @@ Example: 12201
