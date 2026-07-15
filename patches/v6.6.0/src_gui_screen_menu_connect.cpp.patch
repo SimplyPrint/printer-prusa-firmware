@@ -1,5 +1,5 @@
 diff --git a/src/gui/screen_menu_connect.cpp b/src/gui/screen_menu_connect.cpp
-index 73dfa8370a43ce12879f29f0ba625b628bcf18b1..aea5f30b5b0ff022383fd90f4887f569fa2b5a27 100644
+index 73dfa8370a43ce12879f29f0ba625b628bcf18b1..adf82f907afa40f441fa32835d2e33f1d062cbe8 100644
 --- a/src/gui/screen_menu_connect.cpp
 +++ b/src/gui/screen_menu_connect.cpp
 @@ -14,6 +14,22 @@

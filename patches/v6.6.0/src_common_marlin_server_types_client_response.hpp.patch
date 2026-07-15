@@ -1,5 +1,5 @@
 diff --git a/src/common/marlin_server_types/client_response.hpp b/src/common/marlin_server_types/client_response.hpp
-index d24fb686e38acf5a5718f4022c0ac1e2f2d5c3be..550378ad6323b70ed803b875f021924c32444eef 100644
+index d24fb686e38acf5a5718f4022c0ac1e2f2d5c3be..6796c339d4c421f895c98ba7389dcb45eb316f3b 100644
 --- a/src/common/marlin_server_types/client_response.hpp
 +++ b/src/common/marlin_server_types/client_response.hpp
 @@ -250,7 +250,7 @@ enum class PhaseNetworkSetup : PhaseUnderlyingType {

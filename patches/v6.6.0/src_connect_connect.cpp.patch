@@ -1,5 +1,5 @@
 diff --git a/src/connect/connect.cpp b/src/connect/connect.cpp
-index a8fe67292708ab77fc0fac5e18b2175dc13e9786..814a35522dd172f785642c13efed4537278e8d25 100644
+index a8fe67292708ab77fc0fac5e18b2175dc13e9786..c78bbd5c456f4a0a90ca52f383b7499a570f929c 100644
 --- a/src/connect/connect.cpp
 +++ b/src/connect/connect.cpp
 @@ -20,6 +20,8 @@
@@ -109,7 +109,7 @@ index a8fe67292708ab77fc0fac5e18b2175dc13e9786..814a35522dd172f785642c13efed4537
              planner->command(command);
              return monostate {};
          }
-@@ -678,6 +748,35 @@ CommResult Connect::send_command(CachedFactory &conn_factory, const Printer::Con
+@@ -678,6 +748,38 @@ CommResult Connect::send_command(CachedFactory &conn_factory, const Printer::Con
  
      return ConnectionStatus::Ok;
  }
@@ -124,6 +124,8 @@ index a8fe67292708ab77fc0fac5e18b2175dc13e9786..814a35522dd172f785642c13efed4537
 +        return;
 +    }
 +
++    log_debug(connect, "Sending simplyprint payload: %s", sp_send_string.c_str());
++
 +    sp_conn_ready = false;
 +    sp_data_to_send = false;
 +
@@ -136,6 +138,7 @@ index a8fe67292708ab77fc0fac5e18b2175dc13e9786..814a35522dd172f785642c13efed4537
 +
 +    if (error.has_value()) {
 +        sp_response_error = http::to_str(error.value());
++        log_error(connect, "SimplyPrint error: %s", sp_response_error.c_str());
 +    }
 +    else {
 +        sp_response_error = "";
@@ -145,7 +148,7 @@ index a8fe67292708ab77fc0fac5e18b2175dc13e9786..814a35522dd172f785642c13efed4537
  #else
  CommResult Connect::prepare_connection(CachedFactory &conn_factory, const Printer::Config &config) {
      if (!conn_factory.is_valid()) {
-@@ -689,6 +788,35 @@ CommResult Connect::prepare_connection(CachedFactory &conn_factory, const Printe
+@@ -689,6 +791,35 @@ CommResult Connect::prepare_connection(CachedFactory &conn_factory, const Printe
      return monostate {};
  }
  
@@ -181,7 +184,7 @@ index a8fe67292708ab77fc0fac5e18b2175dc13e9786..814a35522dd172f785642c13efed4537
  CommResult Connect::send_command(CachedFactory &conn_factory, const Printer::Config &config, Action &&action, optional<CommandId> background_command_id) {
      log_debug(connect, "Sending to connect");
      BasicRequest request(printer, config, action, background_command_id);
-@@ -784,6 +912,51 @@ CommResult Connect::send_command(CachedFactory &conn_factory, const Printer::Con
+@@ -784,6 +915,52 @@ CommResult Connect::send_command(CachedFactory &conn_factory, const Printer::Con
  }
  #endif
  
@@ -190,6 +193,7 @@ index a8fe67292708ab77fc0fac5e18b2175dc13e9786..814a35522dd172f785642c13efed4537
 +    for (int i = 0; i < 100; i++) {
 +        if (sp_conn_ready) { // Use .load() for atomic reads
 +            sp_send_string = data;
++            sp_data_to_send = true;
 +            sp_conn_ready = false; // Use .store() for atomic writes
 +            timeout = false;
 +            break;
@@ -233,7 +237,7 @@ index a8fe67292708ab77fc0fac5e18b2175dc13e9786..814a35522dd172f785642c13efed4537
  CommResult Connect::communicate(CachedFactory &conn_factory) {
      const auto [config, cfg_changed] = printer.config();
  
-@@ -873,6 +1046,11 @@ void Connect::run() {
+@@ -873,6 +1050,11 @@ void Connect::run() {
      log_debug(connect, "%s", "Connect client starts\n");
  
      CachedFactory conn_factory;
@@ -245,7 +249,7 @@ index a8fe67292708ab77fc0fac5e18b2175dc13e9786..814a35522dd172f785642c13efed4537
  
      while (true) {
          auto reg_wanted = registration.load();
-@@ -898,6 +1076,7 @@ void Connect::run() {
+@@ -898,6 +1080,7 @@ void Connect::run() {
              const auto new_status = communicate(conn_factory);
              process_status(new_status, ConnectionStatus::Error);
          }

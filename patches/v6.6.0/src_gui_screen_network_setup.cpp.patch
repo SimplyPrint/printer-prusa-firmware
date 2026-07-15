@@ -1,5 +1,5 @@
 diff --git a/src/gui/screen_network_setup.cpp b/src/gui/screen_network_setup.cpp
-index 983648e9b130983344863f1595c3b68dede31ae7..b8f4727cd6a522222f20f51b98dbd31cc4509b5c 100644
+index 983648e9b130983344863f1595c3b68dede31ae7..a4b17b9c6ae67fdc94791ac7f420a9b294ec83c3 100644
 --- a/src/gui/screen_network_setup.cpp
 +++ b/src/gui/screen_network_setup.cpp
 @@ -417,7 +417,7 @@ class FrameAskSetupPrusaConnect : public FramePrompt {
