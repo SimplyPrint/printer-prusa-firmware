@@ -17,7 +17,7 @@ CONFLICT_FILES=()
 
 rm -rf $REPO_PATH
 
-git clone https://github.com/prusa3d/Prusa-Firmware-Buddy.git $REPO_PATH # https://github.com/prusa3d/Prusa-Firmware-Buddy.git $REPO_PATH
+git clone https://github.com/prusa3d/Prusa-Firmware-Buddy.git $REPO_PATH  --quiet # https://github.com/prusa3d/Prusa-Firmware-Buddy.git $REPO_PATH
 
 # Navigate to repo
 cd "$REPO_PATH" || { echo "Error: Repository '$REPO_PATH' not found"; exit 1; }
@@ -29,8 +29,8 @@ if ! git rev-parse --is-inside-work-tree >/dev/null 2>&1; then
 fi
 
 # Fetch and checkout target version
-git fetch --tags
-git checkout "$TARGET_VERSION" || { echo "Error: Failed to checkout $TARGET_VERSION"; exit 1; }
+git fetch --tags  --quiet
+git checkout "$TARGET_VERSION" --quiet || { echo "Error: Failed to checkout $TARGET_VERSION"; exit 1; }
 
 # Ensure patches exist
 if [ ! -d "../$PATCH_DIR" ]; then
