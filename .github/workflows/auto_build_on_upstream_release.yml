@@ -109,6 +109,8 @@ jobs:
             exit 1
           fi
 
+          echo "latest_tag=$LATEST_TAG" >> "$GITHUB_OUTPUT"
+
           echo "Upgrading patches from $LATEST_TAG to $TAG"
 
           ./upgrade_version.sh "$TAG" "$LATEST_TAG" 2>&1 | tee patches.log
@@ -124,8 +126,10 @@ jobs:
       - name: Create pull request for patches
         uses: peter-evans/create-pull-request@v8
         with:
+          title: Automatic patch update from ${{steps.upgrade_version.outputs.latest_tag}} to ${{ needs.check-upstream.outputs.tag }}
           commit-message: |
             Upgrade patches for upstream release ${{ needs.check-upstream.outputs.tag }}
+            Based on https://github.com/prusa3d/Prusa-Firmware-Buddy/releases/tag/${{ needs.check-upstream.outputs.tag }}"
 
             upgrade_version log:
             ${{ steps.upgrade_version.outputs.patches_log }}
