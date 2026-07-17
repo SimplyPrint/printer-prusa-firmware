@@ -233,7 +233,7 @@ index a8fe67292708ab77fc0fac5e18b2175dc13e9786..74c55327b6cc7b55e80a0aa55007b148
 +        vTaskDelay(pdMS_TO_TICKS(100)); // Delay for 1000 ms (1 second)
 +    }
 +    sp_conn_ready = false;
-+    return "";
++    return "Timed out waiting for send_simplyprint_internal to finish";
 +}
 +
  CommResult Connect::communicate(CachedFactory &conn_factory) {
