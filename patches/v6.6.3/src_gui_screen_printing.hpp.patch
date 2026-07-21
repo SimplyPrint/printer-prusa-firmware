@@ -1,0 +1,29 @@
+diff --git a/src/gui/screen_printing.hpp b/src/gui/screen_printing.hpp
+index 9457ec89ba8cdf24dff0ef8e3bb157a8d46c68b1..079605ce254248ec16f5d56bd971bb5df3c54134 100644
+--- a/src/gui/screen_printing.hpp
++++ b/src/gui/screen_printing.hpp
+@@ -61,7 +61,15 @@ class screen_printing_data_t : public ScreenPrintingModel {
+ 
+     WindowProgressCircles rotating_circles;
+ #endif
++    window_icon_t sp_print_finished_icon;
++    bool was_network_print;
++    bool second_click_left;
+ 
++    enum class EndScreenState{
++        end_screen,
++        print_result_screen,
++    };
++    EndScreenState end_screen_state;
+     window_roll_text_t w_filename;
+     WindowPrintProgress w_progress;
+     WindowNumbPrintProgress w_progress_txt;
+@@ -129,7 +137,7 @@ class screen_printing_data_t : public ScreenPrintingModel {
+ 
+     window_text_t message_popup;
+     PrintStatusMessage current_message;
+-    std::array<char, 256> message_text;
++    std::array<char, 128> message_text;
+ 
+ public:
+     screen_printing_data_t();

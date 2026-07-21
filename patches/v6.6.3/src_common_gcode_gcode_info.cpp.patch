@@ -1,0 +1,17 @@
+diff --git a/src/common/gcode/gcode_info.cpp b/src/common/gcode/gcode_info.cpp
+index 4e534c1c412368c8de6dbf684500324d82eaff1b..ca218e575ba38bf1236d0e914383b4966c3e6efd 100644
+--- a/src/common/gcode/gcode_info.cpp
++++ b/src/common/gcode/gcode_info.cpp
+@@ -316,9 +316,9 @@ void GCodeInfo::parse_m862(GcodeBuffer::String cmd) {
+ 
+             case '4':
+                 // Parse M862.4 for minimal required firmware version
+-                if (!is_up_to_date(cmd.c_str())) {
+-                    info_.failed_gcode_checks.set(Check::minimum_fw_version);
+-                }
++                // if (!is_up_to_date(cmd.c_str())) {
++                //     info_.failed_gcode_checks.set(Check::minimum_fw_version);
++                // }
+                 break;
+ 
+             case '2':
