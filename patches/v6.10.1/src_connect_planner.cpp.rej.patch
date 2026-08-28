@@ -1,0 +1,15 @@
+diff --git a/src/connect/planner.cpp.rej b/src/connect/planner.cpp.rej
+new file mode 100644
+index 0000000000000000000000000000000000000000..48af0fedc12591edb5e084bb68a1a8644fa0e5a5
+--- /dev/null
++++ b/src/connect/planner.cpp.rej
+@@ -0,0 +1,9 @@
++diff a/src/connect/planner.cpp b/src/connect/planner.cpp	(rejected hunks)
++@@ -36,6 +36,7 @@
++ #include <sys/stat.h>
++ #include "stat_retry.hpp"
++ #include <unistd.h>
+++//#include "connect.hpp"
++ 
++ #include <option/has_side_leds.h>
++ #if HAS_SIDE_LEDS() || defined(UNITTESTS)

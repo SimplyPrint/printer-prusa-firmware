@@ -1,0 +1,17 @@
+diff --git a/lib/Marlin/Marlin/src/module/temperature.cpp b/lib/Marlin/Marlin/src/module/temperature.cpp
+index d2e03f61c8ba2377c95f597206ea2e98748b2852..e4626963b698ea95f3990dea843c2de57406d32d 100644
+--- a/lib/Marlin/Marlin/src/module/temperature.cpp
++++ b/lib/Marlin/Marlin/src/module/temperature.cpp
+@@ -1034,7 +1034,11 @@ void Temperature::isr() {
+     #endif
+     #if HAS_CHAMBER_API()
+       auto current_chamber_temperature = buddy::chamber().current_temperature();
+-      if (current_chamber_temperature.has_value()) SERIAL_ECHOPAIR(" C@:", current_chamber_temperature.value());
++      auto target_chamber_temperature = buddy::chamber().target_temperature();
++      if (current_chamber_temperature.has_value()){
++          SERIAL_ECHOPAIR(" C:", current_chamber_temperature.value());
++          SERIAL_ECHOPAIR("/", target_chamber_temperature.has_value() ? target_chamber_temperature.value() : 0.0f);
++      }
+     #endif
+ 
+     #if HAS_TEMP_HEATBREAK
