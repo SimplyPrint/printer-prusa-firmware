@@ -1,0 +1,47 @@
+diff --git a/src/gui/screen_menu_screen_lock.hpp b/src/gui/screen_menu_screen_lock.hpp
+new file mode 100644
+index 0000000000000000000000000000000000000000..56c37df28e5ae802486827d916ebee424c4c5727
+--- /dev/null
++++ b/src/gui/screen_menu_screen_lock.hpp
+@@ -0,0 +1,41 @@
++//
++// Created by rylan on 1/15/25.
++//
++
++#ifndef PRUSA_FIRMWARE_BUDDY_DEV_SCREEN_MENU_SCREEN_LOCK_H
++#define PRUSA_FIRMWARE_BUDDY_DEV_SCREEN_MENU_SCREEN_LOCK_H
++
++#include "../common/screen_lock.hpp"
++
++#pragma once
++#include "WindowMenuItems.hpp"
++
++class MI_ENABLE_PASSWORD : public WI_ICON_SWITCH_OFF_ON_t {
++    constexpr static const char *const label = N_("Use Password");
++
++public:
++    MI_ENABLE_PASSWORD();
++
++    virtual void OnChange(size_t old_index) override;
++};
++
++class MI_SET_PASSWORD : public WI_ICON_SWITCH_OFF_ON_t {
++    constexpr static const char *const label = N_("Set Password");
++
++public:
++    MI_SET_PASSWORD();
++
++    virtual void OnChange(size_t old_index) override;
++};
++
++class MI_SET_LOCK_TIME : public WI_ICON_SWITCH_OFF_ON_t {
++    constexpr static const char *const label = N_("Set Lock Time");
++
++public:
++    MI_SET_LOCK_TIME();
++
++    virtual void OnChange(size_t old_index) override;
++};
++
++
++#endif //PRUSA_FIRMWARE_BUDDY_DEV_SCREEN_MENU_SCREEN_LOCK_H

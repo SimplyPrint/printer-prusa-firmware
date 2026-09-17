@@ -1,0 +1,21 @@
+diff --git a/lib/Marlin/Marlin/src/feature/prusa/MMU2/mmu2_mk4.cpp b/lib/Marlin/Marlin/src/feature/prusa/MMU2/mmu2_mk4.cpp
+index 0dcd4e96a02f85f53546034be2e4c62b306f21f6..020b301c1693e8525b52d58ebf0ecfb946ff804b 100644
+--- a/lib/Marlin/Marlin/src/feature/prusa/MMU2/mmu2_mk4.cpp
++++ b/lib/Marlin/Marlin/src/feature/prusa/MMU2/mmu2_mk4.cpp
+@@ -373,7 +373,7 @@ void MMU2::mmu_loop() {}
+ 
+ void MMU2::CheckFINDARunout() {
+     // Check for FINDA filament runout
+-    if (!FindaDetectsFilament() && WhereIsFilament() == FilamentState::IN_NOZZLE) { // Check if we have filament runout detected from sensors
++    if (!FindaDetectsFilament() && WhereIsFilament() == FilamentState::IN_NOZZLE) { // breaks with AT_FSENSOR Check if we have filament runout detected from sensors
+         SERIAL_ECHOLNPGM("FINDA filament runout!");
+         if (spool_join.get_num_joins() != 0) {
+             auto join_settings = spool_join.get_spool_2(get_current_tool());
+@@ -382,6 +382,7 @@ void MMU2::CheckFINDARunout() {
+                 return;
+             }
+         }
++
+         enqueue_gcode("M600");
+     }
+ }

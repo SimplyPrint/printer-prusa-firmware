@@ -1,0 +1,20 @@
+diff --git a/src/gui/res/COREONEL_used_imgs.txt b/src/gui/res/COREONEL_used_imgs.txt
+index 67cb45ad098c5b48fff3dd012220d1b3d52f43c6..1886eae2671475f40af85c9290f6105990e5e31c 100644
+--- a/src/gui/res/COREONEL_used_imgs.txt
++++ b/src/gui/res/COREONEL_used_imgs.txt
+@@ -165,3 +165,14 @@ wizard_16x16.png
+ x_axis_16x16.png
+ y_axis_16x16.png
+ z_axis_16x16.png
++sp_print_finished.png
++sp_print_ok_disabled.png
++sp_print_ok_focused.png
++sp_print_ok.png
++sp_next_queue_item_disabled.png
++sp_next_queue_item_focused.png
++sp_next_queue_item.png
++sp_print_failed_disabled.png
++sp_print_failed_focused.png
++sp_print_failed.png
++back_80x80_disabled.png
+\ No newline at end of file
