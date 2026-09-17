@@ -1,0 +1,39 @@
+diff --git a/src/gui/screen_printing_serial.cpp.rej b/src/gui/screen_printing_serial.cpp.rej
+new file mode 100644
+index 0000000000000000000000000000000000000000..07f0d40bef40d83c2ed0da3a9ad7d36f8c44c852
+--- /dev/null
++++ b/src/gui/screen_printing_serial.cpp.rej
+@@ -0,0 +1,33 @@
++diff a/src/gui/screen_printing_serial.cpp b/src/gui/screen_printing_serial.cpp	(rejected hunks)
++@@ -10,23 +10,26 @@
++ #include "screen_menu_tune.hpp"
++ #include "img_resources.hpp"
++ #include <serial_printing.hpp>
++-
+++#include "screen_messages.hpp"
++ #if ENABLED(CRASH_RECOVERY)
++     #include "../Marlin/src/feature/prusa/crash_recovery.hpp"
++ #endif
++ 
+++point_i16_t get_location() {
+++        return {
+++                   GuiDefaults::RectScreenBody.TopCenter().x / 2,
+++                    GuiDefaults::RectScreenBody.TopCenter().y
+++                };
+++    }
++ screen_printing_serial_data_t::screen_printing_serial_data_t()
++     : ScreenPrintingModel(_(caption))
++-    , octo_icon(this, Rect16((GuiDefaults::ScreenWidth - img::serial_printing_172x138.w) / 2, GuiDefaults::RectScreenBody.Top(), img::serial_printing_172x138.w, img::serial_printing_172x138.h), &img::serial_printing_172x138)
++     , last_tick(0)
++     , connection(connection_state_t::connected)
+++    , term(this, get_location(), &term_buff)
++     , last_state(marlin_server::State::Aborted) {
++     ClrMenuTimeoutClose();
++     SetOnSerialClose();
++ 
++-    octo_icon.Disable();
++-    octo_icon.Unshadow();
++-
++     SetButtonIconAndLabel(BtnSocket::Right, BtnRes::Disconnect, LabelRes::Stop);
++ }
++ 

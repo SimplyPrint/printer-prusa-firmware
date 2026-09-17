@@ -1,0 +1,16 @@
+diff --git a/src/connect/connect.cpp.rej b/src/connect/connect.cpp.rej
+new file mode 100644
+index 0000000000000000000000000000000000000000..0e5624fc9765ccef32a062692c4dbc5814813d11
+--- /dev/null
++++ b/src/connect/connect.cpp.rej
+@@ -0,0 +1,10 @@
++diff a/src/connect/connect.cpp b/src/connect/connect.cpp	(rejected hunks)
++@@ -20,6 +20,8 @@
++ #include <optional>
++ #include <variant>
++ #include <charconv>
+++#include <FreeRTOS.h>
+++#include <task.h>
++ 
++ using namespace http;
++ using json::ChunkRenderer;
