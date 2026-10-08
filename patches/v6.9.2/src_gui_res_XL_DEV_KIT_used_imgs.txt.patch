@@ -1,0 +1,20 @@
+diff --git a/src/gui/res/XL_DEV_KIT_used_imgs.txt b/src/gui/res/XL_DEV_KIT_used_imgs.txt
+index af3f983f73e71f4af126e2026b33fddb8dac99b6..fa89ac1d0726f47ece5b08b6213fdc916ceae426 100644
+--- a/src/gui/res/XL_DEV_KIT_used_imgs.txt
++++ b/src/gui/res/XL_DEV_KIT_used_imgs.txt
+@@ -257,3 +257,14 @@ wizard_icon_search_98x98.png
+ x_axis_16x16.png
+ y_axis_16x16.png
+ z_axis_16x16.png
++sp_print_finished.png
++sp_print_ok_disabled.png
++sp_print_ok_focused.png
++sp_print_ok.png
++sp_next_queue_item_disabled.png
++sp_next_queue_item_focused.png
++sp_next_queue_item.png
++sp_print_failed_disabled.png
++sp_print_failed_focused.png
++sp_print_failed.png
++back_80x80_disabled.png
+\ No newline at end of file

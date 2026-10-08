@@ -1,0 +1,22 @@
+diff --git a/src/gui/screen_network_setup.cpp b/src/gui/screen_network_setup.cpp
+index 97ca9594d02e226382c1e3e776f3d161192e5fad..c0fc8aa25b9c990a5ba1a1033803f8933c0a3556 100644
+--- a/src/gui/screen_network_setup.cpp
++++ b/src/gui/screen_network_setup.cpp
+@@ -417,7 +417,7 @@ class FrameAskSetupPrusaConnect : public FramePrompt {
+ 
+ public:
+     FrameAskSetupPrusaConnect(window_frame_t *parent)
+-        : FramePrompt(parent, Phase::ask_setup_prusa_connect, _("Set up Prusa Connect?"), _("Do you want to add your printer to Prusa Connect?")) {
++        : FramePrompt(parent, Phase::ask_setup_prusa_connect, _("Set up SimplyPrint?"), _("Do you want to add your printer to Prusa Connect?")) {
+     }
+ };
+ 
+@@ -425,7 +425,7 @@ class FramePrusaConnectSetup {
+ 
+ public:
+     FramePrusaConnectSetup(window_t *) {
+-        // Prusa Connect setup is a dialog for some reason, so just blockingly execute it
++        // SimplyPrint setup is a dialog for some reason, so just blockingly execute it
+         DialogConnectRegister::Show();
+ 
+         // And let the FSM now that we finished afterwards

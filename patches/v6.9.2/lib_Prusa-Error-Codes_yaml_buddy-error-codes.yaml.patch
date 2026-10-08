@@ -1,0 +1,22 @@
+diff --git a/lib/Prusa-Error-Codes/yaml/buddy-error-codes.yaml b/lib/Prusa-Error-Codes/yaml/buddy-error-codes.yaml
+index 850d1d712e25ebfe1c4074a0ee6303d7a67853df..b136e0d25f9ac99e4eb7b672fff16f0d601f4952 100644
+--- a/lib/Prusa-Error-Codes/yaml/buddy-error-codes.yaml
++++ b/lib/Prusa-Error-Codes/yaml/buddy-error-codes.yaml
+@@ -7,7 +7,7 @@
+ # MECHANICAL     xx1xx   # Mechanical failures, engines XYZ, tower
+ # TEMPERATURE    xx2xx   # Temperature measurement, thermistors, heating
+ # ELECTRICAL     xx3xx   # Electrical, MINDA, FINDA, Motion Controller, …
+-# CONNECTIVITY   xx4xx   # Connectivity - Wi - Fi, LAN, Prusa Connect Cloud
++# CONNECTIVITY   xx4xx   # Connectivity - Wi - Fi, LAN, SimplyPrint Cloud
+ # SYSTEM         xx5xx   # System - BSOD, ...
+ # BOOTLOADER     xx6xx   #
+ # WARNINGS       xx7xx   # Category-less warnings
+@@ -1094,7 +1094,7 @@ Errors:
+ 
+   - code: "XX401"
+     title: "CONNECT REGISTRATION FAILED"
+-    text: "Registration to Prusa Connect failed due to:"
++    text: "Registration to SimplyPrint failed due to:"
+     id: "CONNECT_REGISTRATION_FAILED"
+     approved: true
+ 
