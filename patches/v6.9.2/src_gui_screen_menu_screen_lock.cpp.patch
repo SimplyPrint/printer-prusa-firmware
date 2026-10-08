@@ -1,0 +1,19 @@
+diff --git a/src/gui/screen_menu_screen_lock.cpp b/src/gui/screen_menu_screen_lock.cpp
+new file mode 100644
+index 0000000000000000000000000000000000000000..7364c16ee0e64127958da1d69535ee175010a8dd
+--- /dev/null
++++ b/src/gui/screen_menu_screen_lock.cpp
+@@ -0,0 +1,12 @@
++//
++// Created by rylan on 1/15/25.
++//
++
++#include "screen_menu_screen_lock.hpp"
++#include <hw/touchscreen/touchscreen.hpp>
++
++
++void force_enable_touch_screen(){
++    touchscreen.set_enabled(true);
++
++}
+\ No newline at end of file

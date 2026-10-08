@@ -1,0 +1,27 @@
+diff --git a/src/gui/screen_printing_serial.cpp b/src/gui/screen_printing_serial.cpp
+index c8745b7c338c6bcb663998328544484cde920c7e..03588291257c180c1847532290e2d5fa31b571a5 100644
+--- a/src/gui/screen_printing_serial.cpp
++++ b/src/gui/screen_printing_serial.cpp
+@@ -55,6 +55,13 @@ void screen_printing_serial_data_t::windowEvent(window_t *sender, GUI_event_t ev
+         last_state = state;
+     }
+ 
++    // Update the message buffer content in the terminal
++    // char *txt = nullptr;
++    // while (screen_messages_data_t::message_buffer.try_get(txt)) {
++    //     term.Printf("%s\n", txt);
++    //     free(txt);
++    // }
++
+     ScreenPrintingModel::windowEvent(sender, event, param);
+ }
+ 
+@@ -63,7 +70,7 @@ void screen_printing_serial_data_t::tuneAction() {
+ }
+ 
+ void screen_printing_serial_data_t::pauseAction() {
+-    // pause or resume button, depenging on what state we are in
++    // pause or resume button, depending on what state we are in
+     marlin_server::State state = marlin_vars().print_state;
+     switch (state) {
+     case marlin_server::State::Paused:

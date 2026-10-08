@@ -1,0 +1,13 @@
+diff --git a/src/gui/CMakeLists.txt b/src/gui/CMakeLists.txt
+index 22fb9954a903bef9efa7c0333db150c37d3ee57d..d8017e0d1c57164bff37cf3c41f19050fac26bd3 100644
+--- a/src/gui/CMakeLists.txt
++++ b/src/gui/CMakeLists.txt
+@@ -84,6 +84,8 @@ target_sources(
+           window_print_progress.cpp
+           window_thumbnail.cpp
+           window_wizard_icon.cpp
++          screen_home_2.cpp
++          screen_menu_screen_lock.cpp
+   )
+ 
+ if(HAS_CRASH_DETECTION)
