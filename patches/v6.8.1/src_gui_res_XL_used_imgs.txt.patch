@@ -1,0 +1,19 @@
+diff --git a/src/gui/res/XL_used_imgs.txt b/src/gui/res/XL_used_imgs.txt
+index df5f10d574e927a5b7f56e54c1a17f7d31c78621..746c076f06f85b3d32724ac4d8d161c41909a55e 100644
+--- a/src/gui/res/XL_used_imgs.txt
++++ b/src/gui/res/XL_used_imgs.txt
+@@ -165,3 +165,14 @@ wizard_16x16.png
+ x_axis_16x16.png
+ y_axis_16x16.png
+ z_axis_16x16.png
++sp_print_finished.png
++sp_print_ok_disabled.png
++sp_print_ok_focused.png
++sp_print_ok.png
++sp_next_queue_item_disabled.png
++sp_next_queue_item_focused.png
++sp_next_queue_item.png
++sp_print_failed_disabled.png
++sp_print_failed_focused.png
++sp_print_failed.png
++back_80x80_disabled.png

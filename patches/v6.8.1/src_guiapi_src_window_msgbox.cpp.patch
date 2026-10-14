@@ -1,0 +1,17 @@
+diff --git a/src/guiapi/src/window_msgbox.cpp b/src/guiapi/src/window_msgbox.cpp
+index 4f0eebb4345701e58e4753514e3267366086affb..4d6493396c737e59a56096a3a7d6666cfcabb211 100644
+--- a/src/guiapi/src/window_msgbox.cpp
++++ b/src/guiapi/src/window_msgbox.cpp
+@@ -229,9 +229,9 @@ MsgBoxIconnedError::MsgBoxIconnedError(Rect16 rect, const PhaseResponses &resp,
+     text.SetAlignment(Align_t::LeftCenter());
+     icon.SetRect(getIconRect());
+     AdjustLayout(text, icon);
+-    SetBackColor(COLOR_BRAND);
+-    text.SetBackColor(COLOR_BRAND);
+-    icon.SetBackColor(COLOR_BRAND);
++    SetBackColor(COLOR_PRUSA_ORANGE);
++    text.SetBackColor(COLOR_PRUSA_ORANGE);
++    icon.SetBackColor(COLOR_PRUSA_ORANGE);
+     radio_.SetBackColor(COLOR_WHITE);
+ }
+ 
