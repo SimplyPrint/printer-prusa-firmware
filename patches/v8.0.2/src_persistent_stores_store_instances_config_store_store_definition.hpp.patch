@@ -1,0 +1,24 @@
+diff --git a/src/persistent_stores/store_instances/config_store/store_definition.hpp b/src/persistent_stores/store_instances/config_store/store_definition.hpp
+index d9d62da0eb60a4e344accb2c1cc04f7c25af247c..63129a1a61ab39a51a47ea0048f1bfa11af9d4bd 100644
+--- a/src/persistent_stores/store_instances/config_store/store_definition.hpp
++++ b/src/persistent_stores/store_instances/config_store/store_definition.hpp
+@@ -1047,6 +1047,19 @@ struct CurrentStore
+     StoreItem<float, defaults::loadcell_scale, ItemFlag::hw_config, journal::hash("Loadcell Scale V2")> loadcell_scale;
+ #endif // HAS_LOADCELL()
+ 
++    //screen_password
++    StoreItem<uint32_t, 0000, ItemFlag::features, journal::hash("Screen Password")> screen_password;
++    StoreItem<bool, false, ItemFlag::features, journal::hash("Screen Lock Enabled")> screen_lock_enabled;
++    StoreItem<uint32_t, 120, ItemFlag::features, journal::hash("Screen Lock Time")> screen_lock_time;
++
++    //screen lock
++    void set_screen_password(uint32_t password);
++    uint32_t get_screen_password();
++    void set_screen_lock_enabled(bool enabled);
++    bool get_screen_lock_enabled();
++    void set_screen_lock_time(uint32_t time);
++    uint32_t get_screen_lock_time();
++
+ private:
+     void perform_config_migrations();
+ };
