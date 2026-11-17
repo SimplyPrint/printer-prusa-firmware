@@ -1,0 +1,63 @@
+diff --git a/src/gui/screen_printing_serial.cpp b/src/gui/screen_printing_serial.cpp
+index 63a9b0a176a00047479d2dc42bcac76ae832262d..58b1d9467a3347b92b7523e4580e5d6ff3dabdae 100644
+--- a/src/gui/screen_printing_serial.cpp
++++ b/src/gui/screen_printing_serial.cpp
+@@ -12,22 +12,31 @@
+ #include "img_resources.hpp"
+ #include <serial_printing.hpp>
+ #include <option/has_crash_detection.h>
++#include "screen_messages.hpp"
+ 
+ #if HAS_CRASH_DETECTION()
+     #include "../Marlin/src/feature/prusa/crash_recovery.hpp"
+ #endif
+ 
++point_i16_t get_location() {
++        return {
++                   GuiDefaults::RectScreenBody.TopCenter().x / 2,
++                    GuiDefaults::RectScreenBody.TopCenter().y
++                };
++}
++
+ screen_printing_serial_data_t::screen_printing_serial_data_t()
+     : ScreenPrintingModel(_(caption))
+-    , octo_icon(this, Rect16((GuiDefaults::ScreenWidth - img::serial_printing_172x138.w) / 2, GuiDefaults::RectScreenBody.Top(), img::serial_printing_172x138.w, img::serial_printing_172x138.h), &img::serial_printing_172x138)
++    //, octo_icon(this, Rect16((GuiDefaults::ScreenWidth - img::serial_printing_172x138.w) / 2, GuiDefaults::RectScreenBody.Top(), img::serial_printing_172x138.w, img::serial_printing_172x138.h), &img::serial_printing_172x138)
+     , last_tick(0)
+     , connection(connection_state_t::connected)
+-    , last_state(marlin_server::State::Aborted) {
++    , last_state(marlin_server::State::Aborted)
++    , term(this, get_location(), &term_buff) {
+     ClrMenuTimeoutClose();
+     SetOnSerialClose();
+ 
+-    octo_icon.Disable();
+-    octo_icon.Unshadow();
++    // octo_icon.Disable();
++    // octo_icon.Unshadow();
+ 
+     SetButtonIconAndLabel(BtnSocket::Right, BtnRes::Disconnect, LabelRes::Stop);
+ }
+@@ -56,6 +65,13 @@ void screen_printing_serial_data_t::windowEvent(window_t *sender, GUI_event_t ev
+         last_state = state;
+     }
+ 
++    // Update the message buffer content in the terminal
++    // char *txt = nullptr;
++    // while (screen_messages_data_t::message_buffer.try_get(txt)) {
++    //     term.Printf("%s\n", txt);
++    //     free(txt);
++    // }
++
+     ScreenPrintingModel::windowEvent(sender, event, param);
+ }
+ 
+@@ -64,7 +80,7 @@ void screen_printing_serial_data_t::tuneAction() {
+ }
+ 
+ void screen_printing_serial_data_t::pauseAction() {
+-    // pause or resume button, depenging on what state we are in
++    // pause or resume button, depending on what state we are in
+     marlin_server::State state = marlin_vars().print_state;
+     switch (state) {
+     case marlin_server::State::Paused:

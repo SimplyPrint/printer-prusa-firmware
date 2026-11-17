@@ -1,0 +1,20 @@
+diff --git a/src/gui/res/MK3.5_used_imgs.txt b/src/gui/res/MK3.5_used_imgs.txt
+index 3d489b4de4721aac78f7dc7337299153f4c738f3..870224cc1612dedff370a8cb30d9fd876b0b350e 100644
+--- a/src/gui/res/MK3.5_used_imgs.txt
++++ b/src/gui/res/MK3.5_used_imgs.txt
+@@ -148,3 +148,14 @@ wizard_16x16.png
+ x_axis_16x16.png
+ y_axis_16x16.png
+ z_axis_16x16.png
++sp_print_finished.png
++sp_print_ok_disabled.png
++sp_print_ok_focused.png
++sp_print_ok.png
++sp_next_queue_item_disabled.png
++sp_next_queue_item_focused.png
++sp_next_queue_item.png
++sp_print_failed_disabled.png
++sp_print_failed_focused.png
++sp_print_failed.png
++back_80x80_disabled.png
+\ No newline at end of file

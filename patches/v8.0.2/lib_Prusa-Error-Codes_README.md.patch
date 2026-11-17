@@ -1,0 +1,13 @@
+diff --git a/lib/Prusa-Error-Codes/README.md b/lib/Prusa-Error-Codes/README.md
+index b74a358080439778b202db753292f2d37b18c014..751650862439f786fec1628eb59f23f474925c7d 100644
+--- a/lib/Prusa-Error-Codes/README.md
++++ b/lib/Prusa-Error-Codes/README.md
+@@ -36,7 +36,7 @@ Example: 12201
+ 1. Mechanical - XYZ motors, tower, axis range
+ 2. Temperature - thermistors/heating
+ 3. Electronics - MINDA, FINDA, Motion Controller, …
+-4. Connection - Wi-Fi, Ethernet, Prusa Connect
++4. Connection - Wi-Fi, Ethernet, SimplyPrint
+ 5. System - FW crash, …
+ 6. Bootloader - FW update, USB/SD card fail
+ 7. Warnings

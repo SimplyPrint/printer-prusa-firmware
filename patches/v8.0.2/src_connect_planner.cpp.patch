@@ -1,0 +1,28 @@
+diff --git a/src/connect/planner.cpp b/src/connect/planner.cpp
+index 88383d6f4ac93a87d002ad132ff0c5d83b357a22..0931e8cac2041640e04950678a6f10b73fa4b642 100644
+--- a/src/connect/planner.cpp
++++ b/src/connect/planner.cpp
+@@ -67,7 +67,6 @@ using Incident = ChangedPath::Incident;
+ LOG_COMPONENT_REF(connect);
+ 
+ namespace connect_client {
+-
+ namespace {
+ 
+     // A note about time comparisons. We usually subtract now() and some past
+@@ -700,6 +699,7 @@ JC(Resume, "No paused print to resume")
+ JC(Stop, "No print to stop")
+ 
+ void Planner::command(const Command &command, const StartPrint &params) {
++//    connect_client::is_print_network = true;
+     const char *path = params.path.path();
+ 
+     const char *reason = nullptr;
+@@ -743,6 +743,7 @@ void Planner::command(const Command &command, const SendJobInfo &params) {
+         command.id,
+         params.job_id,
+     };
++//    connect_client::is_print_network = true;
+     planned_event->start_cmd_id = print_start_cmd;
+ }
+ 

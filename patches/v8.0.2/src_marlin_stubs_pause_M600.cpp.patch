@@ -1,0 +1,11 @@
+diff --git a/src/marlin_stubs/pause/M600.cpp b/src/marlin_stubs/pause/M600.cpp
+index 1aa8121746f771b935e21f7317132697ee143a21..41e75e54c3a2c8c8eb1a0c35548f2e5be033ad81 100644
+--- a/src/marlin_stubs/pause/M600.cpp
++++ b/src/marlin_stubs/pause/M600.cpp
+@@ -371,3 +371,5 @@ void PrusaGcodeSuite::M1601() {
+ }
+ 
+ #endif
++
++//find a way to send a serial message when pausing
+\ No newline at end of file
